@@ -1,533 +1,143 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ArrowDown, ArrowRight, Check, ChevronDown, X } from "lucide-react";
 import styles from "./NiwasthanCinematicExperience.module.css";
 
-const scenes = [
-  {
-    id: "living",
-    label: "Living",
-    image:
-      "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=3840&q=90",
-  },
-  {
-    id: "kitchen",
-    label: "Kitchen",
-    image:
-      "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=3840&q=90",
-  },
-  {
-    id: "master",
-    label: "Master",
-    image:
-      "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=3840&q=90",
-  },
-  {
-    id: "kids",
-    label: "Kids",
-    image:
-      "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=3840&q=90",
-  },
-  {
-    id: "balcony",
-    label: "Balcony",
-    image:
-      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=3840&q=90",
-  },
+type Scene = { id: string; label: string; image: string };
+type Hotspot = { id: string; scene: number; x: number; y: number; title: string; brand: string; spec: string; warranty: string; unitPrice: number };
+
+const scenes: Scene[] = [
+  { id: "living", label: "Living Room", image: "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=3840&q=90" },
+  { id: "kitchen-dining", label: "Dining • Kitchen", image: "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=3840&q=90" },
+  { id: "master", label: "Master", image: "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=3840&q=90" },
+  { id: "kids", label: "Kids", image: "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=3840&q=90" },
+  { id: "balcony", label: "Balcony", image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=3840&q=90" },
 ];
 
-const hotspots = [
-  {
-    id: "floor",
-    scene: 0,
-    x: 31,
-    y: 76,
-    title: "Flooring",
-    material: "Premium natural stone",
-    note: "Large-format finish",
-    price: 185000,
-    warranty: "Verify in catalogue",
-  },
-  {
-    id: "wall",
-    scene: 0,
-    x: 68,
-    y: 41,
-    title: "Feature wall",
-    material: "Fluted architectural panel",
-    note: "Custom profile + warm oak tone",
-    price: 94000,
-    warranty: "Verify in catalogue",
-  },
-  {
-    id: "light",
-    scene: 0,
-    x: 81,
-    y: 26,
-    title: "Lighting",
-    material: "Layered architectural lighting",
-    note: "Ambient + accent + task",
-    price: 72000,
-    warranty: "Verify in catalogue",
-  },
-  {
-    id: "counter",
-    scene: 1,
-    x: 56,
-    y: 58,
-    title: "Countertop",
-    material: "Engineered quartz",
-    note: "Low-maintenance work surface",
-    price: 128000,
-    warranty: "Verify in catalogue",
-  },
-  {
-    id: "cabinet",
-    scene: 1,
-    x: 77,
-    y: 37,
-    title: "Cabinetry",
-    material: "Premium acrylic finish",
-    note: "Soft-close hardware ready",
-    price: 264000,
-    warranty: "Verify in catalogue",
-  },
-  {
-    id: "wardrobe",
-    scene: 2,
-    x: 76,
-    y: 46,
-    title: "Wardrobe",
-    material: "Custom hardwood-look system",
-    note: "Full-height storage",
-    price: 196000,
-    warranty: "Verify in catalogue",
-  },
-  {
-    id: "glazing",
-    scene: 2,
-    x: 23,
-    y: 32,
-    title: "Glazing",
-    material: "Acoustic-performance glazing",
-    note: "Quiet bedroom envelope",
-    price: 86000,
-    warranty: "Verify in catalogue",
-  },
-  {
-    id: "study",
-    scene: 3,
-    x: 66,
-    y: 57,
-    title: "Study zone",
-    material: "Integrated desk + storage",
-    note: "Designed to grow with the child",
-    price: 98000,
-    warranty: "Verify in catalogue",
-  },
-  {
-    id: "green",
-    scene: 4,
-    x: 63,
-    y: 48,
-    title: "Green edge",
-    material: "Outdoor planting system",
-    note: "Low-maintenance balcony layer",
-    price: 54000,
-    warranty: "Verify in catalogue",
-  },
+// Presentation data only: catalogue verification remains the source of truth for live commercial values.
+const hotspots: Hotspot[] = [
+  { id: "marble", scene: 0, x: 31, y: 76, title: "Italian Marble Flooring", brand: "Catalogue-selected brand", spec: "Large-format premium natural stone finish", warranty: "Catalogue verified", unitPrice: 0 },
+  { id: "fluted", scene: 0, x: 68, y: 41, title: "Fluted Wall Panels", brand: "Catalogue-selected brand", spec: "Architectural fluted panel system", warranty: "Catalogue verified", unitPrice: 0 },
+  { id: "lighting", scene: 0, x: 81, y: 26, title: "Smart Lighting", brand: "Catalogue-selected brand", spec: "Ambient + accent + task lighting", warranty: "Catalogue verified", unitPrice: 0 },
+  { id: "quartz", scene: 1, x: 56, y: 58, title: "Quartz Countertop", brand: "Catalogue-selected brand", spec: "Engineered quartz work surface", warranty: "Catalogue verified", unitPrice: 0 },
+  { id: "acrylic", scene: 1, x: 77, y: 37, title: "Acrylic Cabinets", brand: "Catalogue-selected brand", spec: "Premium acrylic cabinet finish", warranty: "Catalogue verified", unitPrice: 0 },
+  { id: "appliances", scene: 1, x: 38, y: 48, title: "Built-in Appliances", brand: "Catalogue-selected brand", spec: "Integrated appliance package", warranty: "Catalogue verified", unitPrice: 0 },
+  { id: "wardrobe", scene: 2, x: 76, y: 46, title: "Premium Hardwood Wardrobe", brand: "Catalogue-selected brand", spec: "Full-height premium wardrobe system", warranty: "Catalogue verified", unitPrice: 0 },
+  { id: "glazing", scene: 2, x: 23, y: 32, title: "Soundproof Glazing", brand: "Catalogue-selected brand", spec: "Acoustic-performance glazing", warranty: "Catalogue verified", unitPrice: 0 },
+  { id: "study", scene: 3, x: 66, y: 57, title: "Kids Storage & Study", brand: "Catalogue-selected brand", spec: "Integrated desk + storage system", warranty: "Catalogue verified", unitPrice: 0 },
+  { id: "green", scene: 4, x: 63, y: 48, title: "Balcony Greenery", brand: "Catalogue-selected brand", spec: "Low-maintenance outdoor planting system", warranty: "Catalogue verified", unitPrice: 0 },
 ];
 
-const roomTotals = [
-  ["Living", 351000],
-  ["Kitchen", 392000],
-  ["Master", 282000],
-  ["Kids", 98000],
-  ["Balcony", 54000],
-];
-
-const formatINR = (value: number) =>
-  `₹${Math.round(value).toLocaleString("en-IN")}`;
-
-function clamp(value: number, min = 0, max = 1) {
-  return Math.min(max, Math.max(min, value));
-}
+const roomTotals = ["Living", "Kitchen", "Master", "Kids", "Balcony"].map((room) => ({ room, value: 0 }));
+const clamp = (n: number, min = 0, max = 1) => Math.min(max, Math.max(min, n));
+const fmt = (n: number) => `₹${Math.round(n).toLocaleString("en-IN")}`;
 
 export function NiwasthanCinematicExperience() {
   const ref = useRef<HTMLElement>(null);
-  const [progress, setProgress] = useState(0);
   const [smooth, setSmooth] = useState(0);
   const [activeHotspot, setActiveHotspot] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const reduced = useMemo(() => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches, []);
 
   useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
     let target = 0;
     let current = 0;
     let raf = 0;
-    const onScroll = () => {
-      const el = ref.current;
-      if (!el) return;
+    const read = () => {
       const max = Math.max(1, el.offsetHeight - window.innerHeight);
-      target = clamp(window.scrollY / max);
-      setProgress(target);
+      target = clamp((window.scrollY - el.offsetTop) / max);
+      if (reduced) { current = target; setSmooth(target); }
     };
     const tick = () => {
-      current += (target - current) * 0.12;
+      if (!reduced) current += (target - current) * 0.12;
       setSmooth(current);
       raf = requestAnimationFrame(tick);
     };
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
+    read();
+    window.addEventListener("scroll", read, { passive: true });
+    window.addEventListener("resize", read);
     raf = requestAnimationFrame(tick);
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-      cancelAnimationFrame(raf);
+    return () => { window.removeEventListener("scroll", read); window.removeEventListener("resize", read); cancelAnimationFrame(raf); };
+  }, [reduced]);
+
+  useEffect(() => {
+    const onMove = (event: MouseEvent) => {
+      document.documentElement.style.setProperty("--mx", `${(event.clientX / window.innerWidth - 0.5) * 2}`);
+      document.documentElement.style.setProperty("--my", `${(event.clientY / window.innerHeight - 0.5) * 2}`);
     };
+    window.addEventListener("mousemove", onMove, { passive: true });
+    return () => window.removeEventListener("mousemove", onMove);
   }, []);
 
-  const activeScene = useMemo(() => {
-    if (smooth < 0.14) return -1;
-    return Math.min(4, Math.floor((smooth - 0.14) / 0.17));
-  }, [smooth]);
-
-  const selected = hotspots.find((item) => item.id === activeHotspot) ?? null;
-  const boqTotal = roomTotals.reduce((sum, [, value]) => sum + value, 0);
-  const door = clamp(smooth / 0.12);
-  const discover = clamp((smooth - 0.12) / 0.27);
-  const understand = clamp((smooth - 0.39) / 0.21);
-  const price = clamp((smooth - 0.6) / 0.15);
-  const design = clamp((smooth - 0.75) / 0.12);
-  const build = clamp((smooth - 0.87) / 0.13);
-
-  const jump = (p: number) => {
-    const el = ref.current;
-    if (!el) return;
-    const y = el.offsetTop + p * (el.offsetHeight - window.innerHeight);
-    window.scrollTo({ top: y, behavior: "smooth" });
+  const p = smooth * 6500;
+  const enter = clamp(p / 800);
+  const discover = clamp((p - 800) / 1700);
+  const understand = clamp((p - 2500) / 1300);
+  const price = clamp((p - 3800) / 1000);
+  const design = clamp((p - 4800) / 800);
+  const build = clamp((p - 5600) / 900);
+  const activeScene = p < 800 ? -1 : Math.min(4, Math.floor((p - 800) / 340));
+  const selected = hotspots.find((h) => h.id === activeHotspot);
+  const total = roomTotals.reduce((s, r) => s + r.value, 0);
+  const jump = (px: number) => {
+    const node = ref.current;
+    if (!node) return;
+    window.scrollTo({ top: node.offsetTop + px, behavior: reduced ? "auto" : "smooth" });
     setMenuOpen(false);
   };
 
   return (
-    <main
-      className={styles.shell}
-      ref={ref}
-      aria-label="Niwasthan cinematic home tour"
-    >
-      <div className={styles.stage}>
-        <div
-          className={styles.world}
-          style={{ "--p": smooth } as React.CSSProperties}
-        >
-          <header className={styles.header}>
-            <button
-              className={styles.logo}
-              onClick={() => jump(0)}
-              aria-label="Niwasthan home"
-            >
-              NIWASTHAN
-            </button>
-            <nav
-              className={`${styles.nav} ${menuOpen ? styles.navOpen : ""}`}
-              aria-label="Main menu"
-            >
-              {[
-                [0, "01 Enter"],
-                [0.14, "02 Discover"],
-                [0.39, "03 Understand"],
-                [0.6, "04 Price"],
-                [0.75, "05 Design"],
-                [0.87, "06 Build"],
-              ].map(([p, label]) => (
-                <button key={label as string} onClick={() => jump(p as number)}>
-                  {label}
-                </button>
-              ))}
-            </nav>
-            <button
-              className={styles.boqPill}
-              onClick={() => jump(0.65)}
-              aria-label="View running total"
-            >
-              <span>Total Estimate</span>
-              <strong>{formatINR(price > 0 ? boqTotal : 0)}</strong>
-            </button>
-            <button
-              className={styles.menuButton}
-              onClick={() => setMenuOpen((v) => !v)}
-              aria-label="Toggle menu"
-            >
-              {menuOpen ? <X size={18} /> : <ChevronDown size={18} />}
-            </button>
-          </header>
+    <main ref={ref} className={styles.shell}>
+      <section className={styles.cinemaScroll} id="cinema" aria-label="Niwasthan Home Tour">
+        <div className={styles.stage}>
+          <div className={styles.world}>
+            <header className={styles.header} aria-label="Primary Navigation">
+              <button className={styles.logo} onClick={() => jump(0)}>NIWASTHAN</button>
+              <nav className={`${styles.nav} ${menuOpen ? styles.navOpen : ""}`} aria-label="Main Menu">
+                {[0, 800, 2500, 3800, 4800, 5600].map((at, i) => <button key={at} onClick={() => jump(at)}>{`0${i + 1} ${["Enter", "Discover", "Understand", "Price", "Design", "Build"][i]}`}</button>)}
+              </nav>
+              <button className={styles.boqPill} onClick={() => jump(3800)} aria-label="View Running Total"><span>Total Estimate:</span><strong>{fmt(total)}</strong></button>
+              <button className={styles.menuButton} onClick={() => setMenuOpen((v) => !v)} aria-label="Menu">☰</button>
+            </header>
 
-          <div className={styles.backStack} aria-hidden="true">
-            <div
-              className={styles.entrance}
-              style={{
-                opacity: 1 - door * 0.55,
-                transform: `scale(${1 + door * 0.85})`,
-              }}
-            >
-              <div className={styles.wallTexture} />
-              <div
-                className={styles.doorLeafLeft}
-                style={{ transform: `translateX(${-door * 108}%)` }}
-              />
-              <div
-                className={styles.doorLeafRight}
-                style={{ transform: `translateX(${door * 108}%)` }}
-              />
-              <div className={styles.nameplate}>NIWASTHAN</div>
+            <div className={styles.backStack}>
+              <div className={styles.sceneLayer + " " + styles.layerEntrance} style={{ opacity: 1 - enter * 0.75, transform: `scale(${1 + enter * 0.85})` }}>
+                <div className={styles.corridorWall} />
+                <div className={styles.singleDoor} />
+                <div className={styles.doorHardware} />
+                <div className={styles.nameplate}>NIWASTHAN</div>
+              </div>
+              {scenes.map((scene, i) => {
+                const fadeIn = clamp((p - (800 + i * 300)) / 300);
+                const fadeOut = clamp((2500 - p) / 300);
+                const opacity = discover * (i === activeScene ? 1 : 0.04) * (i === 4 ? 1 : fadeOut + fadeIn);
+                const zoom = 1 + clamp((p - (800 + i * 300)) / 1000) * (0.2 + i * 0.012);
+                return <div key={scene.id} className={`${styles.sceneLayer} ${styles[`layer${i}`]}`} style={{ opacity, transform: `scale(${zoom}) translate3d(calc(var(--mx) * ${-1.4 - i * 0.45}px), calc(var(--my) * ${-0.8 - i * 0.25}px), 0)` }}><img src={scene.image} alt="" /><div className={styles.sceneVeil} /></div>;
+              })}
             </div>
-            {scenes.map((scene, index) => {
-              const distance = Math.abs(index - activeScene);
-              const opacity = clamp(1 - distance * 1.8) * discover;
-              const zoom =
-                1.03 + clamp((smooth - (0.14 + index * 0.04)) / 0.23) * 0.28;
-              return (
-                <div
-                  key={scene.id}
-                  className={styles.sceneLayer}
-                  style={{
-                    opacity,
-                    transform: `scale(${zoom}) translate3d(${(smooth - 0.5) * -index * 2.5}%, ${(smooth - 0.5) * -index * 1.4}%, 0)`,
-                  }}
-                >
-                  <img src={scene.image} alt="" />
-                  <div className={styles.sceneVeil} />
-                </div>
-              );
-            })}
+            <div className={styles.shade} />
+
+            <section className={`${styles.storyPanel} ${styles.panelEnter}`} style={{ opacity: 1 - enter }}><span className={styles.eyebrow}>01 · NIWASTHAN</span><h1>ENTER YOUR HOME</h1><p>Decide Smart. Live Better.</p><span className={styles.scrollCue}>Scroll to enter ↓</span></section>
+            <section className={`${styles.storyPanel} ${styles.panelDiscover}`} style={{ opacity: discover * (1 - understand) }}><span className={styles.eyebrow}>02 · DISCOVER</span><h2>DISCOVER YOUR HOME</h2><div className={styles.roomIndicator}>Living Room • Dining • Kitchen • Master • Kids • Balcony</div></section>
+
+            <section className={styles.hotspotContainer} style={{ opacity: understand }} aria-label="Material Intelligence">
+              {hotspots.map((h) => <button key={h.id} className={`${styles.hotspot} ${h.scene === activeScene ? styles.hotspotActive : ""}`} style={{ left: `${h.x}%`, top: `${h.y}%`, transform: `translate(-50%,-50%) scale(${h.scene === activeScene ? 1 : 0.35})` }} onClick={() => setActiveHotspot(selected?.id === h.id ? null : h.id)} aria-label={`Inspect ${h.title}`}><span>+</span></button>)}
+              {selected && <aside className={styles.materialCard}><button onClick={() => setActiveHotspot(null)} className={styles.close}>×</button><span className={styles.eyebrow}>MATERIAL INTELLIGENCE</span><h3>{selected.title}</h3><dl><dt>Brand</dt><dd>{selected.brand}</dd><dt>Specification</dt><dd>{selected.spec}</dd><dt>Warranty</dt><dd>{selected.warranty}</dd><dt>Unit Price</dt><dd>{selected.unitPrice ? fmt(selected.unitPrice) : "Catalogue verified"}</dd></dl></aside>}
+            </section>
+
+            <section className={styles.storyPanel + " " + styles.panelUnderstand} style={{ opacity: understand * (1 - price) }}><span className={styles.eyebrow}>03 · UNDERSTAND</span><h2>UNDERSTAND YOUR HOME</h2><p>Tap the gold points to inspect materials, brands, specifications, warranty and price intelligence.</p></section>
+
+            <section className={styles.boqBreakdownCard} style={{ opacity: price, transform: `translateY(${50 - price * 50}px)` }}><div><span className={styles.eyebrow}>04 · PRICE YOUR HOME</span><h2>PRICE YOUR HOME</h2></div><div className={styles.boqCard}><header><span>RUNNING TOTAL</span><strong>{fmt(total)}</strong></header>{roomTotals.map((r) => <div className={styles.boqRow} key={r.room}><span>{r.room}</span><b>{fmt(r.value)}</b></div>)}<footer>Room-level BOQ • Product-level transparency</footer></div></section>
+
+            <section className={styles.designPanel} style={{ opacity: design, transform: `translateY(${40 - design * 40}px)` }}><span className={styles.eyebrow}>05 · DESIGN YOUR HOME</span><h2>DESIGN YOUR HOME</h2><div className={styles.processGrid}><article><b>01</b><h3>Niwasthan Process</h3><p>Discovery → Design → Visualization → Handover</p></article><article><b>02</b><h3>AI + Design Intelligence</h3><p>Spatial optimization and material intelligence.</p></article><article><b>03</b><h3>Real-Time 3D Visualization</h3><p>Experience the home before you build it.</p></article></div></section>
+
+            <section className={styles.buildPanel} style={{ opacity: build, transform: `translateY(${40 - build * 40}px)` }}><span className={styles.eyebrow}>06 · BUILD YOUR HOME</span><h2>BUILD YOUR HOME</h2><div className={styles.buildSteps}>{["Procurement", "Execution", "Quality Control", "Handover"].map((s, i) => <div key={s}><b>{`0${i + 1}`}</b><span>{s}</span>{i < 3 && <i>→</i>}</div>)}</div></section>
           </div>
-
-          <div className={styles.grain} />
-          <div className={styles.vignette} />
-
-          <section
-            className={`${styles.copy} ${styles.enterCopy}`}
-            style={{ opacity: 1 - clamp(smooth / 0.13) }}
-          >
-            <span className={styles.kicker}>01 · A different way to begin</span>
-            <h1>
-              ENTER
-              <br />
-              YOUR HOME
-            </h1>
-            <p>Decide Smart. Live Better.</p>
-            <span className={styles.scrollCue}>
-              <ArrowDown size={15} /> Scroll to enter
-            </span>
-          </section>
-
-          <section
-            className={styles.copy}
-            style={{ opacity: discover * (1 - understand) }}
-          >
-            <span className={styles.kicker}>02 · Discover your home</span>
-            <h2>
-              SEE THE HOME
-              <br />
-              BEFORE YOU BUILD IT.
-            </h2>
-            <p>
-              One continuous cinematic journey through the spaces that make your
-              home yours.
-            </p>
-            <div className={styles.roomRail}>
-              {scenes.map((s, i) => (
-                <button
-                  key={s.id}
-                  className={i === activeScene ? styles.roomActive : ""}
-                  onClick={() => jump(0.14 + i * 0.04)}
-                >
-                  {s.label}
-                </button>
-              ))}
-            </div>
-          </section>
-
-          <section
-            className={styles.hotspotLayer}
-            style={{ opacity: understand }}
-          >
-            {hotspots.map((item) => {
-              const visible = item.scene === activeScene;
-              return (
-                <button
-                  key={item.id}
-                  className={`${styles.hotspot} ${visible ? styles.hotspotVisible : ""}`}
-                  style={{
-                    left: `${item.x}%`,
-                    top: `${item.y}%`,
-                    transform: `translate(-50%, -50%) scale(${visible ? 1 : 0.45})`,
-                  }}
-                  onClick={() =>
-                    setActiveHotspot(activeHotspot === item.id ? null : item.id)
-                  }
-                  aria-label={`Inspect ${item.title}`}
-                >
-                  <span className={styles.hotspotDot} />
-                  <span className={styles.hotspotLine} />
-                </button>
-              );
-            })}
-            {selected && (
-              <aside className={styles.materialCard}>
-                <button
-                  className={styles.closeCard}
-                  onClick={() => setActiveHotspot(null)}
-                  aria-label="Close"
-                >
-                  <X size={15} />
-                </button>
-                <span className={styles.cardKicker}>MATERIAL INTELLIGENCE</span>
-                <h3>{selected.title}</h3>
-                <strong>{selected.material}</strong>
-                <p>{selected.note}</p>
-                <div className={styles.specGrid}>
-                  <span>Indicative item value</span>
-                  <b>{formatINR(selected.price)}</b>
-                  <span>Warranty</span>
-                  <b>{selected.warranty}</b>
-                </div>
-                <small>
-                  Final brand, SKU, price and warranty are verified from the
-                  Niwasthan catalogue before purchase.
-                </small>
-              </aside>
-            )}
-          </section>
-
-          <section
-            className={styles.boqPanel}
-            style={{
-              opacity: price,
-              transform: `translateY(${50 - price * 50}px)`,
-            }}
-          >
-            <div>
-              <span className={styles.kicker}>04 · Price your home</span>
-              <h2>
-                KNOW WHAT
-                <br />
-                YOUR HOME COSTS.
-              </h2>
-              <p>
-                No mystery quote. No black box. A room-by-room investment view
-                that can resolve down to product, SKU and quantity.
-              </p>
-            </div>
-            <div className={styles.boqCard}>
-              <div className={styles.boqTop}>
-                <span>LIVE HOME ESTIMATE</span>
-                <strong>{formatINR(boqTotal)}</strong>
-              </div>
-              {roomTotals.map(([room, value]) => (
-                <div className={styles.boqRow} key={room as string}>
-                  <span>{room}</span>
-                  <div>
-                    <i
-                      style={{
-                        width: `${((value as number) / boqTotal) * 100}%`,
-                      }}
-                    />
-                    <b>{formatINR(value as number)}</b>
-                  </div>
-                </div>
-              ))}
-              <div className={styles.boqFoot}>
-                <Check size={14} /> Transparent room-level BOQ
-              </div>
-            </div>
-          </section>
-
-          <section
-            className={styles.featurePanel}
-            style={{
-              opacity: design,
-              transform: `translateY(${40 - design * 40}px)`,
-            }}
-          >
-            <span className={styles.kicker}>05 · Design your home</span>
-            <h2>
-              DESIGN INTELLIGENCE
-              <br />
-              THAT FEELS HUMAN.
-            </h2>
-            <div className={styles.featureGrid}>
-              {[
-                [
-                  "01",
-                  "Discover",
-                  "Understand your property, layout, lifestyle and priorities.",
-                ],
-                [
-                  "02",
-                  "Design",
-                  "AI + expert thinking turns constraints into considered spaces.",
-                ],
-                [
-                  "03",
-                  "Visualize",
-                  "See materials, rooms and decisions before execution begins.",
-                ],
-              ].map(([n, title, body]) => (
-                <article key={n}>
-                  <span>{n}</span>
-                  <h3>{title}</h3>
-                  <p>{body}</p>
-                </article>
-              ))}
-            </div>
-          </section>
-
-          <section className={styles.buildPanel} style={{ opacity: build }}>
-            <span className={styles.kicker}>06 · Build your home</span>
-            <h2>
-              FROM FIRST DECISION
-              <br />
-              TO FINAL HANDOVER.
-            </h2>
-            <div className={styles.steps}>
-              {["Procurement", "Execution", "Quality Control", "Handover"].map(
-                (step, i) => (
-                  <div key={step}>
-                    <span>0{i + 1}</span>
-                    <b>{step}</b>
-                    <i />
-                  </div>
-                ),
-              )}
-            </div>
-            <button className={styles.finalCta} onClick={() => jump(0)}>
-              <span>Start your Niwasthan</span>
-              <ArrowRight size={17} />
-            </button>
-          </section>
         </div>
-      </div>
-
-      <footer className={styles.footer}>
-        <div>
-          <span>NIWASTHAN</span>
-          <p>
-            Homes, thoughtfully designed.
-            <br />
-            Decide Smart. Live Better.
-          </p>
-        </div>
-        <div className={styles.footerLinks}>
-          <button>Contact</button>
-          <button>Terms & Conditions</button>
-          <button>Privacy</button>
-          <button>Refund</button>
-          <button>Social</button>
-        </div>
-        <small>© 2026 Niwasthan. All rights reserved.</small>
-      </footer>
+      </section>
+      <footer className={styles.footer}><div className={styles.footerContent}><div className={styles.footerBrand}>NIWASTHAN</div><div className={styles.footerLinks}><button>Contact</button><button>Terms & Conditions</button><button>Privacy</button><button>Refund</button><button>Social</button></div><div className={styles.copyright}>© 2026 Niwasthan. All rights reserved.</div></div></footer>
     </main>
   );
 }
