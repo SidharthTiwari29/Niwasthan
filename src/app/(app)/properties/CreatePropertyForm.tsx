@@ -2,16 +2,17 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
-const PROPERTY_TYPES = [
-  { value: "", label: "Select type" },
-  { value: "ONE_BHK", label: "1 BHK" },
-  { value: "TWO_BHK", label: "2 BHK" },
-  { value: "THREE_BHK", label: "3 BHK" },
-  { value: "FOUR_BHK", label: "4 BHK" },
-  { value: "VILLA", label: "Villa" },
-  { value: "OTHER", label: "Other" },
-];
+const PROPERTY_TYPE_VALUES = [
+  "",
+  "ONE_BHK",
+  "TWO_BHK",
+  "THREE_BHK",
+  "FOUR_BHK",
+  "VILLA",
+  "OTHER",
+] as const;
 
 const MIN_BUDGET = 100_000; // Rs 1,00,000 - a real, sensible floor for a real renovation
 const MAX_BUDGET = 5_000_000; // Rs 50,00,000 - a real, generous ceiling for the slider's range
@@ -23,6 +24,7 @@ function formatRupees(amount: number): string {
 
 export function CreatePropertyForm() {
   const router = useRouter();
+  const t = useTranslations("onboarding");
   const [name, setName] = useState("");
   const [city, setCity] = useState("");
   const [propertyType, setPropertyType] = useState("");
@@ -30,6 +32,16 @@ export function CreatePropertyForm() {
   const [budget, setBudget] = useState(1_000_000);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+
+  const propertyTypeLabels: Record<string, string> = {
+    "": t("propertyTypeSelect"),
+    ONE_BHK: t("propertyTypeOneBhk"),
+    TWO_BHK: t("propertyTypeTwoBhk"),
+    THREE_BHK: t("propertyTypeThreeBhk"),
+    FOUR_BHK: t("propertyTypeFourBhk"),
+    VILLA: t("propertyTypeVilla"),
+    OTHER: t("propertyTypeOther"),
+  };
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -51,7 +63,7 @@ export function CreatePropertyForm() {
       });
       if (!propertyResponse.ok) {
         const body = await propertyResponse.json().catch(() => null);
-        throw new Error(body?.error?.message ?? "Couldn't add this home.");
+        throw new Error(body?.error?.message ?? t("genericError"));
       }
       const { property } = await propertyResponse.json();
 
@@ -72,7 +84,7 @@ export function CreatePropertyForm() {
 
       router.push(`/properties/${property.id}/floor-plan`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Couldn't add this home.");
+      setError(err instanceof Error ? err.message : t("genericError"));
       setSubmitting(false);
     }
   }
@@ -84,14 +96,14 @@ export function CreatePropertyForm() {
           htmlFor="property-name"
           className="block font-body text-sm font-medium text-ink"
         >
-          What should we call this home?
+          {t("nameLabel")}
         </label>
         <input
           id="property-name"
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
-          placeholder="e.g. Home, My apartment"
+          placeholder={t("namePlaceholder")}
           className="mt-1 w-full rounded-sm border border-ink/15 bg-white px-3 py-2 font-body text-sm text-ink outline-none focus-visible:border-laterite"
         />
       </div>
@@ -102,13 +114,13 @@ export function CreatePropertyForm() {
             htmlFor="property-city"
             className="block font-body text-sm font-medium text-ink"
           >
-            City
+            {t("cityLabel")}
           </label>
           <input
             id="property-city"
             value={city}
             onChange={(e) => setCity(e.target.value)}
-            placeholder="e.g. Bengaluru"
+            placeholder={t("cityPlaceholder")}
             className="mt-1 w-full rounded-sm border border-ink/15 bg-white px-3 py-2 font-body text-sm text-ink outline-none focus-visible:border-laterite"
           />
         </div>
@@ -117,7 +129,7 @@ export function CreatePropertyForm() {
             htmlFor="property-type"
             className="block font-body text-sm font-medium text-ink"
           >
-            Property type
+            {t("propertyTypeLabel")}
           </label>
           <select
             id="property-type"
@@ -125,9 +137,9 @@ export function CreatePropertyForm() {
             onChange={(e) => setPropertyType(e.target.value)}
             className="mt-1 w-full rounded-sm border border-ink/15 bg-white px-3 py-2 font-body text-sm text-ink outline-none focus-visible:border-laterite"
           >
-            {PROPERTY_TYPES.map((pt) => (
-              <option key={pt.value} value={pt.value}>
-                {pt.label}
+            {PROPERTY_TYPE_VALUES.map((value) => (
+              <option key={value} value={value}>
+                {propertyTypeLabels[value]}
               </option>
             ))}
           </select>
@@ -139,18 +151,17 @@ export function CreatePropertyForm() {
           htmlFor="project-name"
           className="block font-body text-sm font-medium text-ink"
         >
-          Project name (optional)
+          {t("projectNameLabel")}
         </label>
         <input
           id="project-name"
           value={projectName}
           onChange={(e) => setProjectName(e.target.value)}
-          placeholder="e.g. Living room redesign, Full home makeover"
+          placeholder={t("projectNamePlaceholder")}
           className="mt-1 w-full rounded-sm border border-ink/15 bg-white px-3 py-2 font-body text-sm text-ink outline-none focus-visible:border-laterite"
         />
         <p className="mt-1 font-body text-xs text-ink-soft">
-          You can also start this later, room by room, once your floor plan is
-          in.
+          {t("projectNameHelp")}
         </p>
       </div>
 
@@ -160,7 +171,7 @@ export function CreatePropertyForm() {
             htmlFor="property-budget"
             className="block font-body text-sm font-medium text-ink"
           >
-            Your target budget
+            {t("budgetLabel")}
           </label>
           <span className="font-body text-sm font-semibold text-ink">
             {formatRupees(budget)}
@@ -181,23 +192,18 @@ export function CreatePropertyForm() {
           <span>{formatRupees(MAX_BUDGET)}</span>
         </div>
         <p className="mt-1 font-body text-xs text-ink-soft">
-          A real starting point — every design decision will show its real cost
-          against this, and you can change it anytime.
+          {t("budgetHelp")}
         </p>
       </div>
 
-      <p className="font-body text-xs text-ink-soft">
-        We don&apos;t ask you to type in room sizes here — the next step is
-        uploading your real floor plan, and we work out the actual dimensions
-        from that.
-      </p>
+      <p className="font-body text-xs text-ink-soft">{t("floorPlanNote")}</p>
       {error ? <p className="font-body text-sm text-alert">{error}</p> : null}
       <button
         type="submit"
         disabled={submitting}
         className="w-fit rounded-sm bg-laterite px-5 py-2.5 font-body text-sm font-medium text-paper transition-colors hover:bg-laterite-deep disabled:opacity-50"
       >
-        {submitting ? "Adding…" : "Add home and upload floor plan"}
+        {submitting ? t("submitBusy") : t("submitIdle")}
       </button>
     </form>
   );

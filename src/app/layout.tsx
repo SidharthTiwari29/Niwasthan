@@ -1,6 +1,13 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { Fraunces, IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
+import {
+  Fraunces,
+  IBM_Plex_Mono,
+  IBM_Plex_Sans,
+  IBM_Plex_Sans_Devanagari,
+} from "next/font/google";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale, getMessages } from "next-intl/server";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -17,6 +24,18 @@ const plexMono = IBM_Plex_Mono({
   subsets: ["latin"],
   variable: "--font-mono",
   weight: ["400", "500"],
+});
+// Real, necessary separate font for Hindi (and any future Devanagari-
+// script language): IBM Plex Sans's Latin subset does not cover
+// Devanagari glyphs at all - without this, Hindi text would silently
+// fall back to a generic system font rather than genuinely rendering
+// in the app's real, intended typeface. Applied via its own CSS
+// variable, layered on top of --font-body rather than replacing it, so
+// Latin-script UI chrome around Hindi content is unaffected.
+const plexSansDevanagari = IBM_Plex_Sans_Devanagari({
+  subsets: ["devanagari"],
+  variable: "--font-body-devanagari",
+  weight: ["400", "500", "600"],
 });
 
 export const metadata: Metadata = {
@@ -42,13 +61,24 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default async function RootLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  const locale = await getLocale();
+  const messages = await getMessages();
+
   return (
     <html
-      lang="en"
-      className={`${fraunces.variable} ${plexSans.variable} ${plexMono.variable}`}
+      lang={locale}
+      className={`${fraunces.variable} ${plexSans.variable} ${plexMono.variable} ${plexSansDevanagari.variable}`}
     >
-      <body>{children}</body>
+      <body>
+        <NextIntlClientProvider messages={messages}>
+          {children}
+        </NextIntlClientProvider>
+      </body>
     </html>
   );
 }

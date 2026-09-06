@@ -1,0 +1,32 @@
+{
+  "nav": {
+    "brand": "Niwasthan",
+    "yourHomes": "Your homes",
+    "catalogue": "Catalogue",
+    "signOut": "Sign out",
+    "creditsRemaining": "{used}/{total} credits"
+  },
+  "onboarding": {
+    "nameLabel": "What should we call this home?",
+    "namePlaceholder": "e.g. Home, My apartment",
+    "cityLabel": "City",
+    "cityPlaceholder": "e.g. Bengaluru",
+    "propertyTypeLabel": "Property type",
+    "propertyTypeSelect": "Select type",
+    "propertyTypeOneBhk": "1 BHK",
+    "propertyTypeTwoBhk": "2 BHK",
+    "propertyTypeThreeBhk": "3 BHK",
+    "propertyTypeFourBhk": "4 BHK",
+    "propertyTypeVilla": "Villa",
+    "propertyTypeOther": "Other",
+    "projectNameLabel": "Project name (optional)",
+    "projectNamePlaceholder": "e.g. Living room redesign, Full home makeover",
+    "projectNameHelp": "You can also start this later, room by room, once your floor plan is in.",
+    "budgetLabel": "Your target budget",
+    "budgetHelp": "A real starting point — every design decision will show its real cost against this, and you can change it anytime.",
+    "floorPlanNote": "We don't ask you to type in room sizes here — the next step is uploading your real floor plan, and we work out the actual dimensions from that.",
+    "genericError": "Couldn't add this home.",
+    "submitIdle": "Add home and upload floor plan",
+    "submitBusy": "Adding…"
+  }
+}

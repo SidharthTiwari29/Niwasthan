@@ -1,0 +1,32 @@
+{
+  "nav": {
+    "brand": "Niwasthan",
+    "yourHomes": "आपके घर",
+    "catalogue": "कैटलॉग",
+    "signOut": "साइन आउट",
+    "creditsRemaining": "{used}/{total} क्रेडिट"
+  },
+  "onboarding": {
+    "nameLabel": "हम इस घर को क्या कहें?",
+    "namePlaceholder": "जैसे: घर, मेरा अपार्टमेंट",
+    "cityLabel": "शहर",
+    "cityPlaceholder": "जैसे: बेंगलुरु",
+    "propertyTypeLabel": "प्रॉपर्टी का प्रकार",
+    "propertyTypeSelect": "प्रकार चुनें",
+    "propertyTypeOneBhk": "1 बीएचके",
+    "propertyTypeTwoBhk": "2 बीएचके",
+    "propertyTypeThreeBhk": "3 बीएचके",
+    "propertyTypeFourBhk": "4 बीएचके",
+    "propertyTypeVilla": "विला",
+    "propertyTypeOther": "अन्य",
+    "projectNameLabel": "प्रोजेक्ट का नाम (वैकल्पिक)",
+    "projectNamePlaceholder": "जैसे: लिविंग रूम का नया डिज़ाइन, पूरे घर का मेकओवर",
+    "projectNameHelp": "आप इसे बाद में भी शुरू कर सकते हैं, कमरे-दर-कमरे, जब आपका फ़्लोर प्लान आ जाए।",
+    "budgetLabel": "आपका लक्षित बजट",
+    "budgetHelp": "एक वास्तविक शुरुआती बिंदु — हर डिज़ाइन निर्णय की असली लागत इसके सामने दिखाई जाएगी, और आप इसे कभी भी बदल सकते हैं।",
+    "floorPlanNote": "हम आपसे यहां कमरों का साइज़ टाइप करने को नहीं कहते — अगला कदम है अपना असली फ़्लोर प्लान अपलोड करना, और हम उसी से सही माप निकालते हैं।",
+    "genericError": "यह घर जोड़ा नहीं जा सका।",
+    "submitIdle": "घर जोड़ें और फ़्लोर प्लान अपलोड करें",
+    "submitBusy": "जोड़ा जा रहा है…"
+  }
+}
