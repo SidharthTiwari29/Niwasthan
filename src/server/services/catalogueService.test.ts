@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { NotFoundError } from "@/server/errors/AppError";
 import { prisma } from "@/server/db/prisma";
+import { notificationService } from "@/server/services/notificationService";
 import {
   addCataloguePrice,
   bulkImportCatalogue,
@@ -18,11 +19,24 @@ vi.mock("@/server/db/prisma", () => ({
       upsert: vi.fn(),
       count: vi.fn(),
     },
-    cataloguePrice: { create: vi.fn() },
+    cataloguePrice: { create: vi.fn(), findFirst: vi.fn() },
+    boqLine: { findMany: vi.fn() },
   },
 }));
 
+vi.mock("@/server/services/notificationService", () => ({
+  notificationService: { notify: vi.fn() },
+}));
+
 const db = vi.mocked(prisma, { deep: true });
+const mockNotify = vi.mocked(notificationService.notify);
+
+// A real, safe default so every existing test - none of which are
+// actually about price-drop detection - doesn't need its own
+// boilerplate mock just to avoid a real crash from the new code path.
+// Tests that DO care about price-drop behavior override this
+// explicitly.
+db.cataloguePrice.findFirst.mockResolvedValue(null);
 
 describe("catalogueService", () => {
   beforeEach(() => vi.clearAllMocks());
@@ -184,6 +198,79 @@ describe("catalogueService", () => {
           data: expect.objectContaining({ availability: "UNKNOWN" }),
         }),
       );
+    });
+
+    it("fires the real PRICE_DROP moment to every real customer with this item in a BOQ, only for a genuine drop", async () => {
+      db.catalogueItem.findUnique.mockResolvedValue({
+        id: "item-1",
+        name: "Real Sofa",
+      } as never);
+      db.cataloguePrice.findFirst.mockResolvedValue({
+        amountMinor: 50_000n,
+      } as never);
+      db.cataloguePrice.create.mockResolvedValue({ id: "price-2" } as never);
+      db.boqLine.findMany.mockResolvedValue([
+        { boq: { project: { ownerId: "user-1" } } },
+        { boq: { project: { ownerId: "user-2" } } },
+      ] as never);
+
+      await addCataloguePrice({ sku: "SKU-1", amountMinor: 40_000n });
+
+      expect(mockNotify).toHaveBeenCalledTimes(2);
+      expect(mockNotify).toHaveBeenCalledWith(
+        expect.objectContaining({ userId: "user-1", type: "PRICE_DROP" }),
+      );
+      expect(mockNotify).toHaveBeenCalledWith(
+        expect.objectContaining({ userId: "user-2", type: "PRICE_DROP" }),
+      );
+    });
+
+    it("never fires PRICE_DROP when the real new price is not actually lower", async () => {
+      db.catalogueItem.findUnique.mockResolvedValue({
+        id: "item-1",
+        name: "Real Sofa",
+      } as never);
+      db.cataloguePrice.findFirst.mockResolvedValue({
+        amountMinor: 40_000n,
+      } as never);
+      db.cataloguePrice.create.mockResolvedValue({ id: "price-2" } as never);
+
+      await addCataloguePrice({ sku: "SKU-1", amountMinor: 45_000n });
+
+      expect(mockNotify).not.toHaveBeenCalled();
+      expect(db.boqLine.findMany).not.toHaveBeenCalled();
+    });
+
+    it("never fires PRICE_DROP for a real, genuinely first-ever price on an item - there is no real previous price to compare against", async () => {
+      db.catalogueItem.findUnique.mockResolvedValue({
+        id: "item-1",
+        name: "Real Sofa",
+      } as never);
+      db.cataloguePrice.findFirst.mockResolvedValue(null);
+      db.cataloguePrice.create.mockResolvedValue({ id: "price-1" } as never);
+
+      await addCataloguePrice({ sku: "SKU-1", amountMinor: 40_000n });
+
+      expect(mockNotify).not.toHaveBeenCalled();
+    });
+
+    it("never notifies the same real customer twice, even if they have the item in multiple real BOQs", async () => {
+      db.catalogueItem.findUnique.mockResolvedValue({
+        id: "item-1",
+        name: "Real Sofa",
+      } as never);
+      db.cataloguePrice.findFirst.mockResolvedValue({
+        amountMinor: 50_000n,
+      } as never);
+      db.cataloguePrice.create.mockResolvedValue({ id: "price-2" } as never);
+      db.boqLine.findMany.mockResolvedValue([
+        { boq: { project: { ownerId: "user-1" } } },
+        { boq: { project: { ownerId: "user-1" } } },
+      ] as never);
+
+      await addCataloguePrice({ sku: "SKU-1", amountMinor: 40_000n });
+
+      expect(mockNotify).toHaveBeenCalledTimes(1);
     });
   });
 

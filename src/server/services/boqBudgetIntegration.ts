@@ -1,6 +1,8 @@
 import { prisma } from "@/server/db/prisma";
 import { budgetRepository } from "@/server/repositories/budgetRepository";
 import { NotFoundError } from "@/server/errors/AppError";
+import { notificationService } from "@/server/services/notificationService";
+import { buildMoment } from "@/server/personality/momentTemplates";
 
 export type BoqBudgetDelta = {
   lowDeltaMinor: bigint;
@@ -72,18 +74,43 @@ export const reconcileBoqWithBudget = async (input: {
     baseVersion.totalTargetMinor,
   );
 
-  return budgetRepository.createImpact(boq.project.propertyId, input.ownerId, {
-    baseVersion: baseVersion.version,
-    proposedLowDeltaMinor: toSafeSignedMinorMoney(delta.lowDeltaMinor),
-    proposedTargetDeltaMinor: toSafeSignedMinorMoney(delta.targetDeltaMinor),
-    proposedHighDeltaMinor: toSafeSignedMinorMoney(delta.highDeltaMinor),
-    reason: `BOQ v${boq.version} reconciliation against budget v${baseVersion.version}`,
-    inputs: {
-      source: "BOQ",
-      boqId: boq.id,
-      boqVersion: boq.version,
-      boqTotalMinor: boq.totalMinor.toString(),
-      budgetTargetMinor: baseVersion.totalTargetMinor.toString(),
+  const impact = await budgetRepository.createImpact(
+    boq.project.propertyId,
+    input.ownerId,
+    {
+      baseVersion: baseVersion.version,
+      proposedLowDeltaMinor: toSafeSignedMinorMoney(delta.lowDeltaMinor),
+      proposedTargetDeltaMinor: toSafeSignedMinorMoney(delta.targetDeltaMinor),
+      proposedHighDeltaMinor: toSafeSignedMinorMoney(delta.highDeltaMinor),
+      reason: `BOQ v${boq.version} reconciliation against budget v${baseVersion.version}`,
+      inputs: {
+        source: "BOQ",
+        boqId: boq.id,
+        boqVersion: boq.version,
+        boqTotalMinor: boq.totalMinor.toString(),
+        budgetTargetMinor: baseVersion.totalTargetMinor.toString(),
+      },
     },
-  });
+  );
+
+  // README §29/§30 Niwasthan Moment: real trigger, previously unwired -
+  // buildMoment's BUDGET_EXCEEDED copy existed but nothing in the app
+  // ever called it. A positive targetDeltaMinor is the real, computed
+  // fact that this BOQ genuinely exceeds the customer's stated target -
+  // never a guess, always the same real delta already persisted above.
+  if (delta.targetDeltaMinor > 0n) {
+    const moment = buildMoment("BUDGET_EXCEEDED", {
+      overageMinor: delta.targetDeltaMinor,
+    });
+    await notificationService.notify({
+      userId: input.ownerId,
+      type: "BUDGET_EXCEEDED",
+      title: moment.title,
+      message: moment.message,
+      relatedEntityType: "Boq",
+      relatedEntityId: boq.id,
+    });
+  }
+
+  return impact;
 };

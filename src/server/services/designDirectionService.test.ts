@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ConflictError, NotFoundError } from "@/server/errors/AppError";
 import { designDirectionRepository } from "@/server/repositories/designDirectionRepository";
+import { notificationService } from "@/server/services/notificationService";
 import { designDirectionService } from "./designDirectionService";
 
 vi.mock("@/server/repositories/designDirectionRepository", () => ({
@@ -15,7 +16,12 @@ vi.mock("@/server/repositories/designDirectionRepository", () => ({
   },
 }));
 
+vi.mock("@/server/services/notificationService", () => ({
+  notificationService: { notify: vi.fn() },
+}));
+
 const repo = vi.mocked(designDirectionRepository);
+const mockNotify = vi.mocked(notificationService.notify);
 
 describe("designDirectionService.createDirection", () => {
   beforeEach(() => vi.clearAllMocks());
@@ -114,6 +120,29 @@ describe("designDirectionService.activateDirection", () => {
 
     expect(repo.activate).toHaveBeenCalledWith("project-1", "dir-2");
     expect(result.status).toBe("ACTIVE");
+  });
+
+  it("fires the real DESIGN_APPROVED moment when a direction is genuinely activated", async () => {
+    repo.findForOwner.mockResolvedValue({
+      id: "dir-2",
+      projectId: "project-1",
+      status: "ALTERNATIVE",
+    } as never);
+    repo.activate.mockResolvedValue({ id: "dir-2", status: "ACTIVE" } as never);
+
+    await designDirectionService.activateDirection(
+      "project-1",
+      "dir-2",
+      "user-1",
+    );
+
+    expect(mockNotify).toHaveBeenCalledWith(
+      expect.objectContaining({
+        userId: "user-1",
+        type: "DESIGN_APPROVED",
+        relatedEntityId: "dir-2",
+      }),
+    );
   });
 
   it("surfaces a real conflict if the atomic activation itself fails (e.g. a race)", async () => {

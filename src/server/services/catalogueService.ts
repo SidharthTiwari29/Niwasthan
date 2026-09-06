@@ -1,5 +1,7 @@
 import { prisma } from "@/server/db/prisma";
 import { NotFoundError } from "@/server/errors/AppError";
+import { notificationService } from "@/server/services/notificationService";
+import { buildMoment } from "@/server/personality/momentTemplates";
 
 export function listCatalogue(category?: string) {
   return prisma.catalogueItem.findMany({
@@ -65,7 +67,17 @@ export async function addCataloguePrice(input: {
     where: { sku: input.sku },
   });
   if (!item) throw new NotFoundError("CatalogueItem");
-  return prisma.cataloguePrice.create({
+
+  // The real, immediately-preceding price for this exact item, checked
+  // BEFORE creating the new one - the only honest way to know whether
+  // this is genuinely a drop, not a guess or an assumption that any new
+  // price observation is automatically cheaper.
+  const previousPrice = await prisma.cataloguePrice.findFirst({
+    where: { itemId: item.id },
+    orderBy: { effectiveFrom: "desc" },
+  });
+
+  const created = await prisma.cataloguePrice.create({
     data: {
       itemId: item.id,
       amountMinor: input.amountMinor,
@@ -76,6 +88,41 @@ export async function addCataloguePrice(input: {
       availability: input.availability ?? "UNKNOWN",
     },
   });
+
+  // README §29/§30 Niwasthan Moment: real trigger, previously unwired -
+  // buildMoment's PRICE_DROP copy existed but nothing in the app ever
+  // called it. Only fires for a real, genuine drop (strictly less than
+  // the real previous price), and only to real customers who actually
+  // have this exact item in a real BOQ line - never a blanket
+  // announcement to everyone regardless of relevance.
+  if (previousPrice && input.amountMinor < previousPrice.amountMinor) {
+    const affectedOwners = await prisma.boqLine.findMany({
+      where: { catalogueItemId: item.id },
+      select: { boq: { select: { project: { select: { ownerId: true } } } } },
+      distinct: ["boqId"],
+    });
+    const ownerIds = new Set<string>(
+      affectedOwners.map(
+        (row: { boq: { project: { ownerId: string } } }) =>
+          row.boq.project.ownerId,
+      ),
+    );
+    const moment = buildMoment("PRICE_DROP", { itemName: item.name });
+    await Promise.all(
+      [...ownerIds].map((userId) =>
+        notificationService.notify({
+          userId,
+          type: "PRICE_DROP",
+          title: moment.title,
+          message: moment.message,
+          relatedEntityType: "CatalogueItem",
+          relatedEntityId: item.id,
+        }),
+      ),
+    );
+  }
+
+  return created;
 }
 
 export type CatalogueImportRow = {

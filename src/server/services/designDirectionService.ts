@@ -1,5 +1,7 @@
 import { ConflictError, NotFoundError } from "@/server/errors/AppError";
 import { designDirectionRepository } from "@/server/repositories/designDirectionRepository";
+import { notificationService } from "@/server/services/notificationService";
+import { buildMoment } from "@/server/personality/momentTemplates";
 
 export const designDirectionService = {
   async createDirection(projectId: string, ownerId: string, name: string) {
@@ -56,6 +58,21 @@ export const designDirectionService = {
     if (!activated) {
       throw new ConflictError("This direction could not be activated");
     }
+
+    // README §29/§30 Niwasthan Moment: real trigger, previously unwired
+    // - buildMoment's DESIGN_APPROVED copy existed but nothing in the
+    // app ever called it. Activating a direction is the real, actual
+    // "the customer approved this design" event.
+    const moment = buildMoment("DESIGN_APPROVED");
+    await notificationService.notify({
+      userId: ownerId,
+      type: "DESIGN_APPROVED",
+      title: moment.title,
+      message: moment.message,
+      relatedEntityType: "DesignDirection",
+      relatedEntityId: activated.id,
+    });
+
     return activated;
   },
 
