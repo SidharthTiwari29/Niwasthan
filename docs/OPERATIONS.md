@@ -4,6 +4,8 @@
 
 This document defines the operational boundary for the Phase 0 / Phase 0.1 production foundation. It is intentionally infrastructure-oriented: provider credentials are configuration, not fixtures, and an unavailable provider must fail explicitly.
 
+The cross-cutting autonomous operations design is defined in `docs/AGENTIC-OPERATIONS.md` and is an architectural target until its implementation gates pass.
+
 ## Required configuration
 
 Use `.env.example` as the canonical variable inventory. Never commit `.env`, credentials, API keys, private keys or signed URLs.
@@ -54,6 +56,42 @@ Jobs are persisted in the database and designed to be idempotent and retryable. 
 
 Never manufacture a successful AI, render, video or BOQ result because a provider is unavailable.
 
+## Agentic operations
+
+The target production model adds specialist Operations Agents and a Process Lead Agent above the domain services.
+
+```text
+Domain Services
+      ↓
+Operational Events / Signals
+      ↓
+Specialist Operations Agents
+      ↓
+Process Lead Agent
+      ↓
+Authorised Domain Actions
+      ↓
+Domain Services
+```
+
+Specialist agents observe, validate, diagnose, act within explicit server-side policy and verify recovery. The Process Lead correlates technical, customer, commercial and workflow signals and produces the founder report.
+
+The initial specialist responsibilities are:
+
+- Property / Spatial Operations
+- Design Operations
+- Catalogue / Product Intelligence
+- Pricing / Deal / Savings
+- BOQ / Budget
+- Visualization
+- Procurement
+- Execution / Quality
+- Customer Journey
+- Commercial / Revenue Intelligence
+- Security / Reliability
+
+Agents must not mutate Prisma directly or bypass domain services. Autonomous actions must be bounded, idempotent where possible and auditable. Financially consequential, security-sensitive, legal, customer-impacting or irreversible actions require the appropriate controlled or human approval boundary.
+
 ## Object storage
 
 All user assets are private by default. Object keys are generated server-side and namespaced by ownership. Signed URLs are short-lived and must not be logged or exposed as permanent identifiers.
@@ -66,11 +104,15 @@ Paid entitlements are activated from verified provider events, not from a browse
 
 Credit usage uses transactional reserve/confirm/release semantics. A failed external operation must not permanently consume reserved credits.
 
+Commercial agents must use verified purchase/payment/entitlement state when reporting sales, upgrades, refunds and conversion outcomes.
+
 ## Observability and auditability
 
 Operational logs should contain request/job identifiers, event type, duration and safe outcome metadata. Never log access tokens, passwords, provider secrets, signed URLs or raw payment credentials.
 
 Security-sensitive and commercial mutations should remain auditable through the application's audit facilities.
+
+Agent observations, decisions, actions and escalations must also be auditable. Agent memory must never be the only source of truth for customer or commercial state.
 
 ## CI and release gate
 
@@ -84,14 +126,56 @@ A red check is a release blocker. Environment-dependent provider integration may
 
 ## Incident handling
 
-For authentication, payment, storage or AI incidents:
+For authentication, payment, storage, AI or agent incidents:
 
-1. Identify the affected capability and job/request IDs.
+1. Identify the affected capability and job/request/event IDs.
 2. Stop or disable the affected provider integration if continued execution could create duplicate side effects.
-3. Preserve database and audit records.
+3. Preserve database, event and audit records.
 4. Reconcile payment/entitlement state before replaying work.
-5. Re-run idempotent jobs only after the underlying provider condition is understood.
-6. Record the remediation and follow-up action in the operational change history.
+5. Disable autonomous remediation for the affected policy if it is producing repeated or unsafe actions.
+6. Re-run idempotent jobs only after the underlying provider condition is understood.
+7. Record the remediation and follow-up action in the operational change history.
+8. Allow the Process Lead to report the incident only from persisted facts and clearly labelled inference/recommendation.
+
+## Founder reporting
+
+The target Process Lead report should provide:
+
+- overall technical/workflow health;
+- what is working well;
+- visitors and customer activity;
+- registrations, property uploads and active projects;
+- designs, quotes and purchases;
+- sales/GMV and average order value where authoritative data exists;
+- upgrades, downgrades, refunds and cancellations;
+- potential, accepted and realised/verified savings;
+- incidents and customer/financial impact;
+- problems the agents detected and fixed;
+- recurring root causes and trends;
+- areas for improvement;
+- founder decisions required.
+
+Reports must distinguish `VERIFIED FACT`, `ESTIMATE`, `INFERENCE`, `RECOMMENDATION` and `UNRESOLVED`. A suspected conversion cause or AI-estimated saving must never be presented as a verified business fact.
+
+The intended delivery flow is:
+
+```text
+Operational Events
+      ↓
+Specialist Agent Analysis
+      ↓
+Process Lead Correlation
+      ↓
+Persisted Report Snapshot
+      ↓
+Report Validation
+      ↓
+Idempotent Email Delivery
+      ↓
+Delivery Audit
+```
+
+Daily reports are the default target. Critical security/payment/customer-impacting incidents use immediate escalation according to policy. Weekly reports should add trend and root-cause analysis.
 
 ## Product-scope guardrail
 
