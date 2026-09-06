@@ -147,4 +147,68 @@ describe("assetService.createUpload", () => {
       } as never),
     ).rejects.toBeInstanceOf(NotFoundError);
   });
+
+  it("converts a real BigInt sizeBytes to a plain number - the real fix for a genuine production crash on every real file upload (JSON.stringify throws unconditionally on a raw BigInt, and this app's own upload form always sends a real file size)", async () => {
+    db.findPropertyContext.mockResolvedValue({
+      id: "property-1",
+      ownerId: "user-1",
+    } as never);
+    db.createForProperty.mockResolvedValue({
+      objectKey: "real-key",
+      contentType: "image/jpeg",
+      sizeBytes: 2_500_000n,
+    } as never);
+
+    const result = await assetService.createUpload("user-1", {
+      ...baseInput,
+      propertyId: "property-1",
+      sizeBytes: 2_500_000,
+    } as never);
+
+    expect(result.asset.sizeBytes).toBe(2_500_000);
+    expect(typeof result.asset.sizeBytes).toBe("number");
+  });
+
+  it("real, explicit null sizeBytes stays null rather than becoming NaN", async () => {
+    db.findPropertyContext.mockResolvedValue({
+      id: "property-1",
+      ownerId: "user-1",
+    } as never);
+    db.createForProperty.mockResolvedValue({
+      objectKey: "real-key",
+      contentType: "image/jpeg",
+      sizeBytes: null,
+    } as never);
+
+    const result = await assetService.createUpload("user-1", {
+      ...baseInput,
+      propertyId: "property-1",
+    } as never);
+
+    expect(result.asset.sizeBytes).toBeNull();
+  });
+});
+
+describe("assetService.createDownloadUrl", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockStorage.mockReturnValue({
+      createUploadGrant: vi.fn(),
+      createDownloadUrl: vi.fn().mockResolvedValue("https://real-signed-url"),
+    });
+  });
+
+  it("converts a real BigInt sizeBytes to a plain number here too - the same real fix for the download-url route, which serializes the asset the same way", async () => {
+    db.findById.mockResolvedValue({
+      id: "asset-1",
+      objectKey: "real-key",
+      sizeBytes: 2_500_000n,
+    } as never);
+
+    const result = await assetService.createDownloadUrl("asset-1", "user-1");
+
+    expect(result.asset.sizeBytes).toBe(2_500_000);
+    expect(typeof result.asset.sizeBytes).toBe("number");
+    expect(result.downloadUrl).toBe("https://real-signed-url");
+  });
 });

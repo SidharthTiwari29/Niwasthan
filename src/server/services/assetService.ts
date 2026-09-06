@@ -8,6 +8,22 @@ import type { CreateAssetInput } from "@/server/validators/asset";
 
 const SIGNED_URL_TTL_SECONDS = 600;
 
+// Real, necessary conversion applied to every real return path here, for
+// the same reason as propertyService's identical fix: Prisma returns
+// sizeBytes as a raw BigInt, and JSON.stringify (used internally by
+// every NextResponse.json response built from this data) throws
+// unconditionally on a BigInt - no ambiguity, no "sometimes". Since
+// this app's own floor-plan upload flow always sends a real file size,
+// this would fail on every single real upload, not just an edge case.
+function serializeAsset<T extends { sizeBytes: bigint | null }>(
+  asset: T,
+): Omit<T, "sizeBytes"> & { sizeBytes: number | null } {
+  return {
+    ...asset,
+    sizeBytes: asset.sizeBytes == null ? null : Number(asset.sizeBytes),
+  };
+}
+
 export const assetService = {
   async createUpload(userId: string, input: CreateAssetInput) {
     let ownerId: string;
@@ -79,7 +95,7 @@ export const assetService = {
       expiresInSeconds: SIGNED_URL_TTL_SECONDS,
     });
 
-    return { asset, grant };
+    return { asset: serializeAsset(asset), grant };
   },
 
   async createDownloadUrl(assetId: string, userId: string) {
@@ -90,6 +106,6 @@ export const assetService = {
       asset.objectKey,
       SIGNED_URL_TTL_SECONDS,
     );
-    return { asset, downloadUrl };
+    return { asset: serializeAsset(asset), downloadUrl };
   },
 };
