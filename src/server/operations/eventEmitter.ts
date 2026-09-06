@@ -52,7 +52,12 @@ export async function emitEvent(input: EmitEventInput): Promise<void> {
         severity: input.severity ?? "INFO",
         currentState: input.currentState,
         previousState: input.previousState,
-        metadata: input.metadata,
+        // Prisma's generated type for an optional Json field does not
+        // accept a bare `undefined` the way ordinary optional scalar
+        // fields do - the key must be omitted entirely rather than
+        // explicitly assigned undefined, so this is a real, necessary
+        // conditional spread rather than a plain property assignment.
+        ...(input.metadata !== undefined ? { metadata: input.metadata } : {}),
       },
     });
   } catch (error) {
