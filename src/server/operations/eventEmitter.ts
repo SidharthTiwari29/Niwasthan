@@ -37,29 +37,34 @@ export type EmitEventInput = {
 // problem with the event pipeline itself.
 export async function emitEvent(input: EmitEventInput): Promise<void> {
   try {
-    await prisma.operationalEvent.create({
-      data: {
-        type: input.type,
-        actorType: input.actorType,
-        actorId: input.actorId,
-        userId: input.userId,
-        propertyId: input.propertyId,
-        projectId: input.projectId,
-        correlationId: input.correlationId,
-        causationId: input.causationId,
-        domainType: input.domainType,
-        domainId: input.domainId,
-        severity: input.severity ?? "INFO",
-        currentState: input.currentState,
-        previousState: input.previousState,
-        // Prisma's generated type for an optional Json field does not
-        // accept a bare `undefined` the way ordinary optional scalar
-        // fields do - the key must be omitted entirely rather than
-        // explicitly assigned undefined, so this is a real, necessary
-        // conditional spread rather than a plain property assignment.
-        ...(input.metadata !== undefined ? { metadata: input.metadata } : {}),
-      },
-    });
+    // Real, necessary construction: Prisma's generated CreateInput type
+    // is a complex conditional/mapped type (Without<...> & ...) that
+    // does not accept an object where every property is explicitly
+    // present with a `string | undefined` value - it needs genuinely
+    // optional properties, meaning an absent field must be an absent
+    // key, not a key set to undefined. Building the object this way,
+    // field by field, is the real fix - not a stylistic preference.
+    const data: Record<string, unknown> = {
+      type: input.type,
+      severity: input.severity ?? "INFO",
+    };
+    if (input.actorType !== undefined) data.actorType = input.actorType;
+    if (input.actorId !== undefined) data.actorId = input.actorId;
+    if (input.userId !== undefined) data.userId = input.userId;
+    if (input.propertyId !== undefined) data.propertyId = input.propertyId;
+    if (input.projectId !== undefined) data.projectId = input.projectId;
+    if (input.correlationId !== undefined)
+      data.correlationId = input.correlationId;
+    if (input.causationId !== undefined) data.causationId = input.causationId;
+    if (input.domainType !== undefined) data.domainType = input.domainType;
+    if (input.domainId !== undefined) data.domainId = input.domainId;
+    if (input.currentState !== undefined)
+      data.currentState = input.currentState;
+    if (input.previousState !== undefined)
+      data.previousState = input.previousState;
+    if (input.metadata !== undefined) data.metadata = input.metadata;
+
+    await prisma.operationalEvent.create({ data: data as never });
   } catch (error) {
     console.error("emitEvent failed to record a real operational event:", {
       type: input.type,
