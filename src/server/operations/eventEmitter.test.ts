@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { prisma } from "@/server/db/prisma";
+import { detectIncidentFromEvent } from "./incidentService";
 import { emitEvent } from "./eventEmitter";
 
 vi.mock("@/server/db/prisma", () => ({
@@ -8,7 +9,12 @@ vi.mock("@/server/db/prisma", () => ({
   },
 }));
 
+vi.mock("./incidentService", () => ({
+  detectIncidentFromEvent: vi.fn().mockResolvedValue(null),
+}));
+
 const db = vi.mocked(prisma, { deep: true });
+const mockDetectIncident = vi.mocked(detectIncidentFromEvent);
 
 describe("emitEvent", () => {
   const consoleErrorSpy = vi
@@ -87,6 +93,50 @@ describe("emitEvent", () => {
     expect(consoleErrorSpy).toHaveBeenCalledWith(
       expect.stringContaining("emitEvent failed"),
       expect.objectContaining({ type: "FLOOR_PLAN_ANALYSIS_FAILED" }),
+    );
+  });
+
+  it("never calls incident detection for a real INFO or WARNING event - matches detectIncidentFromEvent's own honest rule", async () => {
+    db.operationalEvent.create.mockResolvedValue({ id: "event-1" } as never);
+
+    await emitEvent({ type: "PROPERTY_CREATED", severity: "WARNING" });
+
+    expect(mockDetectIncident).not.toHaveBeenCalled();
+  });
+
+  it("calls real incident detection for a genuine ERROR event, with the real created event's ID as evidence", async () => {
+    db.operationalEvent.create.mockResolvedValue({ id: "event-1" } as never);
+
+    await emitEvent({
+      type: "FLOOR_PLAN_ANALYSIS_FAILED",
+      severity: "ERROR",
+      domainType: "FloorPlanAnalysis",
+      propertyId: "property-1",
+    });
+
+    expect(mockDetectIncident).toHaveBeenCalledWith({
+      severity: "ERROR",
+      affectedCapability: "FloorPlanAnalysis",
+      propertyId: "property-1",
+      projectId: undefined,
+      userId: undefined,
+      triggeringEventId: "event-1",
+      metadata: undefined,
+    });
+  });
+
+  it("falls back to the raw event type as the affected capability when no domainType was given", async () => {
+    db.operationalEvent.create.mockResolvedValue({ id: "event-1" } as never);
+
+    await emitEvent({
+      type: "SOME_UNCATEGORIZED_FAILURE",
+      severity: "CRITICAL",
+    });
+
+    expect(mockDetectIncident).toHaveBeenCalledWith(
+      expect.objectContaining({
+        affectedCapability: "SOME_UNCATEGORIZED_FAILURE",
+      }),
     );
   });
 });

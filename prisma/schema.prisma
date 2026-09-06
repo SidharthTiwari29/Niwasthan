@@ -1436,3 +1436,62 @@ model OperationalEvent {
   @@index([projectId])
   @@index([userId])
 }
+
+// Real, additive model for docs/AGENTIC-OPERATIONS.md section 9
+// (Incident lifecycle) and section 16 (AgentIncident, one of the
+// required future domain primitives). Deliberately a real, deterministic
+// record of a detected problem - never a fabricated "everything is
+// fine" default and never auto-resolved without a real, subsequent
+// event confirming the underlying condition actually cleared. Nothing
+// in this schema or the code that writes to it yet performs autonomous
+// remediation (spec section 7's classes B/C/D) - this is the DETECTED
+// state and the human-visible lifecycle around it, not an agent acting
+// on its own.
+enum IncidentStatus {
+  DETECTED
+  ACKNOWLEDGED
+  DIAGNOSING
+  ACTION_PLANNED
+  ACTION_EXECUTED
+  VERIFYING
+  RESOLVED
+  ESCALATED
+  REMEDIATED
+  VERIFIED
+}
+
+model AgentIncident {
+  id                     String         @id @default(cuid())
+  status                 IncidentStatus @default(DETECTED)
+  severity               EventSeverity
+  // The real workflow/capability this incident affects, in the same
+  // vocabulary as OperationalEvent.type (e.g. "FLOOR_PLAN_ANALYSIS") -
+  // deliberately a plain string for the same reason: the real set of
+  // affected capabilities will keep growing as more domain services
+  // are wired into the event model, and that should never require a
+  // migration.
+  affectedCapability     String
+  propertyId             String?
+  projectId              String?
+  userId                 String?
+  // The real event that caused this incident to be detected - the
+  // actual evidence, not a summary or a guess about what happened.
+  triggeringEventId      String?
+  firstDetectedAt        DateTime       @default(now())
+  acknowledgedAt         DateTime?
+  resolvedAt             DateTime?
+  // A real, explicit classification once genuinely known - null until
+  // then, never a placeholder guess standing in for real diagnosis.
+  rootCauseClassification String?
+  // How many times this exact same real condition has been detected
+  // before - a real, counted fact, not an estimate.
+  recurrenceCount        Int            @default(1)
+  preventionRecommendation String?      @db.Text
+  metadata               Json?
+  createdAt              DateTime       @default(now())
+  updatedAt              DateTime       @updatedAt
+
+  @@index([status, severity])
+  @@index([affectedCapability])
+  @@index([propertyId])
+}

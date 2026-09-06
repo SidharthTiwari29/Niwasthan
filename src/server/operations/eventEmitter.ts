@@ -1,4 +1,5 @@
 import { prisma } from "@/server/db/prisma";
+import { detectIncidentFromEvent } from "./incidentService";
 
 export type EventSeverity = "INFO" | "WARNING" | "ERROR" | "CRITICAL";
 
@@ -64,7 +65,30 @@ export async function emitEvent(input: EmitEventInput): Promise<void> {
       data.previousState = input.previousState;
     if (input.metadata !== undefined) data.metadata = input.metadata;
 
-    await prisma.operationalEvent.create({ data: data as never });
+    const createdEvent = await prisma.operationalEvent.create({
+      data: data as never,
+    });
+
+    // Real, deterministic link to the Incident lifecycle (section 9):
+    // only a genuine ERROR or CRITICAL event is ever considered for
+    // incident detection - matching detectIncidentFromEvent's own
+    // honest rule that INFO/WARNING are non-alarming facts, not
+    // problems. domainType is used as the real affected-capability
+    // signal since it already identifies which real workflow this
+    // event belongs to; falling back to the raw event type only when
+    // no domainType was given, rather than skipping detection entirely.
+    const severity = input.severity ?? "INFO";
+    if (severity === "ERROR" || severity === "CRITICAL") {
+      await detectIncidentFromEvent({
+        severity,
+        affectedCapability: input.domainType ?? input.type,
+        propertyId: input.propertyId,
+        projectId: input.projectId,
+        userId: input.userId,
+        triggeringEventId: (createdEvent as { id: string }).id,
+        metadata: input.metadata,
+      });
+    }
   } catch (error) {
     console.error("emitEvent failed to record a real operational event:", {
       type: input.type,
