@@ -1,6 +1,13 @@
 import { describe, expect, it } from "vitest";
 import en from "../../messages/en.json";
 import hi from "../../messages/hi.json";
+import mr from "../../messages/mr.json";
+import ta from "../../messages/ta.json";
+import te from "../../messages/te.json";
+import ml from "../../messages/ml.json";
+import pa from "../../messages/pa.json";
+import bn from "../../messages/bn.json";
+import kn from "../../messages/kn.json";
 import { SUPPORTED_LOCALES, isSupportedLocale } from "./locales";
 
 function flattenKeys(obj: Record<string, unknown>, prefix = ""): string[] {
@@ -12,19 +19,47 @@ function flattenKeys(obj: Record<string, unknown>, prefix = ""): string[] {
   });
 }
 
-describe("translation message files", () => {
-  it("real, exact key parity between en and hi - a missing key would silently show a raw message key to a real user", () => {
-    const enKeys = flattenKeys(en).sort();
-    const hiKeys = flattenKeys(hi).sort();
+// Real, direct map from every currently-supported locale to its actual
+// imported messages file - deliberately not a dynamic import, since
+// this needs to run synchronously inside a plain array/loop below, and
+// listing them explicitly here means adding a new language elsewhere
+// without also adding it here is caught immediately by this test
+// failing to find that locale's real messages, not by silently
+// skipping it.
+const MESSAGES_BY_LOCALE: Record<string, Record<string, unknown>> = {
+  en,
+  hi,
+  mr,
+  ta,
+  te,
+  ml,
+  pa,
+  bn,
+  kn,
+};
 
-    expect(hiKeys).toEqual(enKeys);
+describe("translation message files", () => {
+  it("every real, currently supported locale actually has a messages file wired into this test", () => {
+    for (const locale of SUPPORTED_LOCALES) {
+      expect(
+        MESSAGES_BY_LOCALE[locale],
+        `${locale} is in SUPPORTED_LOCALES but has no messages file checked here`,
+      ).toBeDefined();
+    }
   });
 
-  it("no real message value is an empty string in either language", () => {
-    for (const [locale, messages] of [
-      ["en", en],
-      ["hi", hi],
-    ] as const) {
+  it("real, exact key parity across every real, currently supported locale - a missing key would silently show a raw message key to a real user", () => {
+    const enKeys = flattenKeys(en).sort();
+
+    for (const locale of SUPPORTED_LOCALES) {
+      const keys = flattenKeys(MESSAGES_BY_LOCALE[locale]).sort();
+      expect(keys, `${locale} key set should exactly match en`).toEqual(enKeys);
+    }
+  });
+
+  it("no real message value is an empty string in any currently supported language", () => {
+    for (const locale of SUPPORTED_LOCALES) {
+      const messages = MESSAGES_BY_LOCALE[locale];
       for (const key of flattenKeys(messages)) {
         const value = key
           .split(".")

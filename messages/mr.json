@@ -1,0 +1,32 @@
+{
+  "nav": {
+    "brand": "Niwasthan",
+    "yourHomes": "आपली घरे",
+    "catalogue": "कॅटलॉग",
+    "signOut": "साइन आउट",
+    "creditsRemaining": "{used}/{total} क्रेडिट्स"
+  },
+  "onboarding": {
+    "nameLabel": "आपण या घराला काय म्हणूया?",
+    "namePlaceholder": "उदा. घर, माझे अपार्टमेंट",
+    "cityLabel": "शहर",
+    "cityPlaceholder": "उदा. बेंगळुरू",
+    "propertyTypeLabel": "प्रॉपर्टीचा प्रकार",
+    "propertyTypeSelect": "प्रकार निवडा",
+    "propertyTypeOneBhk": "1 बीएचके",
+    "propertyTypeTwoBhk": "2 बीएचके",
+    "propertyTypeThreeBhk": "3 बीएचके",
+    "propertyTypeFourBhk": "4 बीएचके",
+    "propertyTypeVilla": "व्हिला",
+    "propertyTypeOther": "इतर",
+    "projectNameLabel": "प्रोजेक्टचे नाव (ऐच्छिक)",
+    "projectNamePlaceholder": "उदा. लिव्हिंग रूमचे नवीन डिझाइन, संपूर्ण घराचा मेकओव्हर",
+    "projectNameHelp": "तुम्ही हे नंतरही सुरू करू शकता, खोली-खोलीने, तुमचा फ्लोअर प्लॅन आल्यावर.",
+    "budgetLabel": "तुमचे लक्ष्य बजेट",
+    "budgetHelp": "एक खरी सुरुवात — प्रत्येक डिझाइन निर्णयाची खरी किंमत याच्या समोर दाखवली जाईल, आणि तुम्ही ती कधीही बदलू शकता.",
+    "floorPlanNote": "आम्ही तुम्हाला इथे खोल्यांचा आकार टाइप करायला सांगत नाही — पुढची पायरी आहे तुमचा खरा फ्लोअर प्लॅन अपलोड करणे, आणि आम्ही त्यावरूनच खरे माप काढतो.",
+    "genericError": "हे घर जोडता आले नाही.",
+    "submitIdle": "घर जोडा आणि फ्लोअर प्लॅन अपलोड करा",
+    "submitBusy": "जोडले जात आहे…"
+  }
+}

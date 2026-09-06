@@ -7,6 +7,13 @@ import { SUPPORTED_LOCALES, LOCALE_COOKIE_NAME } from "@/i18n/locales";
 const LOCALE_LABELS: Record<string, string> = {
   en: "English",
   hi: "हिन्दी",
+  ta: "தமிழ்",
+  te: "తెలుగు",
+  mr: "मराठी",
+  ml: "മലയാളം",
+  pa: "ਪੰਜਾਬੀ",
+  bn: "বাংলা",
+  kn: "ಕನ್ನಡ",
 };
 
 // Real, deliberately minimal implementation matching the actual

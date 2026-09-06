@@ -1,0 +1,32 @@
+{
+  "nav": {
+    "brand": "Niwasthan",
+    "yourHomes": "ਤੁਹਾਡੇ ਘਰ",
+    "catalogue": "ਕੈਟਾਲਾਗ",
+    "signOut": "ਸਾਈਨ ਆਊਟ",
+    "creditsRemaining": "{used}/{total} ਕ੍ਰੈਡਿਟ"
+  },
+  "onboarding": {
+    "nameLabel": "ਅਸੀਂ ਇਸ ਘਰ ਨੂੰ ਕੀ ਕਹੀਏ?",
+    "namePlaceholder": "ਜਿਵੇਂ: ਘਰ, ਮੇਰਾ ਅਪਾਰਟਮੈਂਟ",
+    "cityLabel": "ਸ਼ਹਿਰ",
+    "cityPlaceholder": "ਜਿਵੇਂ: ਬੰਗਲੌਰ",
+    "propertyTypeLabel": "ਪ੍ਰਾਪਰਟੀ ਦੀ ਕਿਸਮ",
+    "propertyTypeSelect": "ਕਿਸਮ ਚੁਣੋ",
+    "propertyTypeOneBhk": "1 ਬੀਐਚਕੇ",
+    "propertyTypeTwoBhk": "2 ਬੀਐਚਕੇ",
+    "propertyTypeThreeBhk": "3 ਬੀਐਚਕੇ",
+    "propertyTypeFourBhk": "4 ਬੀਐਚਕੇ",
+    "propertyTypeVilla": "ਵਿਲਾ",
+    "propertyTypeOther": "ਹੋਰ",
+    "projectNameLabel": "ਪ੍ਰੋਜੈਕਟ ਦਾ ਨਾਮ (ਵਿਕਲਪਿਕ)",
+    "projectNamePlaceholder": "ਜਿਵੇਂ: ਲਿਵਿੰਗ ਰੂਮ ਦਾ ਨਵਾਂ ਡਿਜ਼ਾਈਨ, ਪੂਰੇ ਘਰ ਦਾ ਮੇਕਓਵਰ",
+    "projectNameHelp": "ਤੁਸੀਂ ਇਹ ਬਾਅਦ ਵਿੱਚ ਵੀ ਸ਼ੁਰੂ ਕਰ ਸਕਦੇ ਹੋ, ਕਮਰੇ-ਦਰ-ਕਮਰੇ, ਜਦੋਂ ਤੁਹਾਡਾ ਫਲੋਰ ਪਲੈਨ ਆ ਜਾਵੇ।",
+    "budgetLabel": "ਤੁਹਾਡਾ ਟੀਚਾ ਬਜਟ",
+    "budgetHelp": "ਇੱਕ ਅਸਲੀ ਸ਼ੁਰੂਆਤੀ ਬਿੰਦੂ — ਹਰ ਡਿਜ਼ਾਈਨ ਫੈਸਲੇ ਦੀ ਅਸਲੀ ਲਾਗਤ ਇਸ ਦੇ ਸਾਹਮਣੇ ਦਿਖਾਈ ਜਾਵੇਗੀ, ਅਤੇ ਤੁਸੀਂ ਇਸਨੂੰ ਕਦੇ ਵੀ ਬਦਲ ਸਕਦੇ ਹੋ।",
+    "floorPlanNote": "ਅਸੀਂ ਤੁਹਾਨੂੰ ਇੱਥੇ ਕਮਰਿਆਂ ਦੇ ਆਕਾਰ ਟਾਈਪ ਕਰਨ ਲਈ ਨਹੀਂ ਕਹਿੰਦੇ — ਅਗਲਾ ਕਦਮ ਹੈ ਤੁਹਾਡਾ ਅਸਲੀ ਫਲੋਰ ਪਲੈਨ ਅੱਪਲੋਡ ਕਰਨਾ, ਅਤੇ ਅਸੀਂ ਉਸੇ ਤੋਂ ਸਹੀ ਮਾਪ ਕੱਢਦੇ ਹਾਂ।",
+    "genericError": "ਇਹ ਘਰ ਜੋੜਿਆ ਨਹੀਂ ਜਾ ਸਕਿਆ।",
+    "submitIdle": "ਘਰ ਜੋੜੋ ਅਤੇ ਫਲੋਰ ਪਲੈਨ ਅੱਪਲੋਡ ਕਰੋ",
+    "submitBusy": "ਜੋੜਿਆ ਜਾ ਰਿਹਾ ਹੈ…"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "nav": {
+    "brand": "Niwasthan",
+    "yourHomes": "আপনার বাড়ি",
+    "catalogue": "ক্যাটালগ",
+    "signOut": "সাইন আউট",
+    "creditsRemaining": "{used}/{total} ক্রেডিট"
+  },
+  "onboarding": {
+    "nameLabel": "আমরা এই বাড়িটিকে কী বলব?",
+    "namePlaceholder": "যেমন: বাড়ি, আমার অ্যাপার্টমেন্ট",
+    "cityLabel": "শহর",
+    "cityPlaceholder": "যেমন: বেঙ্গালুরু",
+    "propertyTypeLabel": "প্রপার্টির ধরন",
+    "propertyTypeSelect": "ধরন নির্বাচন করুন",
+    "propertyTypeOneBhk": "1 বিএইচকে",
+    "propertyTypeTwoBhk": "2 বিএইচকে",
+    "propertyTypeThreeBhk": "3 বিএইচকে",
+    "propertyTypeFourBhk": "4 বিএইচকে",
+    "propertyTypeVilla": "ভিলা",
+    "propertyTypeOther": "অন্যান্য",
+    "projectNameLabel": "প্রজেক্টের নাম (ঐচ্ছিক)",
+    "projectNamePlaceholder": "যেমন: লিভিং রুমের নতুন ডিজাইন, পুরো বাড়ির মেকওভার",
+    "projectNameHelp": "আপনার ফ্লোর প্ল্যান আসার পর, ঘর ধরে ধরে এটি পরেও শুরু করতে পারেন।",
+    "budgetLabel": "আপনার লক্ষ্য বাজেট",
+    "budgetHelp": "একটি বাস্তব শুরুর বিন্দু — প্রতিটি ডিজাইন সিদ্ধান্তের প্রকৃত খরচ এর বিপরীতে দেখানো হবে, এবং আপনি এটি যেকোনো সময় পরিবর্তন করতে পারেন।",
+    "floorPlanNote": "আমরা আপনাকে এখানে ঘরের মাপ টাইপ করতে বলি না — পরবর্তী ধাপ হলো আপনার আসল ফ্লোর প্ল্যান আপলোড করা, এবং আমরা তা থেকেই প্রকৃত মাপ বের করি।",
+    "genericError": "এই বাড়িটি যোগ করা যায়নি।",
+    "submitIdle": "বাড়ি যোগ করুন এবং ফ্লোর প্ল্যান আপলোড করুন",
+    "submitBusy": "যোগ করা হচ্ছে…"
+  }
+}

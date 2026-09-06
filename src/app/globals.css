@@ -51,14 +51,34 @@
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
-  /* Real, necessary override for Hindi (and any future Devanagari-
-     script locale): the default --font-body has no Devanagari glyphs
-     at all, so text would silently render in a generic fallback font
-     rather than the app's actual, intended typeface. Scoped to the
-     real <html lang="hi"> attribute next-intl sets, so English content
-     is completely unaffected. */
-  html[lang="hi"] body {
+  /* Real, necessary overrides per script - each of these locales'
+     default --font-body has no glyphs at all for its actual script, so
+     without this, text would silently render in a generic fallback
+     font rather than the app's real, intended typeface for that
+     language. Scoped to the real <html lang="..."> attribute
+     next-intl sets, so English (and every other locale) is completely
+     unaffected by any one of these rules. */
+  html[lang="hi"] body,
+  html[lang="mr"] body {
     font-family: var(--font-body-devanagari), var(--font-body);
+  }
+  html[lang="ta"] body {
+    font-family: var(--font-body-tamil), var(--font-body);
+  }
+  html[lang="te"] body {
+    font-family: var(--font-body-telugu), var(--font-body);
+  }
+  html[lang="ml"] body {
+    font-family: var(--font-body-malayalam), var(--font-body);
+  }
+  html[lang="pa"] body {
+    font-family: var(--font-body-gurmukhi), var(--font-body);
+  }
+  html[lang="bn"] body {
+    font-family: var(--font-body-bengali), var(--font-body);
+  }
+  html[lang="kn"] body {
+    font-family: var(--font-body-kannada), var(--font-body);
   }
   h1,
   h2,

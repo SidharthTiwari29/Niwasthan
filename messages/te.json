@@ -1,0 +1,32 @@
+{
+  "nav": {
+    "brand": "Niwasthan",
+    "yourHomes": "మీ ఇళ్లు",
+    "catalogue": "కేటలాగ్",
+    "signOut": "సైన్ అవుట్",
+    "creditsRemaining": "{used}/{total} క్రెడిట్‌లు"
+  },
+  "onboarding": {
+    "nameLabel": "ఈ ఇంటిని మనం ఏమని పిలవాలి?",
+    "namePlaceholder": "ఉదా: ఇల్లు, నా అపార్ట్‌మెంట్",
+    "cityLabel": "నగరం",
+    "cityPlaceholder": "ఉదా: బెంగళూరు",
+    "propertyTypeLabel": "ఆస్తి రకం",
+    "propertyTypeSelect": "రకాన్ని ఎంచుకోండి",
+    "propertyTypeOneBhk": "1 బీహెచ్‌కే",
+    "propertyTypeTwoBhk": "2 బీహెచ్‌కే",
+    "propertyTypeThreeBhk": "3 బీహెచ్‌కే",
+    "propertyTypeFourBhk": "4 బీహెచ్‌కే",
+    "propertyTypeVilla": "విల్లా",
+    "propertyTypeOther": "ఇతరం",
+    "projectNameLabel": "ప్రాజెక్ట్ పేరు (ఐచ్ఛికం)",
+    "projectNamePlaceholder": "ఉదా: లివింగ్ రూమ్ కొత్త డిజైన్, పూర్తి ఇంటి మేకోవర్",
+    "projectNameHelp": "మీ ఫ్లోర్ ప్లాన్ వచ్చిన తర్వాత, గది వారీగా దీన్ని తర్వాత కూడా మొదలుపెట్టవచ్చు.",
+    "budgetLabel": "మీ లక్ష్య బడ్జెట్",
+    "budgetHelp": "ఇది ఒక నిజమైన ప్రారంభ బిందువు — ప్రతి డిజైన్ నిర్ణయం దీనికి వ్యతిరేకంగా దాని అసలు ఖర్చును చూపిస్తుంది, మరియు మీరు దీన్ని ఎప్పుడైనా మార్చుకోవచ్చు.",
+    "floorPlanNote": "గది కొలతలను ఇక్కడ టైప్ చేయమని మేము అడగం — తదుపరి దశ మీ అసలు ఫ్లోర్ ప్లాన్‌ను అప్‌లోడ్ చేయడం, మరియు దాని నుండి మేము అసలు కొలతలను తెలుసుకుంటాము.",
+    "genericError": "ఈ ఇంటిని జోడించలేకపోయాము.",
+    "submitIdle": "ఇల్లు జోడించి ఫ్లోర్ ప్లాన్ అప్‌లోడ్ చేయండి",
+    "submitBusy": "జోడిస్తోంది…"
+  }
+}
