@@ -67,27 +67,35 @@ HOME MEMORY / NIWASTHAN DNA™
 # 2. NON-NEGOTIABLE PRINCIPLES
 
 ### Real Home First
+
 The customer's actual property is the source of truth wherever information has been confirmed. Inputs can include floor plans, photographs, videos, measurements, property details, existing furniture, lifestyle requirements, preferences, budget and constraints.
 
 ### Design First
+
 Designs must respect actual dimensions where known, scale, circulation, ergonomics, storage, natural light, ventilation, electrical/plumbing requirements, furniture dimensions, kitchen workflow, durability, maintenance, constructability, lifestyle and budget.
 
 ### Transparency First
+
 Important decisions expose recommendation, rationale, price basis, source, freshness, specifications, brand, warranty where available, alternatives, trade-offs, potential savings, confidence/evidence and downstream impact.
 
 ### Value First
+
 ```text
 CHEAPEST ≠ BEST VALUE ≠ BEST QUALITY ≠ BEST DEAL
 ```
+
 A genuine deal requires evidence.
 
 ### User Control
+
 Users can accept, reject, compare, modify, replace, upgrade, downgrade, lock, preserve and revert important decisions. A locked decision must not be silently changed by later AI generation.
 
 ### No Fabricated Certainty
+
 Unknown or AI-inferred information remains explicitly `UNKNOWN` or `ESTIMATED / INFERRED` with confidence until confirmed. Niwasthan must never fabricate dimensions, prices, availability, warranties, product identity, evidence, supplier success, execution completion or savings claims.
 
 ### Buildability Matters
+
 > **Beautiful must also be buildable.**
 
 AI-generated visual quality is never sufficient acceptance evidence for a real-world design decision.

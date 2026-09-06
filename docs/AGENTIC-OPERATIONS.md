@@ -43,7 +43,7 @@ Customer / Business Workflow
 Specialist      Process Lead
 Agents            Agent
      |             |
-     +------+------+ 
+     +------+------+
             |
             v
    Authorised Actions
