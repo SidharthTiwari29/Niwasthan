@@ -4,6 +4,7 @@ import {
   getAIUsageSummary,
   listEntitlements,
   listJobs,
+  listOperationalEvents,
 } from "./adminOperationsService";
 
 vi.mock("@/server/db/prisma", () => ({
@@ -12,6 +13,7 @@ vi.mock("@/server/db/prisma", () => ({
     entitlement: { findMany: vi.fn() },
     aIJob: { findMany: vi.fn(), groupBy: vi.fn() },
     catalogueItem: { findMany: vi.fn() },
+    operationalEvent: { findMany: vi.fn() },
   },
 }));
 
@@ -45,5 +47,52 @@ describe("adminOperationsService", () => {
       { provider: "unconfigured", status: "SUCCEEDED", jobs: 3 },
       { provider: "openai", status: "FAILED", jobs: 1 },
     ]);
+  });
+
+  it("clamps the real operational events list limit to the server maximum, same as the other admin list views", async () => {
+    db.operationalEvent.findMany.mockResolvedValue([] as never);
+
+    await listOperationalEvents(5000);
+
+    expect(db.operationalEvent.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ take: 500 }),
+    );
+  });
+
+  it("orders real operational events by most recent first", async () => {
+    db.operationalEvent.findMany.mockResolvedValue([] as never);
+
+    await listOperationalEvents();
+
+    expect(db.operationalEvent.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ orderBy: { occurredAt: "desc" } }),
+    );
+  });
+
+  it("filters real operational events by type and severity when given", async () => {
+    db.operationalEvent.findMany.mockResolvedValue([] as never);
+
+    await listOperationalEvents(100, {
+      type: "FLOOR_PLAN_ANALYSIS_FAILED",
+      severity: "ERROR",
+    });
+
+    expect(db.operationalEvent.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { type: "FLOOR_PLAN_ANALYSIS_FAILED", severity: "ERROR" },
+      }),
+    );
+  });
+
+  it("real, honest default: no filter given means no filter applied - never a fabricated 'no incidents' view", async () => {
+    db.operationalEvent.findMany.mockResolvedValue([] as never);
+
+    await listOperationalEvents();
+
+    expect(db.operationalEvent.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { type: undefined, severity: undefined },
+      }),
+    );
   });
 });

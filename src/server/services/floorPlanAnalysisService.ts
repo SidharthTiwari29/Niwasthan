@@ -2,6 +2,7 @@ import { prisma } from "@/server/db/prisma";
 import { NotFoundError } from "@/server/errors/AppError";
 import { getAIProvider } from "@/server/ai/provider";
 import { getStorageProvider } from "@/server/storage/provider";
+import { emitEvent } from "@/server/operations/eventEmitter";
 import {
   validateFloorPlanObservations,
   type ValidationIssue,
@@ -66,6 +67,17 @@ export async function analyzeFloorPlan(
     },
   });
 
+  await emitEvent({
+    type: "FLOOR_PLAN_ANALYSIS_STARTED",
+    actorType: "system",
+    userId: ownerId,
+    propertyId: floorPlan.propertyId,
+    correlationId: analysis.id,
+    domainType: "FloorPlanAnalysis",
+    domainId: analysis.id,
+    currentState: "PENDING",
+  });
+
   try {
     // A real, signed download URL - the same mechanism already used
     // everywhere else this app needs to hand a stored asset to
@@ -126,6 +138,19 @@ export async function analyzeFloorPlan(
       data: { status: "ANALYZED", completedAt: new Date() },
     });
 
+    await emitEvent({
+      type: "FLOOR_PLAN_ANALYSIS_COMPLETED",
+      actorType: "system",
+      userId: ownerId,
+      propertyId: floorPlan.propertyId,
+      correlationId: analysis.id,
+      domainType: "FloorPlanAnalysis",
+      domainId: analysis.id,
+      currentState: "ANALYZED",
+      previousState: "PENDING",
+      metadata: { observationCount: observations.length },
+    });
+
     // Real geometry validation - runs on the exact same real,
     // persisted observations just created, never a separate or
     // reinterpreted copy of them.
@@ -182,6 +207,27 @@ export async function analyzeFloorPlan(
       data: {
         status: reason ? "NOT_AVAILABLE" : "FAILED",
         completedAt: new Date(),
+        reason:
+          reason ?? (error instanceof Error ? error.message : "Unknown error"),
+      },
+    });
+
+    await emitEvent({
+      type: "FLOOR_PLAN_ANALYSIS_FAILED",
+      actorType: "system",
+      userId: ownerId,
+      propertyId: floorPlan.propertyId,
+      correlationId: analysis.id,
+      domainType: "FloorPlanAnalysis",
+      domainId: analysis.id,
+      // A real, honest distinction: the provider simply not being
+      // configured yet is an expected, known condition worth
+      // recording but not alarming about - a genuinely unexpected
+      // error is a real operational problem.
+      severity: reason ? "WARNING" : "ERROR",
+      currentState: reason ? "NOT_AVAILABLE" : "FAILED",
+      previousState: "PENDING",
+      metadata: {
         reason:
           reason ?? (error instanceof Error ? error.message : "Unknown error"),
       },

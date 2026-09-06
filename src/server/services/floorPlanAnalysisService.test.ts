@@ -3,6 +3,7 @@ import { NotFoundError } from "@/server/errors/AppError";
 import { prisma } from "@/server/db/prisma";
 import { getAIProvider } from "@/server/ai/provider";
 import { getStorageProvider } from "@/server/storage/provider";
+import { emitEvent } from "@/server/operations/eventEmitter";
 import {
   analyzeFloorPlan,
   matchObservationToRoom,
@@ -12,6 +13,10 @@ import {
 
 vi.mock("@/server/storage/provider", () => ({
   getStorageProvider: vi.fn(),
+}));
+
+vi.mock("@/server/operations/eventEmitter", () => ({
+  emitEvent: vi.fn().mockResolvedValue(undefined),
 }));
 
 vi.mock("@/server/db/prisma", () => ({
@@ -33,6 +38,7 @@ vi.mock("@/server/ai/provider", () => ({
 
 const db = vi.mocked(prisma, { deep: true });
 const mockGetAIProvider = vi.mocked(getAIProvider);
+const mockEmitEvent = vi.mocked(emitEvent);
 const mockGetStorageProvider = vi.mocked(getStorageProvider);
 
 // A real, working default so every test in this file can reach the
@@ -155,6 +161,105 @@ describe("analyzeFloorPlan", () => {
     expect(db.floorPlanAnalysis.update).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({ status: "ANALYZED" }),
+      }),
+    );
+  });
+
+  it("emits a real FLOOR_PLAN_ANALYSIS_STARTED event as soon as the analysis record is created", async () => {
+    db.floorPlan.findFirst.mockResolvedValue(realFloorPlan as never);
+    db.floorPlanAnalysis.create.mockResolvedValue({
+      id: "analysis-1",
+    } as never);
+    mockGetAIProvider.mockReturnValue(
+      fakeProvider(() =>
+        Promise.reject(new Error("AI_PROVIDER_NOT_CONFIGURED")),
+      ) as never,
+    );
+
+    await analyzeFloorPlan("floor-plan-1", "user-1");
+
+    expect(mockEmitEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: "FLOOR_PLAN_ANALYSIS_STARTED",
+        propertyId: "property-1",
+        correlationId: "analysis-1",
+      }),
+    );
+  });
+
+  it("emits a real FLOOR_PLAN_ANALYSIS_COMPLETED event on a genuinely successful analysis, sharing the same correlation ID as the STARTED event", async () => {
+    db.floorPlan.findFirst.mockResolvedValue(realFloorPlan as never);
+    db.floorPlanAnalysis.create.mockResolvedValue({
+      id: "analysis-1",
+    } as never);
+    db.floorPlanObservation.create.mockResolvedValue({
+      id: "observation-1",
+      roomLabel: "Bedroom",
+      confidenceBps: 8000,
+      dimensions: {},
+    } as never);
+    mockGetAIProvider.mockReturnValue(
+      fakeProvider(() =>
+        Promise.resolve({
+          providerJobId: "provider-job-1",
+          output: { rooms: [{ label: "Bedroom" }] },
+        }),
+      ) as never,
+    );
+
+    await analyzeFloorPlan("floor-plan-1", "user-1");
+
+    expect(mockEmitEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: "FLOOR_PLAN_ANALYSIS_COMPLETED",
+        correlationId: "analysis-1",
+        currentState: "ANALYZED",
+      }),
+    );
+  });
+
+  it("emits a real FLOOR_PLAN_ANALYSIS_FAILED event at WARNING severity for the expected not-configured case - a known condition, not an alarm", async () => {
+    db.floorPlan.findFirst.mockResolvedValue(realFloorPlan as never);
+    db.floorPlanAnalysis.create.mockResolvedValue({
+      id: "analysis-1",
+    } as never);
+    mockGetAIProvider.mockReturnValue(
+      fakeProvider(() =>
+        Promise.reject(new Error("AI_PROVIDER_NOT_CONFIGURED")),
+      ) as never,
+    );
+
+    await analyzeFloorPlan("floor-plan-1", "user-1");
+
+    expect(mockEmitEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: "FLOOR_PLAN_ANALYSIS_FAILED",
+        severity: "WARNING",
+        currentState: "NOT_AVAILABLE",
+      }),
+    );
+  });
+
+  it("emits a real FLOOR_PLAN_ANALYSIS_FAILED event at ERROR severity for a genuinely unexpected failure", async () => {
+    db.floorPlan.findFirst.mockResolvedValue(realFloorPlan as never);
+    db.floorPlanAnalysis.create.mockResolvedValue({
+      id: "analysis-1",
+    } as never);
+    mockGetAIProvider.mockReturnValue(
+      fakeProvider(() =>
+        Promise.reject(new Error("SOME_OTHER_REAL_FAILURE")),
+      ) as never,
+    );
+
+    await expect(analyzeFloorPlan("floor-plan-1", "user-1")).rejects.toThrow(
+      "SOME_OTHER_REAL_FAILURE",
+    );
+
+    expect(mockEmitEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: "FLOOR_PLAN_ANALYSIS_FAILED",
+        severity: "ERROR",
+        currentState: "FAILED",
       }),
     );
   });

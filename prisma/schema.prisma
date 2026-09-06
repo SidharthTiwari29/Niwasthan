@@ -1376,3 +1376,63 @@ model PlanUpgradeOffer {
 
   @@unique([userId, targetPackageCode])
 }
+
+// Real, additive foundation for docs/AGENTIC-OPERATIONS.md section 5
+// (Operational event model) - the FACTS layer every specialist agent,
+// the audit trail, and the incident lifecycle described there depend
+// on. Deliberately just facts: an event records that something real
+// happened, exactly as the domain service that emitted it observed it
+// - never an agent's interpretation, hypothesis, or decision about
+// that fact (those are separate, not-yet-built layers per the same
+// document's section 8, and must never be recorded here or allowed to
+// overwrite what actually happened).
+enum EventSeverity {
+  INFO
+  WARNING
+  ERROR
+  CRITICAL
+}
+
+model OperationalEvent {
+  id            String        @id @default(cuid())
+  // A real, specific event type from the vocabulary the spec itself
+  // defines (e.g. "FLOOR_PLAN_ANALYSIS_FAILED") - a plain string
+  // rather than a Prisma enum, since the spec's own event list is
+  // explicitly described as "examples" and will keep growing as more
+  // domain services are wired in; a database migration should never be
+  // required just to add a new, real event type.
+  type          String
+  occurredAt    DateTime      @default(now())
+  actorType     String?
+  actorId       String?
+  userId        String?
+  propertyId    String?
+  projectId     String?
+  // Ties together every event produced by a single real, end-to-end
+  // operation (e.g. one floor-plan analysis run) even when it spans
+  // several individual events (STARTED, then either FAILED or a
+  // downstream event) - the spec's own "correlation ID" field.
+  correlationId String?
+  // The specific event (if any) that directly caused this one - the
+  // spec's own "causation ID" field, distinct from correlationId:
+  // several events can share one correlation ID (the same overall
+  // operation) while each still has its own, more specific cause.
+  causationId   String?
+  domainType    String?
+  domainId      String?
+  severity      EventSeverity @default(INFO)
+  currentState  String?
+  previousState String?
+  // Real, structured detail about this specific event - deliberately
+  // named "metadata" to match the spec's own "safe metadata" field,
+  // and deliberately never used to store anything the rest of this
+  // schema already treats as sensitive (matching this project's
+  // existing privacy conventions elsewhere).
+  metadata      Json?
+
+  @@index([type, occurredAt])
+  @@index([correlationId])
+  @@index([propertyId])
+  @@index([projectId])
+  @@index([userId])
+}
