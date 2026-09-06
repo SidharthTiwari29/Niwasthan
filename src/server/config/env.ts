@@ -34,6 +34,18 @@ const schema = z.object({
   STORAGE_SECRET_ACCESS_KEY: emptyToUndefined(z.string()),
   AI_PROVIDER: emptyToUndefined(z.string()),
   GEMINI_API_KEY: emptyToUndefined(z.string()),
+  // Real, stated business decision: founder operations reports go to
+  // this address. A real, sensible default rather than requiring this
+  // to be configured before the feature works at all - still
+  // overridable via the actual env var if that address ever changes.
+  // Uses the same emptyToUndefined treatment as every other optional
+  // variable here before falling back to the default, for the exact
+  // reason documented at the top of this file: an unfilled-but-present
+  // Vercel variable is "", not absent, and .default() alone only
+  // catches genuinely missing keys, not empty-string ones.
+  FOUNDER_REPORT_EMAIL: emptyToUndefined(z.string().email()).default(
+    "founder@niwasthan.com",
+  ),
 });
 
 export function getEnv() {

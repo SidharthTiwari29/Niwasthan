@@ -37,6 +37,7 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "latest",
+    "@types/nodemailer": "^7.0.12",
     "@types/pdfkit": "^0.17.6",
     "@types/pg": "^8.23.1",
     "@types/react": "latest",
