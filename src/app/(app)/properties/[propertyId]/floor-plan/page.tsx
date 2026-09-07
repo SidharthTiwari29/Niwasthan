@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { requireAuth } from "@/server/middleware/requireAuth";
 import { propertyService } from "@/server/services/propertyService";
 import { floorPlanService } from "@/server/services/floorPlanService";
@@ -12,6 +13,7 @@ export default async function FloorPlanPage({
 }) {
   const { propertyId } = await params;
   const { userId } = await requireAuth();
+  const t = await getTranslations("floorPlan");
 
   const property = await propertyService.get(propertyId, userId);
   if (!property) notFound();
@@ -24,15 +26,12 @@ export default async function FloorPlanPage({
         href={`/properties/${propertyId}`}
         className="font-body text-sm text-ink-soft transition-colors hover:text-ink"
       >
-        ← Back to home
+        {t("backToHome")}
       </Link>
-      <h1 className="mt-4 font-display text-3xl font-semibold">Floor plan</h1>
-      <p className="mt-1 font-body text-sm text-ink-soft">
-        Upload a photo or PDF of your floor plan. This is a real record we keep
-        with your home — confirming each room&apos;s actual dimensions still
-        happens separately, since a photo alone is not the same as a verified
-        measurement.
-      </p>
+      <h1 className="mt-4 font-display text-3xl font-semibold">
+        {t("heading")}
+      </h1>
+      <p className="mt-1 font-body text-sm text-ink-soft">{t("description")}</p>
 
       {floorPlans.length > 0 ? (
         <ul className="mt-6 divide-y divide-paper-raised">
@@ -43,7 +42,7 @@ export default async function FloorPlanPage({
                 className="flex items-center justify-between py-3"
               >
                 <span className="font-body text-sm text-ink">
-                  Version {fp.version}
+                  {t("versionLabel", { number: fp.version })}
                 </span>
                 <span className="font-mono text-xs text-ink-soft">
                   {new Date(fp.createdAt).toLocaleDateString()}
@@ -54,7 +53,7 @@ export default async function FloorPlanPage({
         </ul>
       ) : (
         <p className="mt-6 font-body text-sm text-ink-soft">
-          No floor plan uploaded yet.
+          {t("noFloorPlanYet")}
         </p>
       )}
 

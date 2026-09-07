@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 type Observation = {
   id: string;
@@ -41,6 +42,7 @@ export function ReviewWorkspace({
   rooms: RoomOption[];
 }) {
   const router = useRouter();
+  const t = useTranslations("floorPlanReview");
   const [busyId, setBusyId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -59,11 +61,11 @@ export function ReviewWorkspace({
       );
       if (!response.ok) {
         const body = await response.json().catch(() => null);
-        throw new Error(body?.error?.message ?? "Couldn't record that match.");
+        throw new Error(body?.error?.message ?? t("errorMatch"));
       }
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong.");
+      setError(err instanceof Error ? err.message : t("errorMatch"));
     } finally {
       setBusyId(null);
     }
@@ -79,11 +81,11 @@ export function ReviewWorkspace({
       );
       if (!response.ok) {
         const body = await response.json().catch(() => null);
-        throw new Error(body?.error?.message ?? "Couldn't reject this.");
+        throw new Error(body?.error?.message ?? t("errorReject"));
       }
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong.");
+      setError(err instanceof Error ? err.message : t("errorReject"));
     } finally {
       setBusyId(null);
     }
@@ -92,7 +94,7 @@ export function ReviewWorkspace({
   if (!analysis) {
     return (
       <p className="mt-8 font-body text-sm text-ink-soft">
-        No analysis has been run for this floor plan yet.
+        {t("noAnalysisYet")}
       </p>
     );
   }
@@ -102,8 +104,7 @@ export function ReviewWorkspace({
       <div className="mt-8 max-w-xl rounded-sm border border-paper-raised bg-paper-raised/40 p-4">
         <p className="font-body text-sm text-ink">{analysis.reason}</p>
         <p className="mt-2 font-body text-xs text-ink-soft">
-          You can still confirm each room&apos;s real dimensions manually from
-          the property page.
+          {t("manualFallback")}
         </p>
       </div>
     );
@@ -127,15 +128,14 @@ export function ReviewWorkspace({
             failure to load the floor plan image at all. */}
         <img
           src={floorPlanImageUrl}
-          alt="Uploaded floor plan"
+          alt={t("imageAlt")}
           className="w-full rounded-sm border border-paper-raised"
         />
       </div>
 
       <div>
         <p className="font-body text-sm font-semibold text-ink">
-          {pending.length} room{pending.length === 1 ? "" : "s"} need
-          {pending.length === 1 ? "s" : ""} your review
+          {t("roomsNeedReview", { count: pending.length })}
         </p>
 
         <ul className="mt-4 space-y-3">
@@ -160,10 +160,12 @@ export function ReviewWorkspace({
                           : "text-ink-soft"
                       }`}
                     >
-                      {Math.round(obs.effectiveConfidenceBps / 100)}% confidence
+                      {t("confidenceLabel", {
+                        percent: Math.round(obs.effectiveConfidenceBps / 100),
+                      })}
                       {obs.confidenceBps !== null &&
                       obs.effectiveConfidenceBps < obs.confidenceBps
-                        ? ` (down from ${Math.round(obs.confidenceBps / 100)}%)`
+                        ? ` ${t("confidenceDownFrom", { percent: Math.round(obs.confidenceBps / 100) })}`
                         : ""}
                     </span>
                   ) : null}
@@ -197,7 +199,7 @@ export function ReviewWorkspace({
                     className="flex-1 rounded-sm border border-ink/15 bg-white px-2 py-1.5 font-body text-sm"
                   >
                     <option value="" disabled>
-                      This is which real room?
+                      {t("whichRoom")}
                     </option>
                     {rooms.map((r) => (
                       <option key={r.id} value={r.id}>
@@ -210,7 +212,7 @@ export function ReviewWorkspace({
                     disabled={busyId === obs.id}
                     className="font-body text-xs text-alert hover:underline"
                   >
-                    Not a real room
+                    {t("notARealRoom")}
                   </button>
                 </div>
               </li>
@@ -221,7 +223,7 @@ export function ReviewWorkspace({
         {decided.length > 0 ? (
           <div className="mt-8 border-t border-paper-raised pt-4">
             <p className="font-body text-xs font-semibold uppercase tracking-wide text-ink-soft">
-              Already reviewed
+              {t("alreadyReviewed")}
             </p>
             <ul className="mt-3 space-y-2">
               {decided.map((obs) => (
@@ -232,8 +234,8 @@ export function ReviewWorkspace({
                   <span>{obs.roomLabel}</span>
                   <span className="font-mono text-xs">
                     {obs.rejected
-                      ? "Rejected"
-                      : `Matched to ${obs.matchedRoomName}`}
+                      ? t("rejected")
+                      : t("matchedTo", { name: obs.matchedRoomName ?? "" })}
                   </span>
                 </li>
               ))}

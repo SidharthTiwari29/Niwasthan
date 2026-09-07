@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { requireAuth } from "@/server/middleware/requireAuth";
 import { roomService } from "@/server/services/roomService";
 import { assetService } from "@/server/services/assetService";
@@ -14,6 +15,7 @@ export default async function FloorPlanReviewPage({
 }) {
   const { propertyId } = await params;
   const { userId } = await requireAuth();
+  const t = await getTranslations("floorPlanReview");
 
   const rooms = await roomService.list(propertyId, userId);
 
@@ -38,15 +40,13 @@ export default async function FloorPlanReviewPage({
         href={`/properties/${propertyId}/floor-plan`}
         className="font-body text-sm text-ink-soft transition-colors hover:text-ink"
       >
-        ← Back to floor plan
+        {t("backToFloorPlan")}
       </Link>
       <h1 className="mt-4 font-display text-3xl font-semibold">
-        Review what Niwasthan detected
+        {t("heading")}
       </h1>
       <p className="mt-1 max-w-2xl font-body text-sm text-ink-soft">
-        Nothing here is spatial truth yet. Each detected room needs your
-        confirmation — either match it to the real room it represents, or reject
-        it if it&apos;s wrong.
+        {t("description")}
       </p>
 
       <ReviewWorkspace

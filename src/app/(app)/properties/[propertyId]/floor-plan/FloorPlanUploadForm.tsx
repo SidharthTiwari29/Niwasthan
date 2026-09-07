@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 export function FloorPlanUploadForm({ propertyId }: { propertyId: string }) {
   const router = useRouter();
+  const t = useTranslations("floorPlan");
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -29,7 +31,7 @@ export function FloorPlanUploadForm({ propertyId }: { propertyId: string }) {
       });
       if (!assetResponse.ok) {
         const body = await assetResponse.json().catch(() => null);
-        throw new Error(body?.error?.message ?? "Couldn't start the upload.");
+        throw new Error(body?.error?.message ?? t("errorStartUpload"));
       }
       const { asset, grant } = await assetResponse.json();
 
@@ -42,7 +44,7 @@ export function FloorPlanUploadForm({ propertyId }: { propertyId: string }) {
         body: file,
       });
       if (!uploadResponse.ok) {
-        throw new Error("The file upload itself failed. Please try again.");
+        throw new Error(t("errorUploadFailed"));
       }
 
       // Step 3: the real FloorPlan record, referencing the asset that
@@ -54,16 +56,13 @@ export function FloorPlanUploadForm({ propertyId }: { propertyId: string }) {
       });
       if (!floorPlanResponse.ok) {
         const body = await floorPlanResponse.json().catch(() => null);
-        throw new Error(
-          body?.error?.message ??
-            "The upload succeeded, but saving the floor plan record failed.",
-        );
+        throw new Error(body?.error?.message ?? t("errorSaveFailed"));
       }
 
       setFile(null);
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong.");
+      setError(err instanceof Error ? err.message : t("genericError"));
     } finally {
       setUploading(false);
     }
@@ -72,7 +71,7 @@ export function FloorPlanUploadForm({ propertyId }: { propertyId: string }) {
   return (
     <div>
       <h2 className="font-body text-sm font-semibold text-ink">
-        Upload a floor plan
+        {t("uploadHeading")}
       </h2>
       <div className="mt-3 flex items-center gap-3">
         <input
@@ -86,7 +85,7 @@ export function FloorPlanUploadForm({ propertyId }: { propertyId: string }) {
           disabled={!file || uploading}
           className="rounded-sm bg-indigo px-5 py-2.5 font-body text-sm font-medium text-paper transition-colors hover:bg-indigo-soft disabled:opacity-50"
         >
-          {uploading ? "Uploading…" : "Upload"}
+          {uploading ? t("uploadBusy") : t("uploadIdle")}
         </button>
       </div>
       {error ? (

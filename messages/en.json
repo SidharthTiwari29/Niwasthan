@@ -70,5 +70,37 @@
     "submitIdle": "Start design",
     "submitBusy": "Starting…",
     "genericError": "Couldn't start this design."
+  },
+  "floorPlan": {
+    "backToHome": "← Back to home",
+    "heading": "Floor plan",
+    "description": "Upload a photo or PDF of your floor plan. This is a real record we keep with your home — confirming each room's actual dimensions still happens separately, since a photo alone is not the same as a verified measurement.",
+    "versionLabel": "Version {number}",
+    "noFloorPlanYet": "No floor plan uploaded yet.",
+    "uploadHeading": "Upload a floor plan",
+    "uploadIdle": "Upload",
+    "uploadBusy": "Uploading…",
+    "errorStartUpload": "Couldn't start the upload.",
+    "errorUploadFailed": "The file upload itself failed. Please try again.",
+    "errorSaveFailed": "The upload succeeded, but saving the floor plan record failed.",
+    "genericError": "Something went wrong."
+  },
+  "floorPlanReview": {
+    "backToFloorPlan": "← Back to floor plan",
+    "heading": "Review what Niwasthan detected",
+    "description": "Nothing here is spatial truth yet. Each detected room needs your confirmation — either match it to the real room it represents, or reject it if it's wrong.",
+    "imageAlt": "Uploaded floor plan",
+    "noAnalysisYet": "No analysis has been run for this floor plan yet.",
+    "manualFallback": "You can still confirm each room's real dimensions manually from the property page.",
+    "roomsNeedReview": "{count, plural, one {# room needs} other {# rooms need}} your review",
+    "confidenceLabel": "{percent}% confidence",
+    "confidenceDownFrom": "(down from {percent}%)",
+    "whichRoom": "This is which real room?",
+    "notARealRoom": "Not a real room",
+    "alreadyReviewed": "Already reviewed",
+    "rejected": "Rejected",
+    "matchedTo": "Matched to {name}",
+    "errorMatch": "Couldn't record that match.",
+    "errorReject": "Couldn't reject this."
   }
 }
