@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { requireAuth } from "@/server/middleware/requireAuth";
 import { getDesignProject } from "@/server/services/designProjectService";
 import { designDirectionService } from "@/server/services/designDirectionService";
@@ -12,6 +13,7 @@ export default async function DesignProjectPage({
 }) {
   const { projectId } = await params;
   const { userId } = await requireAuth();
+  const t = await getTranslations("designWorkspace");
   const project = await getDesignProject(projectId, userId);
   if (!project) notFound();
 
@@ -26,7 +28,7 @@ export default async function DesignProjectPage({
         href={`/properties/${project.propertyId}`}
         className="font-body text-sm text-ink-soft transition-colors hover:text-ink"
       >
-        ← Back to home
+        {t("backToHome")}
       </Link>
       <h1 className="mt-4 font-display text-3xl font-semibold">
         {project.name}
@@ -37,7 +39,7 @@ export default async function DesignProjectPage({
         </p>
       ) : (
         <p className="mt-1 font-body text-sm text-ink-soft">
-          Whole property — BOQ generation needs a specific room
+          {t("wholePropertyNote")}
         </p>
       )}
 

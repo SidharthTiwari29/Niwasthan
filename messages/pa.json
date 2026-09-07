@@ -102,5 +102,33 @@
     "matchedTo": "{name} ਨਾਲ ਮਿਲਾਇਆ ਗਿਆ",
     "errorMatch": "ਉਹ ਮੇਲ ਦਰਜ ਨਹੀਂ ਹੋ ਸਕਿਆ।",
     "errorReject": "ਇਸਨੂੰ ਰੱਦ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ।"
+  },
+  "designWorkspace": {
+    "backToHome": "← ਘਰ ਵਾਪਸ ਜਾਓ",
+    "wholePropertyNote": "ਪੂਰੀ ਪ੍ਰਾਪਰਟੀ — ਬੀਓਕਿਊ ਬਣਾਉਣ ਲਈ ਇੱਕ ਖਾਸ ਕਮਰਾ ਲੋੜੀਂਦਾ ਹੈ",
+    "errorCreateDirection": "ਇਹ ਦਿਸ਼ਾ ਬਣਾਈ ਨਹੀਂ ਜਾ ਸਕੀ।",
+    "errorActivateDirection": "ਇਹ ਦਿਸ਼ਾ ਸਰਗਰਮ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ।",
+    "errorGenerateBoq": "ਇਸ ਬਜਟ ਲਈ ਬੀਓਕਿਊ ਨਹੀਂ ਬਣਾਇਆ ਜਾ ਸਕਿਆ।",
+    "errorCommitBoq": "ਇਹ ਬੀਓਕਿਊ ਕਮਿਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ।",
+    "genericError": "ਕੁਝ ਗਲਤ ਹੋ ਗਿਆ।",
+    "directionsHeading": "ਡਿਜ਼ਾਈਨ ਦਿਸ਼ਾਵਾਂ",
+    "noDirectionsYet": "ਇਸ ਘਰ ਲਈ ਕੁਝ ਅਸਲੀ ਦਿਸ਼ਾਵਾਂ ਦੀ ਪੜਚੋਲ ਕਰੋ — ਇੱਕ ਸਮੇਂ ਤੇ ਸਿਰਫ਼ ਇੱਕ ਹੀ ਸਰਗਰਮ ਹੁੰਦੀ ਹੈ, ਪਰ ਤੁਸੀਂ ਜੋ ਵੀ ਪੜਚੋਲ ਕੀਤਾ ਉਹ ਕਦੇ ਗੁਆਚਦਾ ਨਹੀਂ।",
+    "makeActive": "ਸਰਗਰਮ ਕਰੋ",
+    "directionNamePlaceholder": "ਜਿਵੇਂ: ਵਾਰਮ ਕੰਟੈਂਪਰੇਰੀ",
+    "addDirection": "ਦਿਸ਼ਾ ਜੋੜੋ",
+    "generateBoqHeading": "ਅਸਲੀ ਬੀਓਕਿਊ ਬਣਾਓ",
+    "generateBoqDescription": "ਇੱਕ ਟੀਚਾ ਬਜਟ ਸੈੱਟ ਕਰੋ ਅਤੇ ਅਸੀਂ ਇਸ ਦੇ ਅਨੁਸਾਰ ਕੈਟਾਲਾਗ ਤੋਂ ਅਸਲੀ, ਮੌਜੂਦਾ ਕੀਮਤ ਵਾਲੇ ਉਤਪਾਦ ਚੁਣਾਂਗੇ।",
+    "budgetPlaceholder": "500000",
+    "generate": "ਬਣਾਓ",
+    "recommendationHeading": "ਅਸਲੀ, ਗੈਰ-ਕਮਿਟਿਡ ਸਿਫਾਰਿਸ਼",
+    "total": "ਕੁੱਲ",
+    "commitBoq": "ਇਹ ਬੀਓਕਿਊ ਕਮਿਟ ਕਰੋ",
+    "committedBoqHeading": "ਅਸਲੀ, ਕਮਿਟਿਡ ਬੀਓਕਿਊ",
+    "committedBoqDescription": "ਕਮਿਟ ਹੋ ਗਿਆ। ਤੁਹਾਡਾ ਬਜਟ ਇਸ ਅਸਲੀ ਕੁੱਲ ਰਕਮ ਦੇ ਅਨੁਸਾਰ ਆਪਣੇ ਆਪ ਮੇਲ ਖਾ ਗਿਆ ਹੈ।"
+  },
+  "directionStatus": {
+    "active": "ਸਰਗਰਮ",
+    "alternative": "ਬਦਲਵਾਂ",
+    "rejected": "ਰੱਦ ਕੀਤਾ ਗਿਆ"
   }
 }

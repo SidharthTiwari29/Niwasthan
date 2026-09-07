@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 type Direction = {
   id: string;
@@ -39,6 +40,8 @@ export function DesignWorkspace({
   initialDirections: Direction[];
 }) {
   const router = useRouter();
+  const t = useTranslations("designWorkspace");
+  const tStatus = useTranslations("directionStatus");
   const [directions, setDirections] = useState(initialDirections);
   const [newDirectionName, setNewDirectionName] = useState("");
   const [targetBudget, setTargetBudget] = useState("");
@@ -52,6 +55,12 @@ export function DesignWorkspace({
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
+  const statusLabels: Record<string, string> = {
+    ACTIVE: tStatus("active"),
+    ALTERNATIVE: tStatus("alternative"),
+    REJECTED: tStatus("rejected"),
+  };
+
   async function createDirection() {
     setError(null);
     setBusy(true);
@@ -64,13 +73,13 @@ export function DesignWorkspace({
           body: JSON.stringify({ name: newDirectionName }),
         },
       );
-      if (!response.ok) throw new Error("Couldn't create this direction.");
+      if (!response.ok) throw new Error(t("errorCreateDirection"));
       const { direction } = await response.json();
       setDirections((prev) => [...prev, direction]);
       setNewDirectionName("");
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong.");
+      setError(err instanceof Error ? err.message : t("genericError"));
     } finally {
       setBusy(false);
     }
@@ -84,7 +93,7 @@ export function DesignWorkspace({
         `/api/design-projects/${projectId}/directions/${directionId}/activate`,
         { method: "POST" },
       );
-      if (!response.ok) throw new Error("Couldn't activate this direction.");
+      if (!response.ok) throw new Error(t("errorActivateDirection"));
       setDirections((prev) =>
         prev.map((d) => ({
           ...d,
@@ -97,7 +106,7 @@ export function DesignWorkspace({
         })),
       );
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong.");
+      setError(err instanceof Error ? err.message : t("genericError"));
     } finally {
       setBusy(false);
     }
@@ -120,14 +129,12 @@ export function DesignWorkspace({
       );
       if (!response.ok) {
         const body = await response.json().catch(() => null);
-        throw new Error(
-          body?.error?.message ?? "Couldn't generate a BOQ for this budget.",
-        );
+        throw new Error(body?.error?.message ?? t("errorGenerateBoq"));
       }
       const { recommendation: rec } = await response.json();
       setRecommendation(rec);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong.");
+      setError(err instanceof Error ? err.message : t("genericError"));
     } finally {
       setBusy(false);
     }
@@ -142,11 +149,11 @@ export function DesignWorkspace({
         `/api/catalogue/recommend/${recommendation.id}/commit`,
         { method: "POST" },
       );
-      if (!response.ok) throw new Error("Couldn't commit this BOQ.");
+      if (!response.ok) throw new Error(t("errorCommitBoq"));
       const { boq } = await response.json();
       setCommittedBoq(boq);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong.");
+      setError(err instanceof Error ? err.message : t("genericError"));
     } finally {
       setBusy(false);
     }
@@ -157,12 +164,11 @@ export function DesignWorkspace({
       {/* Directions */}
       <section>
         <h2 className="font-display text-lg font-semibold">
-          Design directions
+          {t("directionsHeading")}
         </h2>
         {directions.length === 0 ? (
           <p className="mt-2 font-body text-sm text-ink-soft">
-            Explore a few real directions for this home — only one becomes
-            active at a time, but nothing you explore is ever lost.
+            {t("noDirectionsYet")}
           </p>
         ) : (
           <ul className="mt-3 space-y-2">
@@ -176,7 +182,7 @@ export function DesignWorkspace({
                 </span>
                 <div className="flex items-center gap-3">
                   <span className="font-mono text-xs text-ink-soft">
-                    {direction.status}
+                    {statusLabels[direction.status] ?? direction.status}
                   </span>
                   {direction.status !== "ACTIVE" &&
                   direction.status !== "REJECTED" ? (
@@ -185,7 +191,7 @@ export function DesignWorkspace({
                       disabled={busy}
                       className="font-body text-xs font-medium text-laterite hover:underline disabled:opacity-50"
                     >
-                      Make active
+                      {t("makeActive")}
                     </button>
                   ) : null}
                 </div>
@@ -197,7 +203,7 @@ export function DesignWorkspace({
           <input
             value={newDirectionName}
             onChange={(e) => setNewDirectionName(e.target.value)}
-            placeholder="e.g. Warm Contemporary"
+            placeholder={t("directionNamePlaceholder")}
             className="rounded-sm border border-ink/15 bg-white px-3 py-2 font-body text-sm text-ink outline-none focus-visible:border-laterite"
           />
           <button
@@ -205,7 +211,7 @@ export function DesignWorkspace({
             disabled={busy || !newDirectionName.trim()}
             className="rounded-sm bg-indigo px-4 py-2 font-body text-sm font-medium text-paper transition-colors hover:bg-indigo-soft disabled:opacity-50"
           >
-            Add direction
+            {t("addDirection")}
           </button>
         </div>
       </section>
@@ -214,11 +220,10 @@ export function DesignWorkspace({
       {hasRoom ? (
         <section className="border-t border-paper-raised pt-8">
           <h2 className="font-display text-lg font-semibold">
-            Generate a real BOQ
+            {t("generateBoqHeading")}
           </h2>
           <p className="mt-2 font-body text-sm text-ink-soft">
-            Set a target budget and we&apos;ll curate real, currently-priced
-            products from the catalogue to fit it.
+            {t("generateBoqDescription")}
           </p>
           <div className="mt-4 flex items-center gap-3">
             <span className="font-body text-sm text-ink-soft">₹</span>
@@ -226,7 +231,7 @@ export function DesignWorkspace({
               value={targetBudget}
               onChange={(e) => setTargetBudget(e.target.value)}
               type="number"
-              placeholder="500000"
+              placeholder={t("budgetPlaceholder")}
               className="rounded-sm border border-ink/15 bg-white px-3 py-2 font-body text-sm text-ink outline-none focus-visible:border-laterite"
             />
             <button
@@ -234,7 +239,7 @@ export function DesignWorkspace({
               disabled={busy || !targetBudget}
               className="rounded-sm bg-laterite px-4 py-2 font-body text-sm font-medium text-paper transition-colors hover:bg-laterite-deep disabled:opacity-50"
             >
-              Generate
+              {t("generate")}
             </button>
           </div>
         </section>
@@ -244,7 +249,7 @@ export function DesignWorkspace({
       {recommendation && !committedBoq ? (
         <section className="border-t border-paper-raised pt-8">
           <h2 className="font-display text-lg font-semibold">
-            Real, uncommitted recommendation
+            {t("recommendationHeading")}
           </h2>
           <ul className="mt-4 divide-y divide-paper-raised">
             {recommendation.selections.map((selection) => (
@@ -266,7 +271,7 @@ export function DesignWorkspace({
           </ul>
           <div className="mt-4 flex items-center justify-between border-t border-paper-raised pt-4">
             <span className="font-body text-sm font-semibold text-ink">
-              Total
+              {t("total")}
             </span>
             <span className="font-display text-lg font-semibold text-ink">
               {formatRupees(recommendation.totalMinor)}
@@ -277,7 +282,7 @@ export function DesignWorkspace({
             disabled={busy}
             className="mt-4 rounded-sm bg-moss px-5 py-2.5 font-body text-sm font-medium text-paper transition-colors hover:bg-moss-deep disabled:opacity-50"
           >
-            Commit this BOQ
+            {t("commitBoq")}
           </button>
         </section>
       ) : null}
@@ -285,11 +290,10 @@ export function DesignWorkspace({
       {committedBoq ? (
         <section className="border-t border-paper-raised pt-8">
           <h2 className="font-display text-lg font-semibold">
-            Real, committed BOQ
+            {t("committedBoqHeading")}
           </h2>
           <p className="mt-2 font-body text-sm text-ink-soft">
-            Committed. Your budget has been automatically reconciled against
-            this real total.
+            {t("committedBoqDescription")}
           </p>
           <p className="mt-3 font-display text-2xl font-semibold text-ink">
             {formatRupees(committedBoq.totalMinor)}

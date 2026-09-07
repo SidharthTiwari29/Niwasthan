@@ -102,5 +102,33 @@
     "matchedTo": "{name} से मिलाया गया",
     "errorMatch": "यह मिलान दर्ज नहीं हो सका।",
     "errorReject": "इसे अस्वीकार नहीं किया जा सका।"
+  },
+  "designWorkspace": {
+    "backToHome": "← घर पर वापस जाएं",
+    "wholePropertyNote": "पूरी प्रॉपर्टी — बीओक्यू बनाने के लिए एक खास कमरा चाहिए",
+    "errorCreateDirection": "यह दिशा बनाई नहीं जा सकी।",
+    "errorActivateDirection": "यह दिशा सक्रिय नहीं की जा सकी।",
+    "errorGenerateBoq": "इस बजट के लिए बीओक्यू नहीं बनाया जा सका।",
+    "errorCommitBoq": "यह बीओक्यू कमिट नहीं किया जा सका।",
+    "genericError": "कुछ गड़बड़ हो गई।",
+    "directionsHeading": "डिज़ाइन दिशाएं",
+    "noDirectionsYet": "इस घर के लिए कुछ असली दिशाओं को एक्सप्लोर करें — एक समय में केवल एक ही सक्रिय होती है, लेकिन आपने जो भी एक्सप्लोर किया वह कभी खोता नहीं।",
+    "makeActive": "सक्रिय करें",
+    "directionNamePlaceholder": "जैसे: वॉर्म कंटेम्पररी",
+    "addDirection": "दिशा जोड़ें",
+    "generateBoqHeading": "असली बीओक्यू बनाएं",
+    "generateBoqDescription": "एक लक्षित बजट सेट करें और हम इसके लिए कैटलॉग से असली, वर्तमान कीमत वाले प्रोडक्ट्स चुनेंगे।",
+    "budgetPlaceholder": "500000",
+    "generate": "जनरेट करें",
+    "recommendationHeading": "असली, अनकमिटेड सिफारिश",
+    "total": "कुल",
+    "commitBoq": "यह बीओक्यू कमिट करें",
+    "committedBoqHeading": "असली, कमिटेड बीओक्यू",
+    "committedBoqDescription": "कमिट हो गया। आपका बजट इस असली कुल राशि के अनुसार अपने आप समायोजित कर दिया गया है।"
+  },
+  "directionStatus": {
+    "active": "सक्रिय",
+    "alternative": "वैकल्पिक",
+    "rejected": "अस्वीकृत"
   }
 }

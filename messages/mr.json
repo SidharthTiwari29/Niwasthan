@@ -102,5 +102,33 @@
     "matchedTo": "{name} शी जुळवले",
     "errorMatch": "हे जुळवणे नोंदवता आले नाही.",
     "errorReject": "हे नाकारता आले नाही."
+  },
+  "designWorkspace": {
+    "backToHome": "← घरी परत जा",
+    "wholePropertyNote": "संपूर्ण प्रॉपर्टी — बीओक्यू निर्मितीसाठी विशिष्ट खोली आवश्यक",
+    "errorCreateDirection": "ही दिशा तयार करता आली नाही.",
+    "errorActivateDirection": "ही दिशा सक्रिय करता आली नाही.",
+    "errorGenerateBoq": "या बजेटसाठी बीओक्यू तयार करता आले नाही.",
+    "errorCommitBoq": "हे बीओक्यू कमिट करता आले नाही.",
+    "genericError": "काहीतरी चूक झाली.",
+    "directionsHeading": "डिझाइन दिशा",
+    "noDirectionsYet": "या घरासाठी काही खऱ्या दिशा एक्सप्लोर करा — एका वेळी फक्त एकच सक्रिय होते, पण तुम्ही एक्सप्लोर केलेले काहीही कधीही गमावले जात नाही.",
+    "makeActive": "सक्रिय करा",
+    "directionNamePlaceholder": "उदा. वॉर्म कंटेम्पररी",
+    "addDirection": "दिशा जोडा",
+    "generateBoqHeading": "खरे बीओक्यू तयार करा",
+    "generateBoqDescription": "लक्ष्य बजेट सेट करा आणि आम्ही त्यासाठी कॅटलॉगमधून खरी, सध्याच्या किमतीची उत्पादने निवडू.",
+    "budgetPlaceholder": "500000",
+    "generate": "तयार करा",
+    "recommendationHeading": "खरी, अनकमिटेड शिफारस",
+    "total": "एकूण",
+    "commitBoq": "हे बीओक्यू कमिट करा",
+    "committedBoqHeading": "खरे, कमिटेड बीओक्यू",
+    "committedBoqDescription": "कमिट झाले. तुमचे बजेट या खऱ्या एकूण रकमेनुसार आपोआप जुळवले गेले आहे."
+  },
+  "directionStatus": {
+    "active": "सक्रिय",
+    "alternative": "पर्यायी",
+    "rejected": "नाकारले"
   }
 }

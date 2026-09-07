@@ -102,5 +102,33 @@
     "matchedTo": "Matched to {name}",
     "errorMatch": "Couldn't record that match.",
     "errorReject": "Couldn't reject this."
+  },
+  "designWorkspace": {
+    "backToHome": "← Back to home",
+    "wholePropertyNote": "Whole property — BOQ generation needs a specific room",
+    "errorCreateDirection": "Couldn't create this direction.",
+    "errorActivateDirection": "Couldn't activate this direction.",
+    "errorGenerateBoq": "Couldn't generate a BOQ for this budget.",
+    "errorCommitBoq": "Couldn't commit this BOQ.",
+    "genericError": "Something went wrong.",
+    "directionsHeading": "Design directions",
+    "noDirectionsYet": "Explore a few real directions for this home — only one becomes active at a time, but nothing you explore is ever lost.",
+    "makeActive": "Make active",
+    "directionNamePlaceholder": "e.g. Warm Contemporary",
+    "addDirection": "Add direction",
+    "generateBoqHeading": "Generate a real BOQ",
+    "generateBoqDescription": "Set a target budget and we'll curate real, currently-priced products from the catalogue to fit it.",
+    "budgetPlaceholder": "500000",
+    "generate": "Generate",
+    "recommendationHeading": "Real, uncommitted recommendation",
+    "total": "Total",
+    "commitBoq": "Commit this BOQ",
+    "committedBoqHeading": "Real, committed BOQ",
+    "committedBoqDescription": "Committed. Your budget has been automatically reconciled against this real total."
+  },
+  "directionStatus": {
+    "active": "Active",
+    "alternative": "Alternative",
+    "rejected": "Rejected"
   }
 }

@@ -102,5 +102,33 @@
     "matchedTo": "{name} এর সাথে মেলানো হয়েছে",
     "errorMatch": "সেই মিল রেকর্ড করা যায়নি।",
     "errorReject": "এটি প্রত্যাখ্যান করা যায়নি।"
+  },
+  "designWorkspace": {
+    "backToHome": "← বাড়িতে ফিরে যান",
+    "wholePropertyNote": "সম্পূর্ণ প্রপার্টি — বিওকিউ তৈরির জন্য একটি নির্দিষ্ট ঘর প্রয়োজন",
+    "errorCreateDirection": "এই দিকনির্দেশ তৈরি করা যায়নি।",
+    "errorActivateDirection": "এই দিকনির্দেশ সক্রিয় করা যায়নি।",
+    "errorGenerateBoq": "এই বাজেটের জন্য বিওকিউ তৈরি করা যায়নি।",
+    "errorCommitBoq": "এই বিওকিউ কমিট করা যায়নি।",
+    "genericError": "কিছু ভুল হয়েছে।",
+    "directionsHeading": "ডিজাইন দিকনির্দেশ",
+    "noDirectionsYet": "এই বাড়ির জন্য কয়েকটি প্রকৃত দিকনির্দেশ অন্বেষণ করুন — একবারে শুধুমাত্র একটি সক্রিয় থাকে, তবে আপনি যা অন্বেষণ করেছেন তা কখনো হারায় না।",
+    "makeActive": "সক্রিয় করুন",
+    "directionNamePlaceholder": "যেমন: ওয়ার্ম কনটেম্পোরারি",
+    "addDirection": "দিকনির্দেশ যোগ করুন",
+    "generateBoqHeading": "প্রকৃত বিওকিউ তৈরি করুন",
+    "generateBoqDescription": "একটি লক্ষ্য বাজেট সেট করুন এবং আমরা এর জন্য ক্যাটালগ থেকে প্রকৃত, বর্তমান মূল্যের পণ্য নির্বাচন করব।",
+    "budgetPlaceholder": "500000",
+    "generate": "তৈরি করুন",
+    "recommendationHeading": "প্রকৃত, অ-কমিটেড সুপারিশ",
+    "total": "মোট",
+    "commitBoq": "এই বিওকিউ কমিট করুন",
+    "committedBoqHeading": "প্রকৃত, কমিটেড বিওকিউ",
+    "committedBoqDescription": "কমিট হয়েছে। আপনার বাজেট এই প্রকৃত মোট পরিমাণের বিপরীতে স্বয়ংক্রিয়ভাবে সমন্বয় করা হয়েছে।"
+  },
+  "directionStatus": {
+    "active": "সক্রিয়",
+    "alternative": "বিকল্প",
+    "rejected": "প্রত্যাখ্যাত"
   }
 }
