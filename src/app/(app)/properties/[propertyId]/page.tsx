@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { requireAuth } from "@/server/middleware/requireAuth";
 import { propertyService } from "@/server/services/propertyService";
 import { roomService } from "@/server/services/roomService";
@@ -19,26 +20,6 @@ type DesignProjectSummary = {
   status: string;
 };
 
-const PROPERTY_TYPE_LABELS: Record<string, string> = {
-  ONE_BHK: "1 BHK",
-  TWO_BHK: "2 BHK",
-  THREE_BHK: "3 BHK",
-  FOUR_BHK: "4 BHK",
-  VILLA: "Villa",
-  OTHER: "Other",
-};
-
-const ROOM_TYPE_LABELS: Record<string, string> = {
-  LIVING_ROOM: "Living room",
-  BEDROOM: "Bedroom",
-  KITCHEN: "Kitchen",
-  BATHROOM: "Bathroom",
-  DINING_ROOM: "Dining room",
-  BALCONY: "Balcony",
-  STUDY: "Study",
-  OTHER: "Other",
-};
-
 export default async function PropertyDetailPage({
   params,
 }: {
@@ -47,6 +28,29 @@ export default async function PropertyDetailPage({
   const { propertyId } = await params;
   const { userId } = await requireAuth();
   const property = await propertyService.get(propertyId, userId);
+  const t = await getTranslations("property");
+  const tRoomType = await getTranslations("roomType");
+  const tOnboarding = await getTranslations("onboarding");
+
+  const PROPERTY_TYPE_LABELS: Record<string, string> = {
+    ONE_BHK: tOnboarding("propertyTypeOneBhk"),
+    TWO_BHK: tOnboarding("propertyTypeTwoBhk"),
+    THREE_BHK: tOnboarding("propertyTypeThreeBhk"),
+    FOUR_BHK: tOnboarding("propertyTypeFourBhk"),
+    VILLA: tOnboarding("propertyTypeVilla"),
+    OTHER: tOnboarding("propertyTypeOther"),
+  };
+  const ROOM_TYPE_LABELS: Record<string, string> = {
+    LIVING_ROOM: tRoomType("livingRoom"),
+    BEDROOM: tRoomType("bedroom"),
+    KITCHEN: tRoomType("kitchen"),
+    BATHROOM: tRoomType("bathroom"),
+    DINING_ROOM: tRoomType("diningRoom"),
+    BALCONY: tRoomType("balcony"),
+    STUDY: tRoomType("study"),
+    OTHER: tRoomType("other"),
+  };
+
   // propertyService.get() already converts targetBudgetMinor to a plain
   // number (the real fix lives there now, applied once for every real
   // caller) - this is just the normal display-time conversion from
@@ -86,13 +90,13 @@ export default async function PropertyDetailPage({
         href="/properties"
         className="font-body text-sm text-ink-soft transition-colors hover:text-ink"
       >
-        ← Your homes
+        {t("backToHomes")}
       </Link>
       <h1 className="mt-4 font-display text-3xl font-semibold">
         {property.name}
       </h1>
       <p className="mt-1 font-mono text-xs text-ink-soft">
-        Property ID: {property.id}
+        {t("propertyIdLabel", { id: property.id })}
       </p>
       {property.address ? (
         <p className="mt-1 font-body text-sm text-ink-soft">
@@ -109,7 +113,9 @@ export default async function PropertyDetailPage({
         ) : null}
         {targetBudgetRupees !== null ? (
           <span>
-            Target budget: ₹{targetBudgetRupees.toLocaleString("en-IN")}
+            {t("targetBudgetLabel", {
+              amount: `₹${targetBudgetRupees.toLocaleString("en-IN")}`,
+            })}
           </span>
         ) : null}
       </div>
@@ -117,20 +123,22 @@ export default async function PropertyDetailPage({
         href={`/properties/${propertyId}/floor-plan`}
         className="mt-3 inline-block font-body text-sm font-medium text-laterite hover:underline"
       >
-        Upload floor plan →
+        {t("uploadFloorPlan")}
       </Link>
       <Link
         href={`/properties/${propertyId}/floor-plan/review`}
         className="mt-1 block font-body text-sm font-medium text-laterite hover:underline"
       >
-        Review detected rooms →
+        {t("reviewDetectedRooms")}
       </Link>
 
       <div className="mt-10">
-        <h2 className="font-display text-lg font-semibold">Rooms</h2>
+        <h2 className="font-display text-lg font-semibold">
+          {t("roomsHeading")}
+        </h2>
         {rooms.length === 0 ? (
           <p className="mt-3 font-body text-sm text-ink-soft">
-            Add your first room to start understanding this home.
+            {t("noRoomsYet")}
           </p>
         ) : (
           <ul className="mt-4 divide-y divide-paper-raised">
@@ -146,7 +154,7 @@ export default async function PropertyDetailPage({
                   <p className="mt-0.5 font-mono text-xs text-ink-soft">
                     {ROOM_TYPE_LABELS[room.type] ?? room.type}
                     {room.areaSqFt
-                      ? ` · ${room.areaSqFt.toString()} sq ft`
+                      ? ` · ${room.areaSqFt.toString()} ${t("sqFt")}`
                       : ""}
                   </p>
                 </div>
@@ -154,7 +162,7 @@ export default async function PropertyDetailPage({
                   href={`/properties/${propertyId}/rooms/${room.id}/understanding`}
                   className="font-body text-xs font-medium text-laterite hover:underline"
                 >
-                  Confirm dimensions
+                  {t("confirmDimensions")}
                 </Link>
               </li>
             ))}
@@ -163,18 +171,19 @@ export default async function PropertyDetailPage({
 
         <div className="mt-6 border-t border-paper-raised pt-6">
           <h3 className="font-body text-sm font-semibold text-ink">
-            Add a room
+            {t("addRoomHeading")}
           </h3>
           <CreateRoomForm propertyId={propertyId} />
         </div>
       </div>
 
       <div className="mt-12">
-        <h2 className="font-display text-lg font-semibold">Designs</h2>
+        <h2 className="font-display text-lg font-semibold">
+          {t("designsHeading")}
+        </h2>
         {designProjects.length === 0 ? (
           <p className="mt-3 font-body text-sm text-ink-soft">
-            Start a design to see real directions, products, and pricing for
-            this home.
+            {t("noDesignsYet")}
           </p>
         ) : (
           <ul className="mt-4 divide-y divide-paper-raised">
@@ -198,7 +207,7 @@ export default async function PropertyDetailPage({
 
         <div className="mt-6 border-t border-paper-raised pt-6">
           <h3 className="font-body text-sm font-semibold text-ink">
-            Start a design
+            {t("startDesignHeading")}
           </h3>
           <CreateDesignProjectForm
             propertyId={propertyId}

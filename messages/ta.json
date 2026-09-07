@@ -28,5 +28,47 @@
     "genericError": "இந்த வீட்டைச் சேர்க்க முடியவில்லை.",
     "submitIdle": "வீட்டைச் சேர்த்து தள அமைப்புத் திட்டத்தைப் பதிவேற்றவும்",
     "submitBusy": "சேர்க்கப்படுகிறது…"
+  },
+  "property": {
+    "backToHomes": "← உங்கள் வீடுகள்",
+    "propertyIdLabel": "சொத்து ஐடி: {id}",
+    "targetBudgetLabel": "இலக்கு பட்ஜெட்: {amount}",
+    "uploadFloorPlan": "தள அமைப்புத் திட்டத்தைப் பதிவேற்றவும் →",
+    "reviewDetectedRooms": "கண்டறியப்பட்ட அறைகளைப் பார்வையிடவும் →",
+    "roomsHeading": "அறைகள்",
+    "noRoomsYet": "இந்த வீட்டைப் புரிந்துகொள்ளத் தொடங்க உங்கள் முதல் அறையைச் சேர்க்கவும்.",
+    "sqFt": "சதுர அடி",
+    "confirmDimensions": "அளவுகளை உறுதிப்படுத்தவும்",
+    "addRoomHeading": "ஒரு அறையைச் சேர்க்கவும்",
+    "designsHeading": "வடிவமைப்புகள்",
+    "noDesignsYet": "இந்த வீட்டிற்கான உண்மையான திசைகள், தயாரிப்புகள் மற்றும் விலைகளைக் காண ஒரு வடிவமைப்பைத் தொடங்கவும்.",
+    "startDesignHeading": "வடிவமைப்பைத் தொடங்கவும்"
+  },
+  "roomType": {
+    "livingRoom": "வரவேற்பறை",
+    "bedroom": "படுக்கையறை",
+    "kitchen": "சமையலறை",
+    "bathroom": "குளியலறை",
+    "diningRoom": "உணவு அறை",
+    "balcony": "பால்கனி",
+    "study": "படிப்பறை",
+    "other": "மற்றவை"
+  },
+  "createRoomForm": {
+    "nameLabel": "பெயர்",
+    "namePlaceholder": "உதா: முதன்மை வரவேற்பறை",
+    "typeLabel": "வகை",
+    "submitIdle": "அறையைச் சேர்க்கவும்",
+    "submitBusy": "சேர்க்கப்படுகிறது…",
+    "genericError": "இந்த அறையைச் சேர்க்க முடியவில்லை."
+  },
+  "createDesignProjectForm": {
+    "nameLabel": "பெயர்",
+    "namePlaceholder": "உதா: வரவேற்பறை புதிய வடிவமைப்பு",
+    "roomLabel": "அறை (உண்மையான பிஓக்யூ உருவாக்கத்திற்கு குறிப்பிட்ட அறை தேவை)",
+    "wholeProperty": "முழு சொத்தும்",
+    "submitIdle": "வடிவமைப்பைத் தொடங்கவும்",
+    "submitBusy": "தொடங்கப்படுகிறது…",
+    "genericError": "இந்த வடிவமைப்பைத் தொடங்க முடியவில்லை."
   }
 }

@@ -28,5 +28,47 @@
     "genericError": "ਇਹ ਘਰ ਜੋੜਿਆ ਨਹੀਂ ਜਾ ਸਕਿਆ।",
     "submitIdle": "ਘਰ ਜੋੜੋ ਅਤੇ ਫਲੋਰ ਪਲੈਨ ਅੱਪਲੋਡ ਕਰੋ",
     "submitBusy": "ਜੋੜਿਆ ਜਾ ਰਿਹਾ ਹੈ…"
+  },
+  "property": {
+    "backToHomes": "← ਤੁਹਾਡੇ ਘਰ",
+    "propertyIdLabel": "ਪ੍ਰਾਪਰਟੀ ਆਈਡੀ: {id}",
+    "targetBudgetLabel": "ਟੀਚਾ ਬਜਟ: {amount}",
+    "uploadFloorPlan": "ਫਲੋਰ ਪਲੈਨ ਅੱਪਲੋਡ ਕਰੋ →",
+    "reviewDetectedRooms": "ਪਛਾਣੇ ਗਏ ਕਮਰੇ ਵੇਖੋ →",
+    "roomsHeading": "ਕਮਰੇ",
+    "noRoomsYet": "ਇਸ ਘਰ ਨੂੰ ਸਮਝਣਾ ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਆਪਣਾ ਪਹਿਲਾ ਕਮਰਾ ਜੋੜੋ।",
+    "sqFt": "ਵਰਗ ਫੁੱਟ",
+    "confirmDimensions": "ਮਾਪਾਂ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ",
+    "addRoomHeading": "ਇੱਕ ਕਮਰਾ ਜੋੜੋ",
+    "designsHeading": "ਡਿਜ਼ਾਈਨ",
+    "noDesignsYet": "ਇਸ ਘਰ ਲਈ ਅਸਲੀ ਦਿਸ਼ਾਵਾਂ, ਉਤਪਾਦ ਅਤੇ ਕੀਮਤਾਂ ਵੇਖਣ ਲਈ ਇੱਕ ਡਿਜ਼ਾਈਨ ਸ਼ੁਰੂ ਕਰੋ।",
+    "startDesignHeading": "ਡਿਜ਼ਾਈਨ ਸ਼ੁਰੂ ਕਰੋ"
+  },
+  "roomType": {
+    "livingRoom": "ਲਿਵਿੰਗ ਰੂਮ",
+    "bedroom": "ਬੈੱਡਰੂਮ",
+    "kitchen": "ਰਸੋਈ",
+    "bathroom": "ਬਾਥਰੂਮ",
+    "diningRoom": "ਡਾਈਨਿੰਗ ਰੂਮ",
+    "balcony": "ਬਾਲਕੋਨੀ",
+    "study": "ਸਟੱਡੀ",
+    "other": "ਹੋਰ"
+  },
+  "createRoomForm": {
+    "nameLabel": "ਨਾਮ",
+    "namePlaceholder": "ਜਿਵੇਂ: ਮੁੱਖ ਲਿਵਿੰਗ ਰੂਮ",
+    "typeLabel": "ਕਿਸਮ",
+    "submitIdle": "ਕਮਰਾ ਜੋੜੋ",
+    "submitBusy": "ਜੋੜਿਆ ਜਾ ਰਿਹਾ ਹੈ…",
+    "genericError": "ਇਹ ਕਮਰਾ ਜੋੜਿਆ ਨਹੀਂ ਜਾ ਸਕਿਆ।"
+  },
+  "createDesignProjectForm": {
+    "nameLabel": "ਨਾਮ",
+    "namePlaceholder": "ਜਿਵੇਂ: ਲਿਵਿੰਗ ਰੂਮ ਦਾ ਨਵਾਂ ਡਿਜ਼ਾਈਨ",
+    "roomLabel": "ਕਮਰਾ (ਅਸਲੀ ਬੀਓਕਿਊ ਬਣਾਉਣ ਲਈ ਇੱਕ ਖਾਸ ਕਮਰਾ ਲੋੜੀਂਦਾ ਹੈ)",
+    "wholeProperty": "ਪੂਰੀ ਪ੍ਰਾਪਰਟੀ",
+    "submitIdle": "ਡਿਜ਼ਾਈਨ ਸ਼ੁਰੂ ਕਰੋ",
+    "submitBusy": "ਸ਼ੁਰੂ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ…",
+    "genericError": "ਇਹ ਡਿਜ਼ਾਈਨ ਸ਼ੁਰੂ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ।"
   }
 }

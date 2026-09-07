@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 type RoomOption = { id: string; name: string };
 
@@ -13,6 +14,7 @@ export function CreateDesignProjectForm({
   rooms: RoomOption[];
 }) {
   const router = useRouter();
+  const t = useTranslations("createDesignProjectForm");
   const [name, setName] = useState("");
   const [roomId, setRoomId] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -34,14 +36,12 @@ export function CreateDesignProjectForm({
       });
       if (!response.ok) {
         const body = await response.json().catch(() => null);
-        throw new Error(body?.error?.message ?? "Couldn't start this design.");
+        throw new Error(body?.error?.message ?? t("genericError"));
       }
       const { project } = await response.json();
       router.push(`/designs/${project.id}`);
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Couldn't start this design.",
-      );
+      setError(err instanceof Error ? err.message : t("genericError"));
       setSubmitting(false);
     }
   }
@@ -56,14 +56,14 @@ export function CreateDesignProjectForm({
           htmlFor="design-name"
           className="block font-body text-xs font-medium text-ink-soft"
         >
-          Name
+          {t("nameLabel")}
         </label>
         <input
           id="design-name"
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
-          placeholder="e.g. Living room redesign"
+          placeholder={t("namePlaceholder")}
           className="mt-1 rounded-sm border border-ink/15 bg-white px-3 py-2 font-body text-sm text-ink outline-none focus-visible:border-laterite"
         />
       </div>
@@ -73,7 +73,7 @@ export function CreateDesignProjectForm({
             htmlFor="design-room"
             className="block font-body text-xs font-medium text-ink-soft"
           >
-            Room (real BOQ generation needs a specific room)
+            {t("roomLabel")}
           </label>
           <select
             id="design-room"
@@ -81,7 +81,7 @@ export function CreateDesignProjectForm({
             onChange={(e) => setRoomId(e.target.value)}
             className="mt-1 rounded-sm border border-ink/15 bg-white px-3 py-2 font-body text-sm text-ink outline-none focus-visible:border-laterite"
           >
-            <option value="">Whole property</option>
+            <option value="">{t("wholeProperty")}</option>
             {rooms.map((room) => (
               <option key={room.id} value={room.id}>
                 {room.name}
@@ -95,7 +95,7 @@ export function CreateDesignProjectForm({
         disabled={submitting}
         className="rounded-sm bg-indigo px-4 py-2 font-body text-sm font-medium text-paper transition-colors hover:bg-indigo-soft disabled:opacity-50"
       >
-        {submitting ? "Starting…" : "Start design"}
+        {submitting ? t("submitBusy") : t("submitIdle")}
       </button>
       {error ? (
         <p className="w-full font-body text-sm text-alert">{error}</p>

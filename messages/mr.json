@@ -28,5 +28,47 @@
     "genericError": "हे घर जोडता आले नाही.",
     "submitIdle": "घर जोडा आणि फ्लोअर प्लॅन अपलोड करा",
     "submitBusy": "जोडले जात आहे…"
+  },
+  "property": {
+    "backToHomes": "← आपली घरे",
+    "propertyIdLabel": "प्रॉपर्टी आयडी: {id}",
+    "targetBudgetLabel": "लक्ष्य बजेट: {amount}",
+    "uploadFloorPlan": "फ्लोअर प्लॅन अपलोड करा →",
+    "reviewDetectedRooms": "ओळखलेल्या खोल्या पहा →",
+    "roomsHeading": "खोल्या",
+    "noRoomsYet": "हे घर समजून घेणे सुरू करण्यासाठी तुमची पहिली खोली जोडा.",
+    "sqFt": "चौरस फूट",
+    "confirmDimensions": "मापांची पुष्टी करा",
+    "addRoomHeading": "एक खोली जोडा",
+    "designsHeading": "डिझाइन्स",
+    "noDesignsYet": "या घरासाठी खऱ्या दिशा, उत्पादने आणि किंमती पाहण्यासाठी डिझाइन सुरू करा.",
+    "startDesignHeading": "डिझाइन सुरू करा"
+  },
+  "roomType": {
+    "livingRoom": "लिव्हिंग रूम",
+    "bedroom": "बेडरूम",
+    "kitchen": "स्वयंपाकघर",
+    "bathroom": "बाथरूम",
+    "diningRoom": "डायनिंग रूम",
+    "balcony": "बाल्कनी",
+    "study": "स्टडी",
+    "other": "इतर"
+  },
+  "createRoomForm": {
+    "nameLabel": "नाव",
+    "namePlaceholder": "उदा. मुख्य लिव्हिंग रूम",
+    "typeLabel": "प्रकार",
+    "submitIdle": "खोली जोडा",
+    "submitBusy": "जोडले जात आहे…",
+    "genericError": "ही खोली जोडता आली नाही."
+  },
+  "createDesignProjectForm": {
+    "nameLabel": "नाव",
+    "namePlaceholder": "उदा. लिव्हिंग रूमचे नवीन डिझाइन",
+    "roomLabel": "खोली (खऱ्या बीओक्यू निर्मितीसाठी विशिष्ट खोली आवश्यक)",
+    "wholeProperty": "संपूर्ण प्रॉपर्टी",
+    "submitIdle": "डिझाइन सुरू करा",
+    "submitBusy": "सुरू केले जात आहे…",
+    "genericError": "हे डिझाइन सुरू करता आले नाही."
   }
 }

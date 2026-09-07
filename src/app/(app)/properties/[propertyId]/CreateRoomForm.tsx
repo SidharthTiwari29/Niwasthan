@@ -2,24 +2,38 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
-const ROOM_TYPES = [
-  { value: "LIVING_ROOM", label: "Living room" },
-  { value: "BEDROOM", label: "Bedroom" },
-  { value: "KITCHEN", label: "Kitchen" },
-  { value: "BATHROOM", label: "Bathroom" },
-  { value: "DINING_ROOM", label: "Dining room" },
-  { value: "BALCONY", label: "Balcony" },
-  { value: "STUDY", label: "Study" },
-  { value: "OTHER", label: "Other" },
-];
+const ROOM_TYPE_VALUES = [
+  "LIVING_ROOM",
+  "BEDROOM",
+  "KITCHEN",
+  "BATHROOM",
+  "DINING_ROOM",
+  "BALCONY",
+  "STUDY",
+  "OTHER",
+] as const;
 
 export function CreateRoomForm({ propertyId }: { propertyId: string }) {
   const router = useRouter();
+  const t = useTranslations("createRoomForm");
+  const tRoomType = useTranslations("roomType");
   const [name, setName] = useState("");
   const [type, setType] = useState("LIVING_ROOM");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+
+  const roomTypeLabels: Record<string, string> = {
+    LIVING_ROOM: tRoomType("livingRoom"),
+    BEDROOM: tRoomType("bedroom"),
+    KITCHEN: tRoomType("kitchen"),
+    BATHROOM: tRoomType("bathroom"),
+    DINING_ROOM: tRoomType("diningRoom"),
+    BALCONY: tRoomType("balcony"),
+    STUDY: tRoomType("study"),
+    OTHER: tRoomType("other"),
+  };
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -33,12 +47,12 @@ export function CreateRoomForm({ propertyId }: { propertyId: string }) {
       });
       if (!response.ok) {
         const body = await response.json().catch(() => null);
-        throw new Error(body?.error?.message ?? "Couldn't add this room.");
+        throw new Error(body?.error?.message ?? t("genericError"));
       }
       setName("");
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Couldn't add this room.");
+      setError(err instanceof Error ? err.message : t("genericError"));
     } finally {
       setSubmitting(false);
     }
@@ -54,14 +68,14 @@ export function CreateRoomForm({ propertyId }: { propertyId: string }) {
           htmlFor="room-name"
           className="block font-body text-xs font-medium text-ink-soft"
         >
-          Name
+          {t("nameLabel")}
         </label>
         <input
           id="room-name"
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
-          placeholder="e.g. Main living room"
+          placeholder={t("namePlaceholder")}
           className="mt-1 rounded-sm border border-ink/15 bg-white px-3 py-2 font-body text-sm text-ink outline-none focus-visible:border-laterite"
         />
       </div>
@@ -70,7 +84,7 @@ export function CreateRoomForm({ propertyId }: { propertyId: string }) {
           htmlFor="room-type"
           className="block font-body text-xs font-medium text-ink-soft"
         >
-          Type
+          {t("typeLabel")}
         </label>
         <select
           id="room-type"
@@ -78,9 +92,9 @@ export function CreateRoomForm({ propertyId }: { propertyId: string }) {
           onChange={(e) => setType(e.target.value)}
           className="mt-1 rounded-sm border border-ink/15 bg-white px-3 py-2 font-body text-sm text-ink outline-none focus-visible:border-laterite"
         >
-          {ROOM_TYPES.map((rt) => (
-            <option key={rt.value} value={rt.value}>
-              {rt.label}
+          {ROOM_TYPE_VALUES.map((value) => (
+            <option key={value} value={value}>
+              {roomTypeLabels[value]}
             </option>
           ))}
         </select>
@@ -90,7 +104,7 @@ export function CreateRoomForm({ propertyId }: { propertyId: string }) {
         disabled={submitting}
         className="rounded-sm bg-indigo px-4 py-2 font-body text-sm font-medium text-paper transition-colors hover:bg-indigo-soft disabled:opacity-50"
       >
-        {submitting ? "Adding…" : "Add room"}
+        {submitting ? t("submitBusy") : t("submitIdle")}
       </button>
       {error ? (
         <p className="w-full font-body text-sm text-alert">{error}</p>

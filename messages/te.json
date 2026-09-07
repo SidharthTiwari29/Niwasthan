@@ -28,5 +28,47 @@
     "genericError": "ఈ ఇంటిని జోడించలేకపోయాము.",
     "submitIdle": "ఇల్లు జోడించి ఫ్లోర్ ప్లాన్ అప్‌లోడ్ చేయండి",
     "submitBusy": "జోడిస్తోంది…"
+  },
+  "property": {
+    "backToHomes": "← మీ ఇళ్లు",
+    "propertyIdLabel": "ఆస్తి ఐడి: {id}",
+    "targetBudgetLabel": "లక్ష్య బడ్జెట్: {amount}",
+    "uploadFloorPlan": "ఫ్లోర్ ప్లాన్ అప్‌లోడ్ చేయండి →",
+    "reviewDetectedRooms": "గుర్తించిన గదులను చూడండి →",
+    "roomsHeading": "గదులు",
+    "noRoomsYet": "ఈ ఇంటిని అర్థం చేసుకోవడం ప్రారంభించడానికి మీ మొదటి గదిని జోడించండి.",
+    "sqFt": "చదరపు అడుగులు",
+    "confirmDimensions": "కొలతలను నిర్ధారించండి",
+    "addRoomHeading": "ఒక గదిని జోడించండి",
+    "designsHeading": "డిజైన్‌లు",
+    "noDesignsYet": "ఈ ఇంటికి నిజమైన దిశలు, ఉత్పత్తులు మరియు ధరలను చూడటానికి డిజైన్ ప్రారంభించండి.",
+    "startDesignHeading": "డిజైన్ ప్రారంభించండి"
+  },
+  "roomType": {
+    "livingRoom": "లివింగ్ రూమ్",
+    "bedroom": "బెడ్‌రూమ్",
+    "kitchen": "వంటగది",
+    "bathroom": "బాత్రూమ్",
+    "diningRoom": "డైనింగ్ రూమ్",
+    "balcony": "బాల్కనీ",
+    "study": "స్టడీ",
+    "other": "ఇతరం"
+  },
+  "createRoomForm": {
+    "nameLabel": "పేరు",
+    "namePlaceholder": "ఉదా: ప్రధాన లివింగ్ రూమ్",
+    "typeLabel": "రకం",
+    "submitIdle": "గదిని జోడించండి",
+    "submitBusy": "జోడిస్తోంది…",
+    "genericError": "ఈ గదిని జోడించలేకపోయాము."
+  },
+  "createDesignProjectForm": {
+    "nameLabel": "పేరు",
+    "namePlaceholder": "ఉదా: లివింగ్ రూమ్ కొత్త డిజైన్",
+    "roomLabel": "గది (నిజమైన బీఓక్యూ తయారీకి నిర్దిష్ట గది అవసరం)",
+    "wholeProperty": "మొత్తం ఆస్తి",
+    "submitIdle": "డిజైన్ ప్రారంభించండి",
+    "submitBusy": "ప్రారంభిస్తోంది…",
+    "genericError": "ఈ డిజైన్ ప్రారంభించలేకపోయాము."
   }
 }

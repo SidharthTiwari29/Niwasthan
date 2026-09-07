@@ -28,5 +28,47 @@
     "genericError": "ಈ ಮನೆಯನ್ನು ಸೇರಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.",
     "submitIdle": "ಮನೆ ಸೇರಿಸಿ ಮತ್ತು ಫ್ಲೋರ್ ಪ್ಲಾನ್ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ",
     "submitBusy": "ಸೇರಿಸಲಾಗುತ್ತಿದೆ…"
+  },
+  "property": {
+    "backToHomes": "← ನಿಮ್ಮ ಮನೆಗಳು",
+    "propertyIdLabel": "ಆಸ್ತಿ ಐಡಿ: {id}",
+    "targetBudgetLabel": "ಗುರಿ ಬಜೆಟ್: {amount}",
+    "uploadFloorPlan": "ಫ್ಲೋರ್ ಪ್ಲಾನ್ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ →",
+    "reviewDetectedRooms": "ಪತ್ತೆಯಾದ ಕೋಣೆಗಳನ್ನು ನೋಡಿ →",
+    "roomsHeading": "ಕೋಣೆಗಳು",
+    "noRoomsYet": "ಈ ಮನೆಯನ್ನು ಅರ್ಥಮಾಡಿಕೊಳ್ಳಲು ಪ್ರಾರಂಭಿಸಲು ನಿಮ್ಮ ಮೊದಲ ಕೋಣೆಯನ್ನು ಸೇರಿಸಿ.",
+    "sqFt": "ಚದರ ಅಡಿ",
+    "confirmDimensions": "ಅಳತೆಗಳನ್ನು ದೃಢೀಕರಿಸಿ",
+    "addRoomHeading": "ಒಂದು ಕೋಣೆಯನ್ನು ಸೇರಿಸಿ",
+    "designsHeading": "ವಿನ್ಯಾಸಗಳು",
+    "noDesignsYet": "ಈ ಮನೆಗೆ ನಿಜವಾದ ದಿಕ್ಕುಗಳು, ಉತ್ಪನ್ನಗಳು ಮತ್ತು ಬೆಲೆಗಳನ್ನು ನೋಡಲು ವಿನ್ಯಾಸವನ್ನು ಪ್ರಾರಂಭಿಸಿ.",
+    "startDesignHeading": "ವಿನ್ಯಾಸವನ್ನು ಪ್ರಾರಂಭಿಸಿ"
+  },
+  "roomType": {
+    "livingRoom": "ಲಿವಿಂಗ್ ರೂಮ್",
+    "bedroom": "ಬೆಡ್‌ರೂಮ್",
+    "kitchen": "ಅಡುಗೆಮನೆ",
+    "bathroom": "ಬಾತ್‌ರೂಮ್",
+    "diningRoom": "ಡೈನಿಂಗ್ ರೂಮ್",
+    "balcony": "ಬಾಲ್ಕನಿ",
+    "study": "ಸ್ಟಡಿ",
+    "other": "ಇತರೆ"
+  },
+  "createRoomForm": {
+    "nameLabel": "ಹೆಸರು",
+    "namePlaceholder": "ಉದಾ: ಮುಖ್ಯ ಲಿವಿಂಗ್ ರೂಮ್",
+    "typeLabel": "ಪ್ರಕಾರ",
+    "submitIdle": "ಕೋಣೆ ಸೇರಿಸಿ",
+    "submitBusy": "ಸೇರಿಸಲಾಗುತ್ತಿದೆ…",
+    "genericError": "ಈ ಕೋಣೆಯನ್ನು ಸೇರಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ."
+  },
+  "createDesignProjectForm": {
+    "nameLabel": "ಹೆಸರು",
+    "namePlaceholder": "ಉದಾ: ಲಿವಿಂಗ್ ರೂಮ್ ಹೊಸ ವಿನ್ಯಾಸ",
+    "roomLabel": "ಕೋಣೆ (ನಿಜವಾದ ಬಿಒಕ್ಯೂ ರಚನೆಗೆ ನಿರ್ದಿಷ್ಟ ಕೋಣೆ ಅಗತ್ಯವಿದೆ)",
+    "wholeProperty": "ಸಂಪೂರ್ಣ ಆಸ್ತಿ",
+    "submitIdle": "ವಿನ್ಯಾಸವನ್ನು ಪ್ರಾರಂಭಿಸಿ",
+    "submitBusy": "ಪ್ರಾರಂಭಿಸಲಾಗುತ್ತಿದೆ…",
+    "genericError": "ಈ ವಿನ್ಯಾಸವನ್ನು ಪ್ರಾರಂಭಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ."
   }
 }

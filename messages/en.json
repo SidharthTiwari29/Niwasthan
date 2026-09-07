@@ -28,5 +28,47 @@
     "genericError": "Couldn't add this home.",
     "submitIdle": "Add home and upload floor plan",
     "submitBusy": "Adding…"
+  },
+  "property": {
+    "backToHomes": "← Your homes",
+    "propertyIdLabel": "Property ID: {id}",
+    "targetBudgetLabel": "Target budget: {amount}",
+    "uploadFloorPlan": "Upload floor plan →",
+    "reviewDetectedRooms": "Review detected rooms →",
+    "roomsHeading": "Rooms",
+    "noRoomsYet": "Add your first room to start understanding this home.",
+    "sqFt": "sq ft",
+    "confirmDimensions": "Confirm dimensions",
+    "addRoomHeading": "Add a room",
+    "designsHeading": "Designs",
+    "noDesignsYet": "Start a design to see real directions, products, and pricing for this home.",
+    "startDesignHeading": "Start a design"
+  },
+  "roomType": {
+    "livingRoom": "Living room",
+    "bedroom": "Bedroom",
+    "kitchen": "Kitchen",
+    "bathroom": "Bathroom",
+    "diningRoom": "Dining room",
+    "balcony": "Balcony",
+    "study": "Study",
+    "other": "Other"
+  },
+  "createRoomForm": {
+    "nameLabel": "Name",
+    "namePlaceholder": "e.g. Main living room",
+    "typeLabel": "Type",
+    "submitIdle": "Add room",
+    "submitBusy": "Adding…",
+    "genericError": "Couldn't add this room."
+  },
+  "createDesignProjectForm": {
+    "nameLabel": "Name",
+    "namePlaceholder": "e.g. Living room redesign",
+    "roomLabel": "Room (real BOQ generation needs a specific room)",
+    "wholeProperty": "Whole property",
+    "submitIdle": "Start design",
+    "submitBusy": "Starting…",
+    "genericError": "Couldn't start this design."
   }
 }

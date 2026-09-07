@@ -28,5 +28,47 @@
     "genericError": "এই বাড়িটি যোগ করা যায়নি।",
     "submitIdle": "বাড়ি যোগ করুন এবং ফ্লোর প্ল্যান আপলোড করুন",
     "submitBusy": "যোগ করা হচ্ছে…"
+  },
+  "property": {
+    "backToHomes": "← আপনার বাড়ি",
+    "propertyIdLabel": "প্রপার্টি আইডি: {id}",
+    "targetBudgetLabel": "লক্ষ্য বাজেট: {amount}",
+    "uploadFloorPlan": "ফ্লোর প্ল্যান আপলোড করুন →",
+    "reviewDetectedRooms": "শনাক্ত করা ঘরগুলি দেখুন →",
+    "roomsHeading": "ঘরসমূহ",
+    "noRoomsYet": "এই বাড়িটি বোঝা শুরু করতে আপনার প্রথম ঘর যোগ করুন।",
+    "sqFt": "বর্গফুট",
+    "confirmDimensions": "মাপ নিশ্চিত করুন",
+    "addRoomHeading": "একটি ঘর যোগ করুন",
+    "designsHeading": "ডিজাইন",
+    "noDesignsYet": "এই বাড়ির জন্য প্রকৃত দিকনির্দেশ, পণ্য এবং দাম দেখতে একটি ডিজাইন শুরু করুন।",
+    "startDesignHeading": "ডিজাইন শুরু করুন"
+  },
+  "roomType": {
+    "livingRoom": "লিভিং রুম",
+    "bedroom": "বেডরুম",
+    "kitchen": "রান্নাঘর",
+    "bathroom": "বাথরুম",
+    "diningRoom": "ডাইনিং রুম",
+    "balcony": "ব্যালকনি",
+    "study": "স্টাডি",
+    "other": "অন্যান্য"
+  },
+  "createRoomForm": {
+    "nameLabel": "নাম",
+    "namePlaceholder": "যেমন: প্রধান লিভিং রুম",
+    "typeLabel": "ধরন",
+    "submitIdle": "ঘর যোগ করুন",
+    "submitBusy": "যোগ করা হচ্ছে…",
+    "genericError": "এই ঘরটি যোগ করা যায়নি।"
+  },
+  "createDesignProjectForm": {
+    "nameLabel": "নাম",
+    "namePlaceholder": "যেমন: লিভিং রুমের নতুন ডিজাইন",
+    "roomLabel": "ঘর (প্রকৃত বিওকিউ তৈরির জন্য একটি নির্দিষ্ট ঘর প্রয়োজন)",
+    "wholeProperty": "সম্পূর্ণ প্রপার্টি",
+    "submitIdle": "ডিজাইন শুরু করুন",
+    "submitBusy": "শুরু করা হচ্ছে…",
+    "genericError": "এই ডিজাইনটি শুরু করা যায়নি।"
   }
 }

@@ -28,5 +28,47 @@
     "genericError": "ഈ വീട് ചേർക്കാൻ കഴിഞ്ഞില്ല.",
     "submitIdle": "വീട് ചേർത്ത് ഫ്ലോർ പ്ലാൻ അപ്‌ലോഡ് ചെയ്യുക",
     "submitBusy": "ചേർക്കുന്നു…"
+  },
+  "property": {
+    "backToHomes": "← നിങ്ങളുടെ വീടുകൾ",
+    "propertyIdLabel": "പ്രോപ്പർട്ടി ഐഡി: {id}",
+    "targetBudgetLabel": "ലക്ഷ്യ ബജറ്റ്: {amount}",
+    "uploadFloorPlan": "ഫ്ലോർ പ്ലാൻ അപ്‌ലോഡ് ചെയ്യുക →",
+    "reviewDetectedRooms": "കണ്ടെത്തിയ മുറികൾ കാണുക →",
+    "roomsHeading": "മുറികൾ",
+    "noRoomsYet": "ഈ വീട് മനസ്സിലാക്കാൻ തുടങ്ങാൻ നിങ്ങളുടെ ആദ്യ മുറി ചേർക്കുക.",
+    "sqFt": "ചതുരശ്ര അടി",
+    "confirmDimensions": "അളവുകൾ സ്ഥിരീകരിക്കുക",
+    "addRoomHeading": "ഒരു മുറി ചേർക്കുക",
+    "designsHeading": "ഡിസൈനുകൾ",
+    "noDesignsYet": "ഈ വീടിന് യഥാർത്ഥ ദിശകൾ, ഉൽപ്പന്നങ്ങൾ, വിലകൾ എന്നിവ കാണാൻ ഒരു ഡിസൈൻ ആരംഭിക്കുക.",
+    "startDesignHeading": "ഡിസൈൻ ആരംഭിക്കുക"
+  },
+  "roomType": {
+    "livingRoom": "ലിവിംഗ് റൂം",
+    "bedroom": "ബെഡ്‌റൂം",
+    "kitchen": "അടുക്കള",
+    "bathroom": "ബാത്ത്‌റൂം",
+    "diningRoom": "ഡൈനിംഗ് റൂം",
+    "balcony": "ബാൽക്കണി",
+    "study": "സ്റ്റഡി",
+    "other": "മറ്റുള്ളവ"
+  },
+  "createRoomForm": {
+    "nameLabel": "പേര്",
+    "namePlaceholder": "ഉദാ: പ്രധാന ലിവിംഗ് റൂം",
+    "typeLabel": "തരം",
+    "submitIdle": "മുറി ചേർക്കുക",
+    "submitBusy": "ചേർക്കുന്നു…",
+    "genericError": "ഈ മുറി ചേർക്കാൻ കഴിഞ്ഞില്ല."
+  },
+  "createDesignProjectForm": {
+    "nameLabel": "പേര്",
+    "namePlaceholder": "ഉദാ: ലിവിംഗ് റൂം പുതിയ ഡിസൈൻ",
+    "roomLabel": "മുറി (യഥാർത്ഥ ബിഒക്യു നിർമ്മാണത്തിന് ഒരു നിർദ്ദിഷ്ട മുറി ആവശ്യമാണ്)",
+    "wholeProperty": "മുഴുവൻ പ്രോപ്പർട്ടിയും",
+    "submitIdle": "ഡിസൈൻ ആരംഭിക്കുക",
+    "submitBusy": "ആരംഭിക്കുന്നു…",
+    "genericError": "ഈ ഡിസൈൻ ആരംഭിക്കാൻ കഴിഞ്ഞില്ല."
   }
 }

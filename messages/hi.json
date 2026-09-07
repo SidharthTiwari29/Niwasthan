@@ -28,5 +28,47 @@
     "genericError": "यह घर जोड़ा नहीं जा सका।",
     "submitIdle": "घर जोड़ें और फ़्लोर प्लान अपलोड करें",
     "submitBusy": "जोड़ा जा रहा है…"
+  },
+  "property": {
+    "backToHomes": "← आपके घर",
+    "propertyIdLabel": "प्रॉपर्टी आईडी: {id}",
+    "targetBudgetLabel": "लक्षित बजट: {amount}",
+    "uploadFloorPlan": "फ़्लोर प्लान अपलोड करें →",
+    "reviewDetectedRooms": "पहचाने गए कमरे देखें →",
+    "roomsHeading": "कमरे",
+    "noRoomsYet": "इस घर को समझना शुरू करने के लिए अपना पहला कमरा जोड़ें।",
+    "sqFt": "वर्ग फुट",
+    "confirmDimensions": "माप की पुष्टि करें",
+    "addRoomHeading": "एक कमरा जोड़ें",
+    "designsHeading": "डिज़ाइन",
+    "noDesignsYet": "इस घर के लिए असली दिशाएं, प्रोडक्ट्स और कीमतें देखने के लिए एक डिज़ाइन शुरू करें।",
+    "startDesignHeading": "डिज़ाइन शुरू करें"
+  },
+  "roomType": {
+    "livingRoom": "लिविंग रूम",
+    "bedroom": "बेडरूम",
+    "kitchen": "रसोई",
+    "bathroom": "बाथरूम",
+    "diningRoom": "डाइनिंग रूम",
+    "balcony": "बालकनी",
+    "study": "स्टडी",
+    "other": "अन्य"
+  },
+  "createRoomForm": {
+    "nameLabel": "नाम",
+    "namePlaceholder": "जैसे: मुख्य लिविंग रूम",
+    "typeLabel": "प्रकार",
+    "submitIdle": "कमरा जोड़ें",
+    "submitBusy": "जोड़ा जा रहा है…",
+    "genericError": "यह कमरा जोड़ा नहीं जा सका।"
+  },
+  "createDesignProjectForm": {
+    "nameLabel": "नाम",
+    "namePlaceholder": "जैसे: लिविंग रूम का नया डिज़ाइन",
+    "roomLabel": "कमरा (असली बीओक्यू बनाने के लिए एक खास कमरा चाहिए)",
+    "wholeProperty": "पूरी प्रॉपर्टी",
+    "submitIdle": "डिज़ाइन शुरू करें",
+    "submitBusy": "शुरू किया जा रहा है…",
+    "genericError": "यह डिज़ाइन शुरू नहीं किया जा सका।"
   }
 }
