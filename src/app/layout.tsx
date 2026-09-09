@@ -86,12 +86,15 @@ const notoSansKannada = Noto_Sans_Kannada({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ?? "https://niwasthan.com",
+  ),
   title: {
-    default: "Niwasthan | A better way to build home",
+    default: "Niwasthan | Design a better home, with clarity",
     template: "%s | Niwasthan",
   },
   description:
-    "Explore your home, understand the design, see the budget relationship and decide how you want it delivered with Niwasthan.",
+    "Niwasthan connects your real home, thoughtful design, real materials, transparent costs and buildable execution in one intelligent journey.",
   keywords: [
     "Niwasthan",
     "home design",
@@ -101,11 +104,23 @@ export const metadata: Metadata = {
     "transparent home renovation",
   ],
   openGraph: {
-    title: "Niwasthan | A better way to build home",
+    title: "Niwasthan | Design a better home, with clarity",
     description:
       "See the space. Understand the design. Know the cost. Then decide how you want it delivered.",
     type: "website",
+    siteName: "Niwasthan",
+    locale: "en_IN",
+    images: [{ url: "/hero/03-living-room.webp", width: 1600, height: 1000, alt: "A considered Niwasthan living room" }],
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Niwasthan | Design a better home, with clarity",
+    description:
+      "A home intelligence platform for clearer design, costs and execution.",
+    images: ["/hero/03-living-room.webp"],
+  },
+  alternates: { canonical: "/" },
+  robots: { index: true, follow: true },
 };
 
 const FONT_VARIABLES = [

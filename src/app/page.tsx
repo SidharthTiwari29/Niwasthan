@@ -1,18 +1,10 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import { Component, type ReactNode } from "react";
 import { ArrowRight } from "lucide-react";
-
-const CinematicLanding = dynamic(
-  () =>
-    import("@/components/cinematic/CinematicLandingFinal").then(
-      (module) => module.CinematicLandingFinal,
-    ),
-  { ssr: false, loading: () => <HomepageShell /> },
-);
+import { CinematicLandingFinal } from "@/components/cinematic/CinematicLandingFinal";
 
 function HomepageShell() {
   const heroImage =
@@ -89,7 +81,7 @@ class HomepageBoundary extends Component<
 export default function HomePage() {
   return (
     <HomepageBoundary>
-      <CinematicLanding />
+      <CinematicLandingFinal />
     </HomepageBoundary>
   );
 }

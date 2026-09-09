@@ -176,6 +176,7 @@ function SiteNav() {
     ["Why Niwasthan", "#why-niwasthan"],
     ["The promise", "#promise"],
     ["How it works", "#process"],
+    ["Plans", "/pricing"],
     ["FAQ", "#faq"],
   ];
 
@@ -588,8 +589,10 @@ function FAQ() {
             return (
               <div key={question} className="border-b border-[#d6b477]/15">
                 <button
+                  id={`faq-question-${index}`}
                   onClick={() => setOpen(isOpen ? null : index)}
                   aria-expanded={isOpen}
+                  aria-controls={`faq-answer-${index}`}
                   className="flex w-full items-center justify-between gap-6 py-7 text-left"
                 >
                   <span className="font-display text-2xl font-semibold tracking-[-0.025em] md:text-3xl">
@@ -601,7 +604,12 @@ function FAQ() {
                   />
                 </button>
                 {isOpen ? (
-                  <p className="max-w-2xl pb-8 pr-8 font-body text-sm leading-relaxed text-white/50">
+                  <p
+                    id={`faq-answer-${index}`}
+                    role="region"
+                    aria-labelledby={`faq-question-${index}`}
+                    className="max-w-2xl pb-8 pr-8 font-body text-sm leading-relaxed text-white/50"
+                  >
                     {answer}
                   </p>
                 ) : null}
