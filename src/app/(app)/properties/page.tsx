@@ -1,61 +1,43 @@
-import Link from "next/link";
 import { requireAuth } from "@/server/middleware/requireAuth";
 import { propertyService } from "@/server/services/propertyService";
+import { roomService } from "@/server/services/roomService";
+import { listDesignProjectsForProperty } from "@/server/services/designProjectService";
 import { CreatePropertyForm } from "./CreatePropertyForm";
-
-type PropertySummary = {
-  id: string;
-  name: string;
-  address: string | null;
-};
+import { HomeDashboard, type DashboardProperty } from "./HomeDashboard";
 
 export default async function PropertiesPage() {
   const { userId } = await requireAuth();
   const properties = await propertyService.list(userId);
+  const dashboardProperties: DashboardProperty[] = await Promise.all(
+    properties.map(async (property) => {
+      const [rooms, designs] = await Promise.all([
+        roomService.list(property.id, userId),
+        listDesignProjectsForProperty(property.id, userId),
+      ]);
+      return {
+        id: property.id,
+        name: property.name,
+        address: property.address,
+        city: property.city,
+        propertyType: property.propertyType,
+        targetBudgetMinor: property.targetBudgetMinor,
+        roomCount: rooms.length,
+        designCount: designs.length,
+      };
+    }),
+  );
 
   return (
     <div>
-      <h1 className="font-display text-3xl font-semibold">Your homes</h1>
-      <p className="mt-2 font-body text-sm text-ink-soft">
-        Add a home to start understanding it, designing it, and pricing it for
-        real.
-      </p>
-
-      {properties.length === 0 ? (
-        <div className="mt-10 rounded-sm border border-dashed border-ink/20 px-8 py-12 text-center">
-          <p className="font-body text-sm text-ink-soft">
-            You haven&apos;t added a home yet. Add one below to begin.
-          </p>
-        </div>
-      ) : (
-        <ul className="mt-8 divide-y divide-paper-raised">
-          {properties.map((property: PropertySummary) => (
-            <li key={property.id} className="py-4">
-              <Link
-                href={`/properties/${property.id}`}
-                className="group flex items-center justify-between"
-              >
-                <div>
-                  <p className="font-body text-base font-medium text-ink group-hover:text-laterite">
-                    {property.name}
-                  </p>
-                  {property.address ? (
-                    <p className="mt-1 font-body text-sm text-ink-soft">
-                      {property.address}
-                    </p>
-                  ) : null}
-                </div>
-                <span className="font-body text-sm text-ink-soft group-hover:text-laterite">
-                  View →
-                </span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
-
-      <div className="mt-12 border-t border-paper-raised pt-8">
-        <h2 className="font-display text-lg font-semibold">Add a home</h2>
+      <HomeDashboard properties={dashboardProperties} />
+      <div className="mt-8 rounded-[1.5rem] border border-ink/10 bg-white p-7 md:p-9">
+        <h2 className="font-display text-3xl font-semibold tracking-[-0.04em]">
+          Create the property record
+        </h2>
+        <p className="mt-2 max-w-xl font-body text-sm leading-relaxed text-ink-soft">
+          Keep the inputs grounded in your actual home. You can refine the
+          details as evidence becomes available.
+        </p>
         <CreatePropertyForm />
       </div>
     </div>
