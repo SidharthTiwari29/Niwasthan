@@ -46,11 +46,42 @@ export async function upsertCatalogueItem(input: {
   unit: string;
   brand?: string;
   active?: boolean;
+  imageUrl?: string;
+  sourceUrl?: string;
+  qualityTier?: string;
+  niwasthanRating?: number;
 }) {
+  // Real, necessary construction for the four new fields: Prisma's
+  // generated CreateInput/UpdateInput types reject an object where
+  // every property is explicitly present with a `value | undefined`
+  // type (the exact class of error this project hit and fixed earlier
+  // for OperationalEvent) - an absent field must be a genuinely absent
+  // key, not a present key holding undefined.
+  const optionalFields: Record<string, unknown> = {};
+  if (input.imageUrl !== undefined) optionalFields.imageUrl = input.imageUrl;
+  if (input.sourceUrl !== undefined) optionalFields.sourceUrl = input.sourceUrl;
+  if (input.qualityTier !== undefined)
+    optionalFields.qualityTier = input.qualityTier;
+  if (input.niwasthanRating !== undefined)
+    optionalFields.niwasthanRating = input.niwasthanRating;
+
+  const data = {
+    sku: input.sku,
+    name: input.name,
+    category: input.category,
+    unit: input.unit,
+    ...(input.description !== undefined
+      ? { description: input.description }
+      : {}),
+    ...(input.brand !== undefined ? { brand: input.brand } : {}),
+    ...(input.active !== undefined ? { active: input.active } : {}),
+    ...optionalFields,
+  };
+
   return prisma.catalogueItem.upsert({
     where: { sku: input.sku },
-    create: input,
-    update: input,
+    create: data as never,
+    update: data as never,
   });
 }
 
@@ -131,7 +162,20 @@ export type CatalogueImportRow = {
   category: string;
   unit: string;
   brand?: string;
-  amountMinor: bigint;
+  description?: string;
+  imageUrl?: string;
+  sourceUrl?: string;
+  qualityTier?: string;
+  niwasthanRating?: number;
+  // Genuinely optional - a real, substantial share of real-world
+  // catalogue sources never publish a numeric price at all (only a
+  // dealer-enquiry route). Importing the item's real metadata without
+  // ever fabricating a price for it is the honest choice; the price
+  // row (and its warranty/availability fields, which only make sense
+  // attached to a real price observation) is skipped entirely when
+  // amountMinor is absent, rather than defaulted to zero or any other
+  // invented number.
+  amountMinor?: bigint;
   mrpMinor?: bigint;
   warrantyMonths?: number;
   availability?: "IN_STOCK" | "LIMITED_STOCK" | "OUT_OF_STOCK" | "UNKNOWN";
@@ -163,14 +207,21 @@ export async function bulkImportCatalogue(
         category: row.category,
         unit: row.unit,
         brand: row.brand,
+        description: row.description,
+        imageUrl: row.imageUrl,
+        sourceUrl: row.sourceUrl,
+        qualityTier: row.qualityTier,
+        niwasthanRating: row.niwasthanRating,
       });
-      await addCataloguePrice({
-        sku: row.sku,
-        amountMinor: row.amountMinor,
-        mrpMinor: row.mrpMinor,
-        warrantyMonths: row.warrantyMonths,
-        availability: row.availability,
-      });
+      if (row.amountMinor !== undefined) {
+        await addCataloguePrice({
+          sku: row.sku,
+          amountMinor: row.amountMinor,
+          mrpMinor: row.mrpMinor,
+          warrantyMonths: row.warrantyMonths,
+          availability: row.availability,
+        });
+      }
       results.push({ sku: row.sku, status: "IMPORTED" });
     } catch (error) {
       results.push({

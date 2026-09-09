@@ -11,7 +11,12 @@ const rowSchema = z.object({
   category: z.string().trim().min(1).max(120),
   unit: z.string().trim().min(1).max(30),
   brand: z.string().trim().max(200).optional(),
-  amountMinor: z.number().int().positive(),
+  description: z.string().trim().max(5000).optional(),
+  imageUrl: z.string().trim().url().max(2000).optional(),
+  sourceUrl: z.string().trim().url().max(2000).optional(),
+  qualityTier: z.string().trim().max(50).optional(),
+  niwasthanRating: z.number().min(0).max(5).optional(),
+  amountMinor: z.number().int().positive().optional(),
   mrpMinor: z.number().int().positive().optional(),
   warrantyMonths: z.number().int().nonnegative().optional(),
   availability: z
@@ -33,7 +38,8 @@ export const POST = withErrorHandling(async (request: Request) => {
   const results = await bulkImportCatalogue(
     rows.map((row) => ({
       ...row,
-      amountMinor: BigInt(row.amountMinor),
+      amountMinor:
+        row.amountMinor !== undefined ? BigInt(row.amountMinor) : undefined,
       mrpMinor: row.mrpMinor !== undefined ? BigInt(row.mrpMinor) : undefined,
     })),
   );

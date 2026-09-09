@@ -108,6 +108,49 @@ describe("catalogueService", () => {
       );
       expect(result).toEqual({ id: "item-1", sku: "SKU-1" });
     });
+
+    it("includes the real new metadata fields only when genuinely provided", async () => {
+      db.catalogueItem.upsert.mockResolvedValue({ id: "item-2" } as never);
+
+      await upsertCatalogueItem({
+        sku: "SKU-2",
+        name: "Marine Plywood",
+        category: "boards",
+        unit: "sheet",
+        imageUrl: "https://example.com/image.jpg",
+        sourceUrl: "https://example.com/product",
+        qualityTier: "Premium",
+        niwasthanRating: 4.6,
+      });
+
+      expect(db.catalogueItem.upsert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          create: expect.objectContaining({
+            imageUrl: "https://example.com/image.jpg",
+            sourceUrl: "https://example.com/product",
+            qualityTier: "Premium",
+            niwasthanRating: 4.6,
+          }),
+        }),
+      );
+    });
+
+    it("never sends the new metadata fields as explicit undefined when genuinely absent - a real, absent key, not a present key holding undefined", async () => {
+      db.catalogueItem.upsert.mockResolvedValue({ id: "item-3" } as never);
+
+      await upsertCatalogueItem({
+        sku: "SKU-3",
+        name: "Basic Item",
+        category: "misc",
+        unit: "piece",
+      });
+
+      const call = db.catalogueItem.upsert.mock.calls[0][0];
+      expect(call.create).not.toHaveProperty("imageUrl");
+      expect(call.create).not.toHaveProperty("sourceUrl");
+      expect(call.create).not.toHaveProperty("qualityTier");
+      expect(call.create).not.toHaveProperty("niwasthanRating");
+    });
   });
 
   describe("addCataloguePrice", () => {
@@ -332,6 +375,22 @@ describe("catalogueService", () => {
       expect(results[0].status).toBe("FAILED");
       expect(results[0].reason).toContain("CatalogueItem");
       expect(results[1].status).toBe("IMPORTED");
+    });
+
+    it("imports a real item with no verified price honestly - never fabricates a price, and never calls addCataloguePrice at all", async () => {
+      db.catalogueItem.upsert.mockResolvedValue({ id: "item-1" } as never);
+
+      const results = await bulkImportCatalogue([
+        {
+          sku: "SKU-NO-PRICE",
+          name: "Dealer-Enquiry-Only Item",
+          category: "custom",
+          unit: "set",
+        },
+      ]);
+
+      expect(results).toEqual([{ sku: "SKU-NO-PRICE", status: "IMPORTED" }]);
+      expect(db.cataloguePrice.create).not.toHaveBeenCalled();
     });
   });
 });

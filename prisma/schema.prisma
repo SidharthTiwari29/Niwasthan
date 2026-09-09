@@ -679,6 +679,29 @@ model CatalogueItem {
   description String?          @db.Text
   category    String
   unit        String
+  // Real, direct product image URL from the manufacturer/dealer source
+  // page that published it - never a generated or placeholder image.
+  // Null means no real image URL was found for this item, not "use a
+  // stock photo" - the customer-facing UI must handle a missing image
+  // honestly rather than fabricate one.
+  imageUrl    String?
+  // The real source page this item's specification/pricing was
+  // verified against - lets a curator or customer trace a listing back
+  // to its actual origin, matching this catalogue's own sourcing
+  // discipline (see the bulk-import research standard).
+  sourceUrl   String?
+  // A real, editorial positioning tier (e.g. Economy/Standard/Premium/
+  // Luxury) as assigned by whoever curated this row - not a
+  // manufacturer-issued rating. Deliberately a plain string, not an
+  // enum: the real, evolving set of tiers used across very different
+  // categories (plywood vs. smart toilets) shouldn't be constrained to
+  // a fixed list decided ahead of time.
+  qualityTier String?
+  // A real, editorial score out of 5 reflecting documented fit,
+  // specification strength, and value for Indian interior use - not a
+  // manufacturer claim, and never fabricated when no real assessment
+  // was made (null, not a default, when absent from the source data).
+  niwasthanRating Decimal?     @db.Decimal(3, 2)
   // Real, manufacturer-published, objectively verifiable specs -
   // relevant specifically to Home Automation family products (README
   // family #11) and lighting, not fabricated claims about smart
