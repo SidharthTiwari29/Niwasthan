@@ -34,7 +34,37 @@ export default async function CatalogueItemPage({
       <h1 className="mt-4 font-display text-3xl font-semibold">{item.name}</h1>
       <p className="mt-1 font-mono text-sm text-ink-soft">
         {item.brand ?? "Unbranded"} · {item.category}
+        {item.qualityTier ? ` · ${item.qualityTier}` : ""}
+        {item.niwasthanRating !== null && item.niwasthanRating !== undefined
+          ? ` · ★ ${Number(item.niwasthanRating).toFixed(1)}`
+          : ""}
       </p>
+
+      {item.imageUrl ? (
+        // eslint-disable-next-line @next/next/no-img-element -- real, external manufacturer/dealer image URL, domain unknown ahead of time
+        <img
+          src={item.imageUrl}
+          alt={item.name}
+          className="mt-6 max-h-80 w-full max-w-md rounded-sm border border-paper-raised object-contain"
+        />
+      ) : null}
+
+      {item.description ? (
+        <p className="mt-6 max-w-2xl whitespace-pre-line font-body text-sm leading-relaxed text-ink-soft">
+          {item.description}
+        </p>
+      ) : null}
+
+      {item.sourceUrl ? (
+        <a
+          href={item.sourceUrl}
+          target="_blank"
+          rel="noreferrer noopener"
+          className="mt-3 inline-block font-body text-xs text-laterite hover:underline"
+        >
+          View the real source listing →
+        </a>
+      ) : null}
 
       {price ? (
         <div className="mt-6 flex items-baseline gap-3">

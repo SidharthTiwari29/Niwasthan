@@ -5,8 +5,10 @@ import { notificationService } from "@/server/services/notificationService";
 import {
   addCataloguePrice,
   bulkImportCatalogue,
+  countCatalogue,
   getCatalogueItem,
   listCatalogue,
+  listCatalogueCategories,
   upsertCatalogueItem,
 } from "./catalogueService";
 
@@ -51,10 +53,92 @@ describe("catalogueService", () => {
 
       expect(db.catalogueItem.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
-          where: { active: true, category: "sofa" },
+          where: expect.objectContaining({
+            active: true,
+            category: "sofa",
+          }),
         }),
       );
       expect(result).toEqual([{ id: "item-1", sku: "SKU-1" }]);
+    });
+
+    it("paginates using a real, fixed page size - page 1 has no skip", async () => {
+      db.catalogueItem.findMany.mockResolvedValue([]);
+
+      await listCatalogue(undefined, 1);
+
+      expect(db.catalogueItem.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({ take: 30, skip: 0 }),
+      );
+    });
+
+    it("paginates correctly for a later page - hand-verified: page 3 skips 60 real rows", async () => {
+      db.catalogueItem.findMany.mockResolvedValue([]);
+
+      await listCatalogue(undefined, 3);
+
+      expect(db.catalogueItem.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({ take: 30, skip: 60 }),
+      );
+    });
+
+    it("filters by a real, case-insensitive name search when given", async () => {
+      db.catalogueItem.findMany.mockResolvedValue([]);
+
+      await listCatalogue(undefined, 1, "plywood");
+
+      expect(db.catalogueItem.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            name: { contains: "plywood", mode: "insensitive" },
+          }),
+        }),
+      );
+    });
+
+    it("never applies a name filter when no real search term is given", async () => {
+      db.catalogueItem.findMany.mockResolvedValue([]);
+
+      await listCatalogue();
+
+      const call = db.catalogueItem.findMany.mock.calls[0][0];
+      expect(call.where).not.toHaveProperty("name");
+    });
+  });
+
+  describe("countCatalogue", () => {
+    it("counts only active items matching the real filters, mirroring listCatalogue", async () => {
+      db.catalogueItem.count.mockResolvedValue(42);
+
+      const result = await countCatalogue("sofa", "leather");
+
+      expect(db.catalogueItem.count).toHaveBeenCalledWith({
+        where: {
+          active: true,
+          category: "sofa",
+          name: { contains: "leather", mode: "insensitive" },
+        },
+      });
+      expect(result).toBe(42);
+    });
+  });
+
+  describe("listCatalogueCategories", () => {
+    it("returns the real, distinct categories currently in the catalogue", async () => {
+      db.catalogueItem.findMany.mockResolvedValue([
+        { category: "Plywood" },
+        { category: "Lighting" },
+      ] as never);
+
+      const result = await listCatalogueCategories();
+
+      expect(db.catalogueItem.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { active: true },
+          distinct: ["category"],
+        }),
+      );
+      expect(result).toEqual(["Plywood", "Lighting"]);
     });
   });
 

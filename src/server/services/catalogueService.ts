@@ -3,9 +3,17 @@ import { NotFoundError } from "@/server/errors/AppError";
 import { notificationService } from "@/server/services/notificationService";
 import { buildMoment } from "@/server/personality/momentTemplates";
 
-export function listCatalogue(category?: string) {
+const PAGE_SIZE = 30;
+
+export function listCatalogue(category?: string, page = 1, search?: string) {
   return prisma.catalogueItem.findMany({
-    where: { active: true, category },
+    where: {
+      active: true,
+      category,
+      ...(search
+        ? { name: { contains: search, mode: "insensitive" as const } }
+        : {}),
+    },
     include: {
       prices: {
         where: {
@@ -17,7 +25,34 @@ export function listCatalogue(category?: string) {
       },
     },
     orderBy: { name: "asc" },
+    take: PAGE_SIZE,
+    skip: (page - 1) * PAGE_SIZE,
   });
+}
+
+export async function countCatalogue(category?: string, search?: string) {
+  return prisma.catalogueItem.count({
+    where: {
+      active: true,
+      category,
+      ...(search
+        ? { name: { contains: search, mode: "insensitive" as const } }
+        : {}),
+    },
+  });
+}
+
+// Real, distinct list of categories actually present in the live
+// catalogue - never a hardcoded list that could drift from what's
+// genuinely there.
+export async function listCatalogueCategories() {
+  const rows = await prisma.catalogueItem.findMany({
+    where: { active: true },
+    select: { category: true },
+    distinct: ["category"],
+    orderBy: { category: "asc" },
+  });
+  return rows.map((r: { category: string }) => r.category);
 }
 
 export async function getCatalogueItem(sku: string) {

@@ -110,7 +110,14 @@ export const metadata: Metadata = {
     type: "website",
     siteName: "Niwasthan",
     locale: "en_IN",
-    images: [{ url: "/hero/03-living-room.webp", width: 1600, height: 1000, alt: "A considered Niwasthan living room" }],
+    images: [
+      {
+        url: "/hero/03-living-room.webp",
+        width: 1600,
+        height: 1000,
+        alt: "A considered Niwasthan living room",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
