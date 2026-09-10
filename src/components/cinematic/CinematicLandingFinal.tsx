@@ -176,6 +176,7 @@ function SiteNav() {
     ["Why Niwasthan", "#why-niwasthan"],
     ["The promise", "#promise"],
     ["How it works", "#process"],
+    ["How it works page", "/how-it-works"],
     ["Plans", "/pricing"],
     ["FAQ", "#faq"],
   ];
