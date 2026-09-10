@@ -102,7 +102,7 @@ describe("catalogueService", () => {
       await listCatalogue();
 
       const call = db.catalogueItem.findMany.mock.calls[0]![0];
-      expect(call.where).not.toHaveProperty("name");
+      expect(call!.where).not.toHaveProperty("name");
     });
   });
 
