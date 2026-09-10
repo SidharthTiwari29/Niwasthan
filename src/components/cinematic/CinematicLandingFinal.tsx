@@ -9,7 +9,14 @@ import {
   Menu,
   X,
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type PointerEvent,
+  type ReactNode,
+} from "react";
 
 const rooms = [
   {
@@ -160,6 +167,65 @@ function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(value, min), max);
 }
 
+function useReducedMotion() {
+  const [reduced, setReduced] = useState(false);
+
+  useEffect(() => {
+    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const update = () => setReduced(media.matches);
+    update();
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
+
+  return reduced;
+}
+
+function Reveal({
+  children,
+  className = "",
+  delay = 0,
+}: {
+  children: ReactNode;
+  className?: string;
+  delay?: number;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+  const reduced = useReducedMotion();
+
+  useEffect(() => {
+    if (reduced) {
+      return;
+    }
+    const element = ref.current;
+    if (!element) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.12, rootMargin: "0px 0px -8% 0px" },
+    );
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, [reduced]);
+
+  return (
+    <div
+      ref={ref}
+      data-reveal
+      data-visible={visible}
+      className={className}
+      style={{ "--reveal-delay": `${delay}ms` } as CSSProperties}
+    >
+      {children}
+    </div>
+  );
+}
+
 function useRoomCrossfade(progress: number) {
   const count = rooms.length;
   const position = progress * (count - 1);
@@ -233,8 +299,24 @@ function SiteNav() {
 
 function Hero({ imageUrl }: { imageUrl: string }) {
   const [failed, setFailed] = useState(false);
+  const [pointer, setPointer] = useState({ x: 0, y: 0 });
+  const reduced = useReducedMotion();
+
+  function handlePointerMove(event: PointerEvent<HTMLElement>) {
+    if (reduced) return;
+    const rect = event.currentTarget.getBoundingClientRect();
+    setPointer({
+      x: clamp((event.clientX - rect.left) / rect.width - 0.5, -0.5, 0.5),
+      y: clamp((event.clientY - rect.top) / rect.height - 0.5, -0.5, 0.5),
+    });
+  }
+
   return (
-    <section className="relative min-h-[100svh] overflow-hidden bg-[#0b0b0a]">
+    <section
+      className="relative min-h-[100svh] overflow-hidden bg-[#0b0b0a]"
+      onPointerMove={handlePointerMove}
+      onPointerLeave={() => setPointer({ x: 0, y: 0 })}
+    >
       {!failed ? (
         <Image
           src={imageUrl}
@@ -243,6 +325,12 @@ function Hero({ imageUrl }: { imageUrl: string }) {
           priority
           sizes="100vw"
           className="object-cover object-center"
+          style={{
+            transform: reduced
+              ? undefined
+              : `scale(1.06) translate3d(${pointer.x * -12}px, ${pointer.y * -8}px, 0)`,
+            transition: "transform 700ms cubic-bezier(0.23, 1, 0.32, 1)",
+          }}
           onError={() => setFailed(true)}
         />
       ) : (
@@ -250,6 +338,26 @@ function Hero({ imageUrl }: { imageUrl: string }) {
       )}
       <div className="absolute inset-0 bg-gradient-to-b from-black/65 via-black/15 to-[#0b0b0a]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_60%_35%,transparent_0%,rgba(0,0,0,.18)_40%,rgba(0,0,0,.72)_100%)]" />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute right-[8%] top-[28%] hidden h-64 w-64 rounded-full border border-[#d6b477]/25 lg:block"
+        style={{
+          transform: reduced
+            ? undefined
+            : `rotateX(${pointer.y * -14}deg) rotateY(${pointer.x * 18}deg) translate3d(${pointer.x * 22}px, ${pointer.y * 18}px, 0)`,
+          transition: "transform 700ms cubic-bezier(0.23, 1, 0.32, 1)",
+          transformStyle: "preserve-3d",
+        }}
+      >
+        <div className="absolute inset-7 rounded-full border border-[#d6b477]/20" />
+        <div className="absolute left-1/2 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#d6b477] shadow-[0_0_28px_8px_rgba(214,180,119,.35)]" />
+        <div className="absolute -right-16 top-10 rounded-full border border-[#d6b477]/30 bg-black/20 px-3 py-2 font-mono text-[8px] uppercase tracking-[0.18em] text-[#d6b477] backdrop-blur-md">
+          Real home
+        </div>
+        <div className="absolute -bottom-5 -left-14 rounded-full border border-white/15 bg-black/20 px-3 py-2 font-mono text-[8px] uppercase tracking-[0.18em] text-white/60 backdrop-blur-md">
+          Buildable by design
+        </div>
+      </div>
       <div className="relative z-10 mx-auto flex min-h-[100svh] max-w-[1440px] flex-col justify-end px-5 pb-14 pt-32 md:px-10 md:pb-20">
         <div className="max-w-5xl">
           <p className="font-mono text-[10px] uppercase tracking-[0.32em] text-[#d6b477]">
@@ -411,7 +519,7 @@ function Intro() {
           </p>
           <div className="mt-8 h-px w-16 bg-[#d6b477]/50" />
         </div>
-        <div>
+        <Reveal>
           <h2 className="max-w-6xl font-display text-[clamp(3.8rem,8vw,8.5rem)] font-semibold leading-[0.82] tracking-[-0.06em] text-[#f7f0e4]">
             Your home should never feel like a black box.
           </h2>
@@ -420,7 +528,7 @@ function Intro() {
             space, understand the design, see how choices influence the budget,
             and decide what happens next with clarity.
           </p>
-        </div>
+        </Reveal>
       </div>
     </section>
   );
@@ -433,7 +541,7 @@ function WhyNiwasthan() {
       className="bg-[#0b0b0a] px-5 py-32 text-[#f4efe6] sm:py-40 md:px-10 md:py-52"
     >
       <div className="mx-auto max-w-[1440px]">
-        <div className="max-w-5xl">
+        <Reveal className="max-w-5xl">
           <p className="font-mono text-[10px] uppercase tracking-[0.32em] text-[#d6b477]">
             Why Niwasthan
           </p>
@@ -442,7 +550,7 @@ function WhyNiwasthan() {
             <br />
             good on you.
           </h2>
-        </div>
+        </Reveal>
         <div className="mt-20 grid overflow-hidden rounded-[2rem] border border-[#d6b477]/20 md:grid-cols-2 lg:grid-cols-4">
           {pillars.map(([number, title, text]) => (
             <article
@@ -485,7 +593,7 @@ function Promise() {
     >
       <div className="mx-auto max-w-[1440px] rounded-[2rem] border border-[#d6b477]/20 bg-[#11100d] p-8 md:p-14 lg:p-20">
         <div className="grid gap-16 lg:grid-cols-[1.1fr_.9fr] lg:gap-24">
-          <div>
+          <Reveal>
             <p className="font-mono text-[10px] uppercase tracking-[0.32em] text-[#d6b477]">
               The promise
             </p>
@@ -499,8 +607,8 @@ function Promise() {
               should be able to understand the design, the choices and the route
               from idea to execution.
             </p>
-          </div>
-          <div className="lg:pt-20">
+          </Reveal>
+          <Reveal className="lg:pt-20" delay={100}>
             <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-[#d6b477]/70">
               What that means
             </p>
@@ -515,7 +623,7 @@ function Promise() {
                 </li>
               ))}
             </ul>
-          </div>
+          </Reveal>
         </div>
       </div>
     </section>
@@ -529,7 +637,7 @@ function Process() {
       className="bg-[#0b0b0a] px-5 py-32 text-[#f4efe6] sm:py-40 md:px-10 md:py-52"
     >
       <div className="mx-auto max-w-[1440px]">
-        <div className="max-w-5xl">
+        <Reveal className="max-w-5xl">
           <p className="font-mono text-[10px] uppercase tracking-[0.32em] text-[#d6b477]">
             How it works
           </p>
@@ -542,7 +650,7 @@ function Process() {
             A simple path from understanding your home to deciding how you want
             to bring it to life.
           </p>
-        </div>
+        </Reveal>
         <div className="mt-20 border-t border-[#d6b477]/15">
           {processSteps.map(([number, title, text]) => (
             <article
@@ -574,7 +682,7 @@ function FAQ() {
       className="bg-[#0b0b0a] px-5 py-32 text-[#f4efe6] sm:py-40 md:px-10 md:py-52"
     >
       <div className="mx-auto grid max-w-[1440px] gap-16 lg:grid-cols-[.75fr_1.25fr] lg:gap-24">
-        <div>
+        <Reveal>
           <p className="font-mono text-[10px] uppercase tracking-[0.32em] text-[#d6b477]">
             FAQ
           </p>
@@ -583,8 +691,8 @@ function FAQ() {
             <br />
             Clear answers.
           </h2>
-        </div>
-        <div className="border-t border-[#d6b477]/15">
+        </Reveal>
+        <Reveal className="border-t border-[#d6b477]/15">
           {faqs.map(([question, answer], index) => {
             const isOpen = open === index;
             return (
@@ -617,7 +725,7 @@ function FAQ() {
               </div>
             );
           })}
-        </div>
+        </Reveal>
       </div>
     </section>
   );
