@@ -4,6 +4,7 @@ import { ArrowRight, Check, Crown, Sparkles } from "lucide-react";
 const plans = [
   {
     name: "Starter",
+    packageCode: "NIWASTHAN_STARTER",
     eyebrow: "Discover your home",
     price: "₹199",
     description:
@@ -25,6 +26,7 @@ const plans = [
   },
   {
     name: "Design",
+    packageCode: "NIWASTHAN_DESIGN",
     eyebrow: "Design your home",
     price: "₹999",
     description:
@@ -52,6 +54,7 @@ const plans = [
   },
   {
     name: "Home Book",
+    packageCode: "NIWASTHAN_HOME_BOOK",
     eyebrow: "Plan with confidence",
     price: "₹2,599",
     description:
@@ -79,6 +82,7 @@ const plans = [
   },
   {
     name: "Immersive",
+    packageCode: "NIWASTHAN_IMMERSIVE",
     eyebrow: "Enter your future home",
     price: "₹9,999",
     description:
@@ -191,7 +195,7 @@ export default function PricingPage() {
                 </p>
 
                 <Link
-                  href="/sign-in"
+                  href={`/sign-in?callbackUrl=${encodeURIComponent(`/checkout?package=${plan.packageCode}`)}`}
                   className={`mt-7 inline-flex items-center justify-center gap-2 rounded-full px-5 py-3.5 font-body text-sm font-semibold transition-transform hover:scale-[1.02] ${
                     plan.featured
                       ? "bg-[#d6b477] text-[#11100e]"

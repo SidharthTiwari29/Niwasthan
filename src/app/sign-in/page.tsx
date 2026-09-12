@@ -1,6 +1,19 @@
 import { signIn } from "@/auth";
 
-export default function SignInPage() {
+export default async function SignInPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ callbackUrl?: string }>;
+}) {
+  const { callbackUrl } = await searchParams;
+  // Real, deliberate safety check: only ever redirect to a real, relative
+  // path within this app - never follow a callbackUrl to an external
+  // host, which would turn this into an open-redirect vector.
+  const destination =
+    callbackUrl && callbackUrl.startsWith("/") && !callbackUrl.startsWith("//")
+      ? callbackUrl
+      : "/properties";
+
   return (
     <main className="flex min-h-screen items-center justify-center bg-paper px-6">
       <div className="w-full max-w-sm">
@@ -14,7 +27,7 @@ export default function SignInPage() {
           className="mt-8"
           action={async () => {
             "use server";
-            await signIn("google", { redirectTo: "/properties" });
+            await signIn("google", { redirectTo: destination });
           }}
         >
           <button

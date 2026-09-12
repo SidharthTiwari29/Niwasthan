@@ -5,6 +5,7 @@ import { parseOrThrow } from "@/server/validators/parse";
 import { z } from "zod";
 import { createPurchase } from "@/server/payments/purchaseService";
 import { consumeRateLimit } from "@/server/security/rateLimit";
+import { getEnv } from "@/server/config/env";
 
 const schema = z.object({
   packageCode: z.string().min(1).max(64),
@@ -48,6 +49,12 @@ export const POST = withErrorHandling(async (request: Request) => {
           purchase.voluntaryContributionMinor.toString(),
         currency: purchase.currency,
       },
+      // Razorpay's key ID is a real, publicly-shareable credential (per
+      // Razorpay's own documentation, unlike the secret) - the client-
+      // side checkout widget needs it to open. Returned here instead of
+      // a separate NEXT_PUBLIC_ env var so the founder configures this
+      // value exactly once.
+      razorpayKeyId: getEnv().RAZORPAY_KEY_ID,
     },
     { status: 201 },
   );
