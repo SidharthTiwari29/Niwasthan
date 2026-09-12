@@ -5,6 +5,7 @@ import { getTranslations } from "next-intl/server";
 import { auth, signOut } from "@/auth";
 import { getCurrentPlan } from "@/server/services/currentPlanService";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { NotificationBell } from "@/components/NotificationBell";
 
 export default async function AppLayout({ children }: { children: ReactNode }) {
   const session = await auth();
@@ -41,6 +42,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
               : ""}
           </Link>
           <LanguageSwitcher />
+          <NotificationBell />
           <form
             action={async () => {
               "use server";
