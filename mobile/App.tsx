@@ -1,0 +1,881 @@
+import { StatusBar } from "expo-status-bar";
+import { useMemo, useState } from "react";
+import {
+  Alert,
+  Pressable,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
+
+type Tab = "Home" | "Design" | "Budget" | "Build" | "More";
+const tabs: Tab[] = ["Home", "Design", "Budget", "Build", "More"];
+const directions = [
+  {
+    name: "Quiet Japandi",
+    tag: "Most aligned",
+    score: "9.2",
+    copy: "Warm oak, mineral plaster, low visual noise.",
+    colors: ["#D7C8B5", "#9A8B76"],
+  },
+  {
+    name: "Modern Indian",
+    tag: "Best value",
+    score: "8.8",
+    copy: "Hand-finished details and flexible storage.",
+    colors: ["#B66F51", "#332E2B"],
+  },
+  {
+    name: "Soft Minimal",
+    tag: "Lowest upkeep",
+    score: "8.5",
+    copy: "Calm neutrals and durable surfaces.",
+    colors: ["#C8C3B9", "#76746D"],
+  },
+];
+
+export default function App() {
+  const [tab, setTab] = useState<Tab>("Home");
+  const [syncing, setSyncing] = useState(false);
+  const [saved, setSaved] = useState<string[]>([]);
+  const [search, setSearch] = useState("");
+  const filteredDirections = useMemo(
+    () =>
+      directions.filter((direction) =>
+        `${direction.name} ${direction.copy}`
+          .toLowerCase()
+          .includes(search.toLowerCase()),
+      ),
+    [search],
+  );
+  function showCapture() {
+    Alert.alert("Capture your home", "Choose what you want to add.", [
+      {
+        text: "Take a photo",
+        onPress: () =>
+          Alert.alert(
+            "Camera ready",
+            "Connect the camera permission flow to capture a room photo.",
+          ),
+      },
+      {
+        text: "Upload a plan",
+        onPress: () =>
+          Alert.alert(
+            "Upload ready",
+            "Connect the resumable upload flow to add a floor plan.",
+          ),
+      },
+      { text: "Cancel", style: "cancel" },
+    ]);
+  }
+  function toggleDirection(name: string) {
+    setSaved((current) =>
+      current.includes(name)
+        ? current.filter((item) => item !== name)
+        : [...current, name],
+    );
+  }
+  function refreshSync() {
+    setSyncing(true);
+    setTimeout(() => setSyncing(false), 900);
+  }
+  return (
+    <SafeAreaView style={styles.safe}>
+      <StatusBar style="dark" />
+      <View style={styles.app}>
+        <View style={styles.topbar}>
+          <View>
+            <Text style={styles.brand}>niwasthan</Text>
+            <Text style={styles.eyebrow}>HOME INTELLIGENCE</Text>
+          </View>
+          <Pressable
+            onPress={() =>
+              Alert.alert("Notifications", "You are all caught up.")
+            }
+            style={styles.bell}
+            accessibilityLabel="Notifications"
+          >
+            <Text style={styles.bellText}>◌</Text>
+            <View style={styles.notificationDot} />
+          </Pressable>
+        </View>
+        <ScrollView
+          contentContainerStyle={styles.scroll}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.syncRow}>
+            <View style={styles.syncLeft}>
+              <View style={styles.syncDot} />
+              <Text style={styles.syncText}>
+                {syncing ? "Syncing your workspace…" : "Synced just now"}
+              </Text>
+            </View>
+            <Pressable onPress={refreshSync}>
+              <Text style={styles.syncAction}>Refresh</Text>
+            </Pressable>
+          </View>
+          {tab === "Home" && (
+            <HomeView onCapture={showCapture} onOpen={setTab} />
+          )}
+          {tab === "Design" && (
+            <DesignView
+              filteredDirections={filteredDirections}
+              search={search}
+              setSearch={setSearch}
+              saved={saved}
+              toggleDirection={toggleDirection}
+            />
+          )}
+          {tab === "Budget" && <BudgetView />}
+          {tab === "Build" && <BuildView onCapture={showCapture} />}
+          {tab === "More" && <MoreView />}
+        </ScrollView>
+        <View style={styles.tabbar}>
+          {tabs.map((item) => (
+            <Pressable
+              key={item}
+              onPress={() => setTab(item)}
+              style={({ pressed }) => [styles.tab, pressed && styles.pressed]}
+              accessibilityRole="tab"
+              accessibilityState={{ selected: tab === item }}
+            >
+              <Text
+                style={[styles.tabIcon, tab === item && styles.tabIconActive]}
+              >
+                {item === "Home"
+                  ? "⌂"
+                  : item === "Design"
+                    ? "✧"
+                    : item === "Budget"
+                      ? "₹"
+                      : item === "Build"
+                        ? "◫"
+                        : "⋯"}
+              </Text>
+              <Text
+                style={[styles.tabText, tab === item && styles.tabTextActive]}
+              >
+                {item}
+              </Text>
+            </Pressable>
+          ))}
+        </View>
+      </View>
+    </SafeAreaView>
+  );
+}
+
+function HomeView({
+  onCapture,
+  onOpen,
+}: {
+  onCapture: () => void;
+  onOpen: (tab: Tab) => void;
+}) {
+  return (
+    <>
+      <Text style={styles.date}>SUNDAY, 13 SEPTEMBER 2026</Text>
+      <Text style={styles.title}>Good morning, Sidharth.</Text>
+      <Text style={styles.subtitle}>
+        Your home is becoming clearer. Confirm the few unknowns and your next
+        decision gets easier.
+      </Text>
+      <View style={styles.hero}>
+        <View style={styles.heroLine}>
+          <View>
+            <Text style={styles.pill}>ACTIVE HOME</Text>
+            <Text style={styles.heroTitle}>The Tiwari Residence</Text>
+            <Text style={styles.heroMeta}>
+              3 BHK · Bengaluru · Living here soon
+            </Text>
+          </View>
+          <Text style={styles.heroMark}>✦</Text>
+        </View>
+        <View style={styles.statRow}>
+          <Stat value="78%" label="HOME UNDERSTOOD" />
+          <Stat value="03" label="DIRECTIONS READY" />
+          <Stat value="₹18.4L" label="WORKING BUDGET" />
+        </View>
+        <Pressable onPress={() => onOpen("Design")} style={styles.heroLink}>
+          <Text style={styles.heroLinkText}>Open home intelligence ↗</Text>
+        </Pressable>
+      </View>
+      <SectionHeading
+        eyebrow="NEXT BEST STEP"
+        title="One small confirmation unlocks better options."
+      />
+      <View style={styles.nextCard}>
+        <View style={styles.iconBubble}>
+          <Text style={styles.iconText}>⌾</Text>
+        </View>
+        <View style={styles.nextCopy}>
+          <Text style={styles.cardTitle}>Confirm your living room opening</Text>
+          <Text style={styles.cardCopy}>
+            We inferred a 1.2m balcony opening from your plan. A photo will
+            raise design confidence.
+          </Text>
+          <Pressable onPress={onCapture}>
+            <Text style={styles.link}>Add a photo ›</Text>
+          </Pressable>
+        </View>
+      </View>
+      <SectionHeading
+        eyebrow="PROJECT PULSE"
+        title="A clear view of what’s moving"
+      />
+      {[
+        [
+          "Home intelligence",
+          "92%",
+          "2 items need confirmation",
+          92,
+          "#7D9A7B",
+        ],
+        [
+          "Design direction",
+          "68%",
+          "Choose between 3 strong options",
+          68,
+          "#B66F51",
+        ],
+        [
+          "Budget confidence",
+          "44%",
+          "Add measurements to improve estimate",
+          44,
+          "#C9A15C",
+        ],
+      ].map(([label, value, note, progress, color]) => (
+        <View key={String(label)} style={styles.progressCard}>
+          <View style={styles.progressHead}>
+            <Text style={styles.cardTitle}>{label}</Text>
+            <Text style={styles.progressValue}>{value}</Text>
+          </View>
+          <View style={styles.track}>
+            <View
+              style={[
+                styles.progress,
+                {
+                  width: `${Number(progress)}%`,
+                  backgroundColor: color as string,
+                },
+              ]}
+            />
+          </View>
+          <Text style={styles.cardCopy}>{note}</Text>
+        </View>
+      ))}
+      <Pressable
+        onPress={onCapture}
+        style={({ pressed }) => [styles.captureCard, pressed && styles.pressed]}
+      >
+        <View style={styles.captureIcon}>
+          <Text>＋</Text>
+        </View>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.cardTitle}>
+            Bring the real home into the room
+          </Text>
+          <Text style={styles.cardCopy}>
+            Upload a plan, photo, video, or measurement.
+          </Text>
+        </View>
+        <Text style={styles.arrow}>↗</Text>
+      </Pressable>
+    </>
+  );
+}
+
+function DesignView({
+  filteredDirections,
+  search,
+  setSearch,
+  saved,
+  toggleDirection,
+}: {
+  filteredDirections: typeof directions;
+  search: string;
+  setSearch: (value: string) => void;
+  saved: string[];
+  toggleDirection: (name: string) => void;
+}) {
+  return (
+    <>
+      <Text style={styles.date}>DESIGN INTELLIGENCE</Text>
+      <Text style={styles.title}>Directions grounded in your home.</Text>
+      <Text style={styles.subtitle}>
+        Compare strong options, keep the trade-offs visible, and lock only when
+        you are ready.
+      </Text>
+      <TextInput
+        value={search}
+        onChangeText={setSearch}
+        placeholder="Search directions"
+        placeholderTextColor="#9B9185"
+        style={styles.input}
+      />
+      {filteredDirections.map((direction) => (
+        <View key={direction.name} style={styles.directionCard}>
+          <View
+            style={[
+              styles.directionVisual,
+              { backgroundColor: direction.colors[0] },
+            ]}
+          >
+            <View
+              style={[
+                styles.directionShape,
+                { backgroundColor: direction.colors[1] },
+              ]}
+            />
+            <Text style={styles.directionTag}>{direction.tag}</Text>
+            <Pressable
+              onPress={() => toggleDirection(direction.name)}
+              style={styles.saveButton}
+            >
+              <Text
+                style={{
+                  color: saved.includes(direction.name) ? "#B66F51" : "#645C53",
+                }}
+              >
+                {saved.includes(direction.name) ? "✓" : "+"}
+              </Text>
+            </Pressable>
+          </View>
+          <View style={styles.directionBody}>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.directionName}>{direction.name}</Text>
+              <Text style={styles.cardCopy}>{direction.copy}</Text>
+            </View>
+            <View>
+              <Text style={styles.score}>{direction.score}</Text>
+              <Text style={styles.scoreLabel}>FIT SCORE</Text>
+            </View>
+          </View>
+          <Pressable
+            onPress={() =>
+              Alert.alert(
+                direction.name,
+                "Review this direction against your plan, budget, and material evidence.",
+              )
+            }
+          >
+            <Text style={styles.link}>Review direction ›</Text>
+          </Pressable>
+        </View>
+      ))}
+    </>
+  );
+}
+function BudgetView() {
+  return (
+    <>
+      <Text style={styles.date}>BUDGET & BOQ</Text>
+      <Text style={styles.title}>Know what the decision changes.</Text>
+      <Text style={styles.subtitle}>
+        Estimates are clearly separated from confirmed values. Potential savings
+        are not reported as realised savings.
+      </Text>
+      <View style={styles.budgetHero}>
+        <Text style={styles.budgetLabel}>WORKING BUDGET</Text>
+        <Text style={styles.budgetValue}>₹18,40,000</Text>
+        <View style={styles.budgetSplit}>
+          <View>
+            <Text style={styles.budgetSmall}>Confirmed</Text>
+            <Text style={styles.budgetStat}>₹6.2L</Text>
+          </View>
+          <View>
+            <Text style={styles.budgetSmall}>Estimated</Text>
+            <Text style={styles.budgetStat}>₹12.2L</Text>
+          </View>
+          <View>
+            <Text style={styles.budgetSmall}>Confidence</Text>
+            <Text style={styles.budgetStat}>44%</Text>
+          </View>
+        </View>
+      </View>
+      <View style={styles.infoCard}>
+        <Text style={styles.cardTitle}>
+          A better deal is not always the cheapest choice.
+        </Text>
+        <Text style={styles.cardCopy}>
+          When alternatives become available, we’ll show price delta, quality,
+          maintenance, warranty, and downstream impact together.
+        </Text>
+        <Pressable
+          onPress={() =>
+            Alert.alert(
+              "Savings mode",
+              "Savings opportunities will appear once the catalogue and BOQ are connected.",
+            )
+          }
+        >
+          <Text style={styles.link}>Open savings mode ›</Text>
+        </Pressable>
+      </View>
+    </>
+  );
+}
+function BuildView({ onCapture }: { onCapture: () => void }) {
+  return (
+    <>
+      <Text style={styles.date}>BUILD & HANDOVER</Text>
+      <Text style={styles.title}>Build what you approved.</Text>
+      <Text style={styles.subtitle}>
+        Every milestone keeps the decision history, evidence, and next owner
+        visible.
+      </Text>
+      {[
+        ["Design lock", "Complete", "#7D9A7B"],
+        ["BOQ and quote review", "In progress", "#C9A15C"],
+        ["Site reality check", "Next", "#D8D0C4"],
+        ["Installation and snagging", "Upcoming", "#D8D0C4"],
+      ].map(([label, state, color], index) => (
+        <View key={String(label)} style={styles.timelineRow}>
+          <View
+            style={[styles.timelineDot, { backgroundColor: color as string }]}
+          >
+            <Text style={styles.timelineNumber}>{index + 1}</Text>
+          </View>
+          <View style={styles.timelineCopy}>
+            <Text style={styles.cardTitle}>{label}</Text>
+            <Text style={styles.cardCopy}>
+              {state}
+              {state === "In progress" ? " · 3 decisions need review" : ""}
+            </Text>
+          </View>
+          <Text style={styles.arrow}>›</Text>
+        </View>
+      ))}
+      <Pressable onPress={onCapture} style={styles.infoCard}>
+        <Text style={styles.cardTitle}>Capture a snag from site</Text>
+        <Text style={styles.cardCopy}>
+          Use the camera to attach a photo, room, severity, and note. Sync
+          status stays visible.
+        </Text>
+        <Text style={styles.link}>Add a snag ›</Text>
+      </Pressable>
+    </>
+  );
+}
+function MoreView() {
+  return (
+    <>
+      <Text style={styles.date}>YOUR NIWASTHAN</Text>
+      <Text style={styles.title}>The memory of your home.</Text>
+      <Text style={styles.subtitle}>
+        Keep people, decisions, documents, and care instructions together over
+        time.
+      </Text>
+      {[
+        "Home Memory / DNA",
+        "Notifications",
+        "Language: English",
+        "Account & privacy",
+      ].map((item) => (
+        <Pressable
+          key={item}
+          onPress={() =>
+            Alert.alert(
+              item,
+              "This surface is ready to connect to the shared Niwasthan account and domain services.",
+            )
+          }
+          style={styles.moreRow}
+        >
+          <Text style={styles.cardTitle}>{item}</Text>
+          <Text style={styles.arrow}>›</Text>
+        </Pressable>
+      ))}
+      <View style={styles.humsafar}>
+        <Text style={styles.pill}>HUMSAFAR</Text>
+        <Text style={styles.humsafarTitle}>
+          A second opinion, without taking the decision away from you.
+        </Text>
+        <Pressable
+          onPress={() =>
+            Alert.alert(
+              "Humsafar",
+              "Ask about your space, budget, or the next best step.",
+            )
+          }
+        >
+          <Text style={styles.heroLinkText}>Start a conversation ↗</Text>
+        </Pressable>
+      </View>
+    </>
+  );
+}
+function Stat({ value, label }: { value: string; label: string }) {
+  return (
+    <View style={styles.stat}>
+      <Text style={styles.statValue}>{value}</Text>
+      <Text style={styles.statLabel}>{label}</Text>
+    </View>
+  );
+}
+function SectionHeading({
+  eyebrow,
+  title,
+}: {
+  eyebrow: string;
+  title: string;
+}) {
+  return (
+    <View style={styles.sectionHeading}>
+      <Text style={styles.date}>{eyebrow}</Text>
+      <Text style={styles.sectionTitle}>{title}</Text>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  safe: { flex: 1, backgroundColor: "#F4F1EB" },
+  app: { flex: 1, backgroundColor: "#F4F1EB" },
+  topbar: {
+    paddingHorizontal: 20,
+    paddingTop: 15,
+    paddingBottom: 12,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  brand: {
+    fontFamily: "serif",
+    fontSize: 25,
+    color: "#24221F",
+    letterSpacing: -1.2,
+  },
+  eyebrow: {
+    color: "#8F8475",
+    fontSize: 8,
+    letterSpacing: 2.3,
+    fontWeight: "700",
+    marginTop: 2,
+  },
+  bell: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "#DED8CE",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#FAF8F4",
+  },
+  bellText: { color: "#71695F", fontSize: 22 },
+  notificationDot: {
+    position: "absolute",
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: "#B66F51",
+    top: 10,
+    right: 10,
+  },
+  scroll: { paddingHorizontal: 20, paddingBottom: 28 },
+  syncRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 4,
+    marginBottom: 20,
+  },
+  syncLeft: { flexDirection: "row", alignItems: "center", gap: 7 },
+  syncDot: { width: 7, height: 7, borderRadius: 4, backgroundColor: "#7D9A7B" },
+  syncText: { color: "#8D847A", fontSize: 11 },
+  syncAction: { color: "#A65C43", fontSize: 11, fontWeight: "700" },
+  date: {
+    color: "#B66F51",
+    fontSize: 10,
+    fontWeight: "700",
+    letterSpacing: 2.2,
+    marginBottom: 8,
+  },
+  title: {
+    color: "#24221F",
+    fontFamily: "serif",
+    fontSize: 37,
+    lineHeight: 43,
+    letterSpacing: -1.5,
+  },
+  subtitle: {
+    color: "#81796F",
+    fontSize: 14,
+    lineHeight: 21,
+    marginTop: 10,
+    marginBottom: 22,
+  },
+  hero: {
+    backgroundColor: "#2C2A27",
+    borderRadius: 24,
+    padding: 22,
+    marginBottom: 28,
+  },
+  heroLine: { flexDirection: "row", justifyContent: "space-between" },
+  pill: {
+    color: "#DFC292",
+    backgroundColor: "#4B463E",
+    paddingHorizontal: 9,
+    paddingVertical: 5,
+    borderRadius: 12,
+    fontSize: 9,
+    fontWeight: "700",
+    letterSpacing: 1.1,
+    alignSelf: "flex-start",
+    overflow: "hidden",
+  },
+  heroTitle: {
+    color: "#F7F1E8",
+    fontFamily: "serif",
+    fontSize: 28,
+    marginTop: 14,
+    letterSpacing: -1,
+  },
+  heroMeta: { color: "#AAA296", fontSize: 11, marginTop: 4 },
+  heroMark: { color: "#F2C98C", fontSize: 20 },
+  statRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 32,
+    paddingRight: 12,
+  },
+  stat: { flex: 1 },
+  statValue: { color: "#F7F1E8", fontSize: 22, fontWeight: "600" },
+  statLabel: {
+    color: "#A9A092",
+    fontSize: 8,
+    letterSpacing: 1.1,
+    marginTop: 6,
+  },
+  heroLink: { marginTop: 28 },
+  heroLinkText: { color: "#F2C98C", fontSize: 12, fontWeight: "700" },
+  sectionHeading: { marginBottom: 13, marginTop: 3 },
+  sectionTitle: {
+    color: "#24221F",
+    fontFamily: "serif",
+    fontSize: 23,
+    lineHeight: 28,
+    letterSpacing: -0.6,
+  },
+  nextCard: {
+    backgroundColor: "#F5F0E8",
+    borderRadius: 18,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: "#E7DFD3",
+    flexDirection: "row",
+    gap: 12,
+    marginBottom: 29,
+  },
+  iconBubble: {
+    backgroundColor: "#D8E2D1",
+    height: 30,
+    width: 30,
+    borderRadius: 15,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  iconText: { color: "#4D704B", fontSize: 16 },
+  nextCopy: { flex: 1 },
+  cardTitle: { color: "#35312C", fontSize: 14, fontWeight: "700" },
+  cardCopy: { color: "#827A70", fontSize: 11, lineHeight: 17, marginTop: 5 },
+  link: { color: "#A65C43", fontSize: 12, fontWeight: "700", marginTop: 12 },
+  progressCard: {
+    borderWidth: 1,
+    borderColor: "#E2DCD2",
+    borderRadius: 17,
+    padding: 16,
+    marginBottom: 10,
+  },
+  progressHead: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  progressValue: { color: "#35312C", fontFamily: "serif", fontSize: 21 },
+  track: {
+    height: 6,
+    backgroundColor: "#E5DFD6",
+    borderRadius: 4,
+    marginTop: 16,
+    overflow: "hidden",
+  },
+  progress: { height: 6, borderRadius: 4 },
+  captureCard: {
+    backgroundColor: "#E9E1D5",
+    borderRadius: 18,
+    padding: 16,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    marginTop: 20,
+  },
+  captureIcon: {
+    width: 39,
+    height: 39,
+    borderRadius: 20,
+    backgroundColor: "#F4EEE5",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  arrow: { color: "#A65C43", fontSize: 21 },
+  input: {
+    height: 46,
+    borderWidth: 1,
+    borderColor: "#DED8CE",
+    borderRadius: 14,
+    backgroundColor: "#FAF8F4",
+    paddingHorizontal: 14,
+    color: "#24221F",
+    marginBottom: 14,
+  },
+  directionCard: {
+    backgroundColor: "#FBF9F5",
+    borderRadius: 18,
+    paddingBottom: 15,
+    marginBottom: 14,
+    overflow: "hidden",
+    borderWidth: 1,
+    borderColor: "#E2DCD2",
+  },
+  directionVisual: { height: 118, position: "relative", overflow: "hidden" },
+  directionShape: {
+    position: "absolute",
+    width: 130,
+    height: 130,
+    borderRadius: 65,
+    right: -15,
+    top: -22,
+    opacity: 0.8,
+  },
+  directionTag: {
+    position: "absolute",
+    bottom: 11,
+    left: 13,
+    backgroundColor: "rgba(255,255,255,.75)",
+    color: "#554A3E",
+    paddingHorizontal: 8,
+    paddingVertical: 5,
+    borderRadius: 10,
+    fontSize: 9,
+    fontWeight: "700",
+    letterSpacing: 1,
+  },
+  saveButton: {
+    position: "absolute",
+    top: 11,
+    right: 11,
+    width: 29,
+    height: 29,
+    borderRadius: 15,
+    backgroundColor: "rgba(255,255,255,.76)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  directionBody: {
+    paddingHorizontal: 15,
+    paddingTop: 14,
+    flexDirection: "row",
+    gap: 10,
+  },
+  directionName: { color: "#35312C", fontFamily: "serif", fontSize: 21 },
+  score: {
+    color: "#35312C",
+    fontFamily: "serif",
+    fontSize: 19,
+    textAlign: "right",
+  },
+  scoreLabel: { color: "#A0978B", fontSize: 8, letterSpacing: 1, marginTop: 3 },
+  budgetHero: {
+    backgroundColor: "#2C2A27",
+    borderRadius: 22,
+    padding: 22,
+    marginBottom: 14,
+  },
+  budgetLabel: { color: "#A9A092", fontSize: 9, letterSpacing: 1.5 },
+  budgetValue: {
+    color: "#F7F1E8",
+    fontFamily: "serif",
+    fontSize: 35,
+    marginTop: 6,
+  },
+  budgetSplit: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 27,
+  },
+  budgetSmall: { color: "#A9A092", fontSize: 10 },
+  budgetStat: {
+    color: "#F7F1E8",
+    fontSize: 16,
+    fontWeight: "600",
+    marginTop: 5,
+  },
+  infoCard: {
+    backgroundColor: "#F5F0E8",
+    borderRadius: 18,
+    padding: 17,
+    marginTop: 12,
+    borderWidth: 1,
+    borderColor: "#E7DFD3",
+  },
+  timelineRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: "#E2DCD2",
+    gap: 12,
+  },
+  timelineDot: {
+    width: 31,
+    height: 31,
+    borderRadius: 16,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  timelineNumber: { color: "#FFFFFF", fontSize: 11, fontWeight: "700" },
+  timelineCopy: { flex: 1 },
+  moreRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: 19,
+    borderBottomWidth: 1,
+    borderBottomColor: "#E2DCD2",
+  },
+  humsafar: {
+    backgroundColor: "#2C2A27",
+    borderRadius: 20,
+    marginTop: 25,
+    padding: 19,
+  },
+  humsafarTitle: {
+    color: "#F7F1E8",
+    fontFamily: "serif",
+    fontSize: 21,
+    lineHeight: 28,
+    marginTop: 16,
+  },
+  tabbar: {
+    backgroundColor: "#FAF8F4",
+    borderTopWidth: 1,
+    borderTopColor: "#DED8CE",
+    height: 78,
+    paddingBottom: 9,
+    paddingTop: 8,
+    flexDirection: "row",
+    justifyContent: "space-around",
+  },
+  tab: { alignItems: "center", justifyContent: "center", width: 65 },
+  pressed: { opacity: 0.7, transform: [{ scale: 0.98 }] },
+  tabIcon: { color: "#9B9185", fontSize: 20, lineHeight: 24 },
+  tabIconActive: { color: "#B66F51" },
+  tabText: { color: "#9B9185", fontSize: 9, marginTop: 3 },
+  tabTextActive: { color: "#A65C43", fontWeight: "700" },
+});
