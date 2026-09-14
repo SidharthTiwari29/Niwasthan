@@ -47,6 +47,22 @@ describe("buildMoment", () => {
     );
   });
 
+  it("includes the real package name and amount, formatted in Indian rupee grouping, for PURCHASE_CONFIRMED", () => {
+    const moment = buildMoment("PURCHASE_CONFIRMED", {
+      packageName: "Niwasthan Design",
+      amountMinor: 99900n, // hand-verified: 99900 paise = ₹999
+    });
+    expect(moment.message).toContain("Niwasthan Design");
+    expect(moment.message).toContain("₹999");
+  });
+
+  it("falls back to generic phrasing for PURCHASE_CONFIRMED without real package/amount context", () => {
+    const moment = buildMoment("PURCHASE_CONFIRMED");
+    expect(moment.message).toBe(
+      "Your payment went through. Let's get to work.",
+    );
+  });
+
   it("never lets personality copy exceed a reasonable length that could bury real information", () => {
     // README §29: humour must never obscure financial/safety/execution
     // information - a sanity bound to catch someone accidentally writing
@@ -57,11 +73,14 @@ describe("buildMoment", () => {
       "BUDGET_EXCEEDED",
       "DESIGN_APPROVED",
       "WALKTHROUGH_READY",
+      "PURCHASE_CONFIRMED",
     ] as const) {
       const moment = buildMoment(type, {
         itemName: "a very specific item name",
         savingMinor: 100000n,
         overageMinor: 100000n,
+        packageName: "Niwasthan Design",
+        amountMinor: 100000n,
       });
       expect(moment.message.length).toBeLessThan(200);
     }

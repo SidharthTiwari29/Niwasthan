@@ -4,6 +4,7 @@ import { activatePaidPurchase, createPurchase } from "./purchaseService";
 import { ensureCommercialPackages } from "./packages";
 import { getPaymentProvider } from "./provider";
 import { referralPlanDiscountService } from "@/server/services/referralPlanDiscountService";
+import { notificationService } from "@/server/services/notificationService";
 
 vi.mock("@/server/db/prisma", () => ({
   prisma: {
@@ -28,6 +29,10 @@ vi.mock("@/server/services/referralPlanDiscountService", () => ({
   },
 }));
 
+vi.mock("@/server/services/notificationService", () => ({
+  notificationService: { notify: vi.fn() },
+}));
+
 const transaction = vi.mocked(prisma.$transaction);
 const packageFindFirst = vi.mocked(prisma.package.findFirst);
 const purchaseCreate = vi.mocked(prisma.purchase.create);
@@ -35,6 +40,7 @@ const purchaseUpdate = vi.mocked(prisma.purchase.update);
 const ensurePackages = vi.mocked(ensureCommercialPackages);
 const paymentProvider = vi.mocked(getPaymentProvider);
 const referralService = vi.mocked(referralPlanDiscountService);
+const mockNotify = vi.mocked(notificationService.notify);
 
 const NOT_ELIGIBLE = { eligible: false, reason: "not eligible" };
 
@@ -203,8 +209,9 @@ describe("activatePaidPurchase", () => {
       id: "purchase-1",
       userId: "user-1",
       packageId: "package-1",
+      amountMinor: 99900n,
       status: "PENDING",
-      package: { credits: 100 },
+      package: { name: "Niwasthan Design", credits: 100 },
       payment: { status: "PENDING", providerPaymentId: null },
     };
     const tx = {
@@ -248,6 +255,50 @@ describe("activatePaidPurchase", () => {
     expect(tx.auditLog.create).toHaveBeenCalledTimes(1);
   });
 
+  it("fires the real PURCHASE_CONFIRMED notification, with the real package name and amount, for a genuinely new activation", async () => {
+    const purchase = {
+      id: "purchase-1",
+      userId: "user-1",
+      packageId: "package-1",
+      amountMinor: 99900n,
+      status: "PENDING",
+      package: { name: "Niwasthan Design", credits: 100 },
+      payment: { status: "PENDING", providerPaymentId: null },
+    };
+    const tx = {
+      purchase: {
+        findUnique: vi.fn().mockResolvedValue(purchase),
+        updateMany: vi.fn().mockResolvedValue({ count: 1 }),
+        findUniqueOrThrow: vi.fn().mockResolvedValue({
+          ...purchase,
+          status: "PAID",
+        }),
+      },
+      payment: { update: vi.fn().mockResolvedValue({}) },
+      entitlement: { upsert: vi.fn().mockResolvedValue({}) },
+      auditLog: { create: vi.fn().mockResolvedValue({}) },
+    };
+    transaction.mockImplementation(async (callback) => callback(tx as never));
+
+    await activatePaidPurchase({
+      providerOrderId: "order-1",
+      providerPaymentId: "payment-1",
+      rawEventHash: "hash-1",
+    });
+
+    expect(mockNotify).toHaveBeenCalledWith(
+      expect.objectContaining({
+        userId: "user-1",
+        type: "PURCHASE_CONFIRMED",
+        relatedEntityId: "purchase-1",
+      }),
+    );
+    // Hand-verified: 99900 paise = ₹999
+    const call = mockNotify.mock.calls[0]![0];
+    expect(call.message).toContain("Niwasthan Design");
+    expect(call.message).toContain("₹999");
+  });
+
   it("does not duplicate an already-captured payment", async () => {
     const purchase = {
       id: "purchase-1",
@@ -273,5 +324,28 @@ describe("activatePaidPurchase", () => {
     expect(tx.payment.update).not.toHaveBeenCalled();
     expect(tx.entitlement.upsert).not.toHaveBeenCalled();
     expect(tx.auditLog.create).not.toHaveBeenCalled();
+  });
+
+  it("never fires a duplicate real notification for a webhook re-delivery of an already-activated purchase", async () => {
+    const purchase = {
+      id: "purchase-1",
+      status: "PAID",
+      payment: { status: "CAPTURED", providerPaymentId: "payment-1" },
+    };
+    const tx = {
+      purchase: { findUnique: vi.fn().mockResolvedValue(purchase) },
+      payment: { update: vi.fn() },
+      entitlement: { upsert: vi.fn() },
+      auditLog: { create: vi.fn() },
+    };
+    transaction.mockImplementation(async (callback) => callback(tx as never));
+
+    await activatePaidPurchase({
+      providerOrderId: "order-1",
+      providerPaymentId: "payment-1",
+      rawEventHash: "hash-1",
+    });
+
+    expect(mockNotify).not.toHaveBeenCalled();
   });
 });

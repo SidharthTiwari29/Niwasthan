@@ -1,4 +1,6 @@
 import { prisma } from "@/server/db/prisma";
+import { notificationService } from "@/server/services/notificationService";
+import { buildMoment } from "@/server/personality/momentTemplates";
 import { ensureCommercialPackages } from "./packages";
 import { getPaymentProvider } from "./provider";
 import { computeReferralDiscount } from "@/server/services/referralPlanDiscount";
@@ -89,7 +91,7 @@ export async function activatePaidPurchase(input: {
   signature?: string;
   rawEventHash: string;
 }) {
-  return prisma.$transaction(async (tx) => {
+  const result = await prisma.$transaction(async (tx) => {
     const purchase = await tx.purchase.findUnique({
       where: { providerOrderId: input.providerOrderId },
       include: { package: true, payment: true },
@@ -99,13 +101,14 @@ export async function activatePaidPurchase(input: {
       purchase.status === "PAID" &&
       purchase.payment?.providerPaymentId === input.providerPaymentId
     )
-      return purchase;
-    if (purchase.payment?.status === "CAPTURED") return purchase;
+      return { purchase, wasNewlyActivated: false };
+    if (purchase.payment?.status === "CAPTURED")
+      return { purchase, wasNewlyActivated: false };
     const updated = await tx.purchase.updateMany({
       where: { id: purchase.id, status: { not: "PAID" } },
       data: { status: "PAID" },
     });
-    if (updated.count === 0) return purchase;
+    if (updated.count === 0) return { purchase, wasNewlyActivated: false };
     await tx.payment.update({
       where: { purchaseId: purchase.id },
       data: {
@@ -138,9 +141,34 @@ export async function activatePaidPurchase(input: {
         metadata: { providerPaymentId: input.providerPaymentId },
       },
     });
-    return tx.purchase.findUniqueOrThrow({
+    const fresh = await tx.purchase.findUniqueOrThrow({
       where: { id: purchase.id },
       include: { package: true, payment: true, entitlements: true },
     });
+    return { purchase: fresh, wasNewlyActivated: true };
   });
+
+  // README §14: notifications must cover real purchase/payment state -
+  // fired here, outside the transaction (notificationService uses its
+  // own real prisma client, not the transaction's tx), and only for a
+  // genuinely NEW activation. A webhook re-delivery for an already-
+  // active purchase (Razorpay's own documented retry behavior) must
+  // never produce a second, duplicate "payment received" notification
+  // for the same real purchase.
+  if (result.wasNewlyActivated) {
+    const moment = buildMoment("PURCHASE_CONFIRMED", {
+      packageName: result.purchase.package.name,
+      amountMinor: result.purchase.amountMinor,
+    });
+    await notificationService.notify({
+      userId: result.purchase.userId,
+      type: "PURCHASE_CONFIRMED",
+      title: moment.title,
+      message: moment.message,
+      relatedEntityType: "Purchase",
+      relatedEntityId: result.purchase.id,
+    });
+  }
+
+  return result.purchase;
 }

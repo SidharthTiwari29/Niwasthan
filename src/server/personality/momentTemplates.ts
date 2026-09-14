@@ -11,12 +11,15 @@ export type MomentType =
   | "BETTER_ALTERNATIVE_FOUND"
   | "BUDGET_EXCEEDED"
   | "DESIGN_APPROVED"
-  | "WALKTHROUGH_READY";
+  | "WALKTHROUGH_READY"
+  | "PURCHASE_CONFIRMED";
 
 export type MomentContext = {
   itemName?: string;
   savingMinor?: bigint;
   overageMinor?: bigint;
+  packageName?: string;
+  amountMinor?: bigint;
 };
 
 export type Moment = {
@@ -72,6 +75,14 @@ export function buildMoment(
       return {
         title: "🚪 Walkthrough ready",
         message: "Your future home is ready. Shall we go inside?",
+      };
+    case "PURCHASE_CONFIRMED":
+      return {
+        title: "✅ Payment received",
+        message:
+          context.packageName && context.amountMinor !== undefined
+            ? `${context.packageName} is active - ${formatRupees(context.amountMinor)} received. Let's get to work.`
+            : "Your payment went through. Let's get to work.",
       };
   }
 }
