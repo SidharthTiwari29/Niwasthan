@@ -276,28 +276,45 @@ export function DesignWorkspace({
   }, [renderJob, projectId]);
 
   return (
-    <div className="mt-10 space-y-10">
+    <div className="mt-10 space-y-8">
+      <section className="relative overflow-hidden rounded-[1.75rem] bg-ink px-6 py-8 text-paper shadow-xl shadow-ink/10 md:px-9 md:py-10">
+        <div className="pointer-events-none absolute -right-24 -top-28 h-72 w-72 rounded-full border border-brass/25" />
+        <div className="relative max-w-3xl">
+          <div className="flex flex-wrap items-center gap-2 font-mono text-[9px] uppercase tracking-[0.22em] text-paper/55">
+            <span className="rounded-full bg-paper/10 px-2.5 py-1 text-brass">Design decision room</span>
+            <span>Real home context</span>
+          </div>
+          <h2 className="mt-5 font-display text-[clamp(2.7rem,6vw,5.2rem)] font-semibold leading-[0.86] tracking-[-0.06em] text-paper">Make the beautiful choice buildable.</h2>
+          <p className="mt-5 max-w-2xl font-body text-sm leading-relaxed text-paper/65 md:text-base">Compare directions, then see what each choice changes in materials, budget, maintenance, confidence, and execution. A render can inspire the decision; evidence earns it.</p>
+          <div className="mt-6 flex flex-wrap gap-2 text-[10px] font-mono uppercase tracking-[0.16em] text-paper/55"><span className="rounded-full border border-moss/50 px-2.5 py-1.5 text-[#b9c8af]">● confirmed</span><span className="rounded-full border border-brass/50 px-2.5 py-1.5 text-brass">✦ inferred</span><span className="rounded-full border border-paper/20 px-2.5 py-1.5">? unknown</span></div>
+        </div>
+      </section>
       {/* Directions */}
-      <section>
-        <h2 className="font-display text-lg font-semibold">
+      <section className="rounded-[1.5rem] border border-ink/10 bg-white p-6 md:p-8">
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p className="font-mono text-[9px] uppercase tracking-[0.24em] text-laterite">01 · options</p>
+            <h2 className="mt-2 font-display text-3xl font-semibold tracking-[-0.04em]">
           {t("directionsHeading")}
-        </h2>
+            </h2>
+            <p className="mt-2 max-w-xl font-body text-sm leading-relaxed text-ink-soft">Start with three strong directions. The active direction is the one you can carry into budget and buildability review.</p>
+          </div>
+          <span className="rounded-full bg-paper-raised px-3 py-1.5 font-mono text-[9px] uppercase tracking-[0.16em] text-ink-soft">{directions.length} directions · user controlled</span>
+        </div>
         {directions.length === 0 ? (
           <p className="mt-2 font-body text-sm text-ink-soft">
             {t("noDirectionsYet")}
           </p>
         ) : (
-          <ul className="mt-3 space-y-2">
+          <ul className="mt-5 grid gap-3 md:grid-cols-2">
             {directions.map((direction) => (
               <li
                 key={direction.id}
-                className="flex items-center justify-between rounded-sm border border-paper-raised px-4 py-2.5"
+                className={`flex min-h-24 flex-col justify-between rounded-2xl border p-4 transition-all hover:-translate-y-0.5 hover:shadow-md ${direction.status === "ACTIVE" ? "border-laterite/50 bg-[#fbf5ef]" : "border-paper-raised bg-paper/40"}`}
               >
-                <span className="font-body text-sm text-ink">
-                  {direction.name}
-                </span>
+                <div className="flex items-start justify-between gap-3"><span className="font-display text-xl font-semibold tracking-[-0.03em] text-ink">{direction.name}</span><span className="font-mono text-[9px] uppercase tracking-[0.15em] text-ink-soft">{direction.status === "ACTIVE" ? "● active" : "○ option"}</span></div>
                 <div className="flex items-center gap-3">
-                  <span className="font-mono text-xs text-ink-soft">
+                  <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-ink-soft">
                     {statusLabels[direction.status] ?? direction.status}
                   </span>
                   {direction.status !== "ACTIVE" &&
@@ -315,17 +332,17 @@ export function DesignWorkspace({
             ))}
           </ul>
         )}
-        <div className="mt-4 flex gap-3">
+        <div className="mt-5 flex flex-col gap-3 sm:flex-row">
           <input
             value={newDirectionName}
             onChange={(e) => setNewDirectionName(e.target.value)}
             placeholder={t("directionNamePlaceholder")}
-            className="rounded-sm border border-ink/15 bg-white px-3 py-2 font-body text-sm text-ink outline-none focus-visible:border-laterite"
+            className="min-w-0 flex-1 rounded-xl border border-ink/15 bg-paper/30 px-3 py-2.5 font-body text-sm text-ink outline-none focus-visible:border-laterite"
           />
           <button
             onClick={createDirection}
             disabled={busy || !newDirectionName.trim()}
-            className="rounded-sm bg-indigo px-4 py-2 font-body text-sm font-medium text-paper transition-colors hover:bg-indigo-soft disabled:opacity-50"
+            className="rounded-xl bg-ink px-4 py-2.5 font-body text-sm font-medium text-paper transition-colors hover:bg-indigo-soft disabled:opacity-50"
           >
             {t("addDirection")}
           </button>

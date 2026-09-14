@@ -386,3 +386,42 @@ main section:last-of-type {
     min-height: 300px;
   }
 }
+
+
+/* Authenticated product workspace overrides. The cinematic landing page has
+   intentionally broad art-direction selectors above; the real workspace must
+   retain its light evidence-led canvas and compact application chrome. */
+.authenticated-shell,
+.authenticated-shell main,
+.authenticated-shell main > div,
+.authenticated-shell section {
+  background-color: transparent;
+}
+.authenticated-shell header {
+  padding: 0.9rem 1.25rem !important;
+  pointer-events: auto;
+  background: rgb(242 238 227 / 0.9) !important;
+  border-bottom: 1px solid rgb(28 26 23 / 0.1) !important;
+}
+.authenticated-shell header > div {
+  pointer-events: auto;
+  max-width: none !important;
+}
+.authenticated-shell header a,
+.authenticated-shell header button {
+  text-shadow: none;
+}
+.authenticated-shell main section h2,
+.authenticated-shell main section h3 {
+  color: var(--color-ink) !important;
+  font-size: revert !important;
+  line-height: revert !important;
+}
+.authenticated-shell main section h2 {
+  letter-spacing: -0.04em;
+}
+.authenticated-shell [data-reveal] {
+  opacity: 1;
+  transform: none;
+  transition: none;
+}
