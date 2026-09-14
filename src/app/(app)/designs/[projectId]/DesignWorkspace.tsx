@@ -332,6 +332,17 @@ export function DesignWorkspace({
             ))}
           </ul>
         )}
+        <div className="mt-6 grid gap-3 border-t border-paper-raised pt-6 md:grid-cols-4">
+          {["Look & feeling", "Budget impact", "Buildability", "Evidence"].map((lens, index) => (
+            <div key={lens} className="rounded-xl bg-paper/70 p-4">
+              <p className="font-mono text-[9px] uppercase tracking-[0.16em] text-ink-soft">{lens}</p>
+              <p className="mt-3 font-body text-xs leading-relaxed text-ink-soft">
+                {index === 0 ? "Direction imagery and material intent." : index === 1 ? "Generate a BOQ to see the real cost basis." : index === 2 ? "Review spatial evidence before locking." : "Source, freshness, and confidence stay visible."}
+              </p>
+              <span className="mt-3 inline-flex rounded-full bg-paper-raised px-2 py-1 font-mono text-[9px] uppercase tracking-[0.12em] text-ink-soft">Awaiting project data</span>
+            </div>
+          ))}
+        </div>
         <div className="mt-5 flex flex-col gap-3 sm:flex-row">
           <input
             value={newDirectionName}
