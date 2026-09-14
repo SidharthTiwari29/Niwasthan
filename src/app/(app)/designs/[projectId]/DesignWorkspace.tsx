@@ -26,6 +26,16 @@ type Recommendation = {
   totalMinor: string;
 };
 
+type BudgetImpact = {
+  selectionId: string;
+  description: string;
+  quantity: number;
+  unitPriceMinor?: number;
+  impactMinor?: number;
+  currency: string;
+  priceKnown: boolean;
+};
+
 type RenderJobAsset = { id: string; type: string; contentType: string };
 type RenderJobState = {
   id: string;
@@ -57,6 +67,12 @@ export function DesignWorkspace({
   const [recommendation, setRecommendation] = useState<Recommendation | null>(
     null,
   );
+  const [budgetPreview, setBudgetPreview] = useState<{
+    impacts: BudgetImpact[];
+    totalKnownImpactMinor: number;
+    currency: string;
+  } | null>(null);
+  const [budgetPreviewBusy, setBudgetPreviewBusy] = useState(false);
   const [committedBoq, setCommittedBoq] = useState<{
     id: string;
     totalMinor: string;
@@ -143,10 +159,41 @@ export function DesignWorkspace({
       }
       const { recommendation: rec } = await response.json();
       setRecommendation(rec);
+      void previewBudget(rec);
     } catch (err) {
       setError(err instanceof Error ? err.message : t("genericError"));
     } finally {
       setBusy(false);
+    }
+  }
+
+  async function previewBudget(rec: Recommendation) {
+    setBudgetPreviewBusy(true);
+    try {
+      const response = await fetch(
+        `/api/design-projects/${projectId}/budget-preview`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            currency: "INR",
+            selections: rec.selections.map((selection) => ({
+              selectionId: selection.itemId,
+              catalogueItemId: selection.itemId,
+              description: selection.itemName,
+              quantity: selection.quantity,
+              unitPriceMinor: Number(selection.unitPriceMinor),
+              currency: "INR",
+            })),
+          }),
+        },
+      );
+      if (!response.ok) throw new Error("Budget preview unavailable");
+      setBudgetPreview(await response.json());
+    } catch {
+      setBudgetPreview(null);
+    } finally {
+      setBudgetPreviewBusy(false);
     }
   }
 
@@ -395,6 +442,13 @@ export function DesignWorkspace({
           <h2 className="font-display text-lg font-semibold">
             {t("recommendationHeading")}
           </h2>
+          <div className="mt-4 rounded-2xl bg-[#e9e1d5] p-5">
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <div><p className="font-mono text-[9px] uppercase tracking-[0.18em] text-laterite">Consequence preview</p><p className="mt-2 max-w-xl font-body text-sm leading-relaxed text-ink-soft">Known prices are included in the total. Anything without a verified unit price remains visible as unknown—not silently estimated.</p></div>
+              {budgetPreviewBusy ? <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-ink-soft">Calculating…</span> : budgetPreview ? <span className="font-display text-2xl font-semibold">{formatRupees(budgetPreview.totalKnownImpactMinor)}</span> : <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-ink-soft">Preview unavailable</span>}
+            </div>
+            {budgetPreview ? <div className="mt-4 grid gap-2 sm:grid-cols-2">{budgetPreview.impacts.map((impact) => <div key={impact.selectionId} className="flex items-center justify-between rounded-xl bg-paper/70 px-3 py-2.5"><span className="min-w-0 truncate font-body text-xs text-ink-soft">{impact.description}</span><span className={`ml-3 shrink-0 font-mono text-[10px] ${impact.priceKnown ? "text-moss-deep" : "text-laterite"}`}>{impact.priceKnown ? formatRupees(impact.impactMinor ?? 0) : "price unknown"}</span></div>)}</div> : null}
+          </div>
           <ul className="mt-4 divide-y divide-paper-raised">
             {recommendation.selections.map((selection) => (
               <li
