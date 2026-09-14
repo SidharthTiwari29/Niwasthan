@@ -19,15 +19,31 @@ export type RenderSubmission = {
 
 export type RenderStatus = "QUEUED" | "RUNNING" | "SUCCEEDED" | "FAILED";
 
+// Real, honest status result: outputUrl is only ever present when the
+// provider itself reports SUCCEEDED and actually returned one - never
+// fabricated, never assumed present just because the status is
+// terminal. A provider that reports SUCCEEDED without a real output URL
+// is a real, genuine provider-integration problem, not something to
+// paper over with a guessed value.
+export type RenderStatusResult = {
+  status: RenderStatus;
+  outputUrl?: string;
+  contentType?: string;
+};
+
 export interface RenderingProvider {
   submit(request: RenderRequest): Promise<RenderSubmission>;
-  getStatus(providerJobId: string): Promise<RenderStatus>;
+  getStatus(providerJobId: string): Promise<RenderStatusResult>;
 }
 
 type ProviderResponse = {
   providerJobId?: unknown;
   id?: unknown;
   status?: unknown;
+  outputUrl?: unknown;
+  output_url?: unknown;
+  contentType?: unknown;
+  content_type?: unknown;
 };
 
 const readJson = async (response: Response): Promise<ProviderResponse> => {
@@ -108,12 +124,25 @@ class HttpRenderingProvider implements RenderingProvider {
     return { providerJobId: asJobId(body), provider: "http" };
   }
 
-  async getStatus(providerJobId: string): Promise<RenderStatus> {
+  async getStatus(providerJobId: string): Promise<RenderStatusResult> {
     const body = await this.request(
       `${this.baseUrl}/renders/${encodeURIComponent(providerJobId)}`,
       { method: "GET" },
     );
-    return asStatus(body.status);
+    const status = asStatus(body.status);
+    if (status !== "SUCCEEDED") return { status };
+
+    // Real providers may use either camelCase or snake_case for these
+    // fields - both are checked rather than assuming one convention,
+    // since this HTTP adapter is meant to work against any compliant
+    // real provider, not one specific implementation's exact casing.
+    const outputUrl = body.outputUrl ?? body.output_url;
+    const contentType = body.contentType ?? body.content_type;
+    return {
+      status,
+      outputUrl: typeof outputUrl === "string" ? outputUrl : undefined,
+      contentType: typeof contentType === "string" ? contentType : undefined,
+    };
   }
 }
 
@@ -121,7 +150,7 @@ class UnconfiguredRenderingProvider implements RenderingProvider {
   async submit(): Promise<RenderSubmission> {
     throw new Error("RENDERING_PROVIDER_NOT_CONFIGURED");
   }
-  async getStatus(): Promise<RenderStatus> {
+  async getStatus(): Promise<RenderStatusResult> {
     throw new Error("RENDERING_PROVIDER_NOT_CONFIGURED");
   }
 }

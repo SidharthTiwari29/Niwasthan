@@ -5,7 +5,7 @@ describe("render pipeline validation", () => {
   it("rejects an empty provider job id", async () => {
     const provider = {
       submit: async () => ({ provider: "test", providerJobId: "" }),
-      getStatus: async () => "QUEUED" as const,
+      getStatus: async () => ({ status: "QUEUED" as const }),
     };
     await expect(
       submitRender(provider, { jobId: "job", type: "VIDEO", input: {} }),

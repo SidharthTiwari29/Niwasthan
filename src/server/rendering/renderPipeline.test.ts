@@ -7,7 +7,7 @@ const provider: RenderingProvider = {
     return { provider: "test", providerJobId: "provider-1" };
   },
   async getStatus() {
-    return "SUCCEEDED";
+    return { status: "SUCCEEDED", outputUrl: "https://example.com/out.mp4" };
   },
 };
 
@@ -36,7 +36,7 @@ describe("renderPipeline", () => {
         return { provider: "", providerJobId: "x" };
       },
       async getStatus() {
-        return "QUEUED";
+        return { status: "QUEUED" as const };
       },
     };
     await expect(
@@ -49,7 +49,10 @@ describe("renderPipeline", () => {
   });
 
   it("polls provider status with an explicit provider job id", async () => {
-    await expect(pollRender(provider, "provider-1")).resolves.toBe("SUCCEEDED");
+    await expect(pollRender(provider, "provider-1")).resolves.toEqual({
+      status: "SUCCEEDED",
+      outputUrl: "https://example.com/out.mp4",
+    });
     await expect(pollRender(provider, " ")).rejects.toThrow(
       "PROVIDER_JOB_ID_REQUIRED",
     );

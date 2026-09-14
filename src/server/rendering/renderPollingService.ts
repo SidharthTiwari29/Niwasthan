@@ -2,6 +2,7 @@ import { prisma } from "@/server/db/prisma";
 import { getRenderingProvider } from "@/server/rendering/provider";
 import { pollRender } from "@/server/rendering/renderPipeline";
 import { transitionJob } from "@/server/jobs/jobService";
+import { assetRepository } from "@/server/repositories/assetRepository";
 
 const RENDER_JOB_TYPES = [
   "THREE_D_SCENE",
@@ -43,11 +44,39 @@ export async function pollPendingRenderJobs(): Promise<PollResult[]> {
   for (const job of pendingJobs) {
     if (!job.providerJobId) continue;
     try {
-      const status = await pollRender(provider, job.providerJobId);
-      if (status === "SUCCEEDED") {
+      const result = await pollRender(provider, job.providerJobId);
+      if (result.status === "SUCCEEDED") {
+        // Real, honest requirement: a provider that reports SUCCEEDED
+        // without a real output URL has not actually delivered
+        // anything a customer can see - this is treated as a genuine
+        // provider-integration failure, not silently marked SUCCEEDED
+        // with nothing behind it.
+        if (!result.outputUrl) {
+          await transitionJob({
+            jobId: job.id,
+            status: "FAILED",
+            errorCode: "RENDER_PROVIDER_NO_OUTPUT",
+            errorMessage:
+              "The rendering provider reported success but returned no real output.",
+          });
+          results.push({ jobId: job.id, status: "FAILED" });
+          continue;
+        }
+        // The real Asset this whole pipeline exists to produce - the
+        // README's own DESIGN -> AI JOB -> RENDERING PROVIDER ADAPTER
+        // -> ASSET -> CUSTOMER REVIEW pipeline was missing this exact
+        // step: a job could reach SUCCEEDED with no real asset a
+        // customer could ever actually view.
+        await assetRepository.createForJob({
+          jobId: job.id,
+          type: job.type as never,
+          contentType: result.contentType ?? "application/octet-stream",
+          objectKey: `render:${job.providerJobId}`,
+          metadata: { externalUrl: result.outputUrl },
+        });
         await transitionJob({ jobId: job.id, status: "SUCCEEDED" });
         results.push({ jobId: job.id, status: "SUCCEEDED" });
-      } else if (status === "FAILED") {
+      } else if (result.status === "FAILED") {
         await transitionJob({
           jobId: job.id,
           status: "FAILED",

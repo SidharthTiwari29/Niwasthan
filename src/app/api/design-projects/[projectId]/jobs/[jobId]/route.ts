@@ -25,7 +25,7 @@ export const GET = withErrorHandling(
       where: { id: jobId, projectId, project: { ownerId: userId } },
       include: {
         assets: {
-          select: { id: true, type: true, contentType: true },
+          select: { id: true, type: true, contentType: true, metadata: true },
         },
       },
     });
@@ -40,7 +40,22 @@ export const GET = withErrorHandling(
         errorMessage: job.errorMessage,
         createdAt: job.createdAt,
         completedAt: job.completedAt,
-        assets: job.assets,
+        assets: job.assets.map((asset: (typeof job.assets)[number]) => ({
+          id: asset.id,
+          type: asset.type,
+          contentType: asset.contentType,
+          // A real render's output lives at the rendering provider's own
+          // URL, not in this app's internal storage - exposed directly
+          // here rather than through the internal-storage download-url
+          // route, which assumes an objectKey this app's own storage
+          // provider actually holds.
+          externalUrl:
+            asset.metadata &&
+            typeof asset.metadata === "object" &&
+            "externalUrl" in asset.metadata
+              ? (asset.metadata as { externalUrl: unknown }).externalUrl
+              : null,
+        })),
       },
     });
   },

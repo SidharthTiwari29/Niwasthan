@@ -43,7 +43,14 @@ describe("HTTP rendering provider", () => {
         }),
       )
       .mockResolvedValueOnce(
-        new Response(JSON.stringify({ status: "SUCCEEDED" }), { status: 200 }),
+        new Response(
+          JSON.stringify({
+            status: "SUCCEEDED",
+            outputUrl: "https://renderer.example.com/output/render-123.mp4",
+            contentType: "video/mp4",
+          }),
+          { status: 200 },
+        ),
       );
 
     const provider = getRenderingProvider();
@@ -53,7 +60,11 @@ describe("HTTP rendering provider", () => {
       provider: "http",
       providerJobId: "render-123",
     });
-    await expect(provider.getStatus("render-123")).resolves.toBe("SUCCEEDED");
+    await expect(provider.getStatus("render-123")).resolves.toEqual({
+      status: "SUCCEEDED",
+      outputUrl: "https://renderer.example.com/output/render-123.mp4",
+      contentType: "video/mp4",
+    });
 
     expect(fetchMock).toHaveBeenNthCalledWith(
       1,
@@ -76,5 +87,19 @@ describe("HTTP rendering provider", () => {
     expect(() => getRenderingProvider()).toThrow(
       "RENDERING_PROVIDER_URL_REQUIRED",
     );
+  });
+
+  it("never includes a real output URL for a genuinely non-terminal status - a render still running has no real result yet", async () => {
+    process.env.RENDERING_PROVIDER = "http";
+    process.env.RENDERING_PROVIDER_URL = "https://renderer.example.com/";
+
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
+      new Response(JSON.stringify({ status: "RUNNING" }), { status: 200 }),
+    );
+
+    const provider = getRenderingProvider();
+    await expect(provider.getStatus("render-123")).resolves.toEqual({
+      status: "RUNNING",
+    });
   });
 });

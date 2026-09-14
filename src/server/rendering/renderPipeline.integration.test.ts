@@ -5,9 +5,11 @@ describe("render pipeline integration contract", () => {
   it("propagates provider status", async () => {
     const provider = {
       submit: async () => ({ provider: "test", providerJobId: "p-1" }),
-      getStatus: async () => "RUNNING" as const,
+      getStatus: async () => ({ status: "RUNNING" as const }),
     };
-    await expect(pollRender(provider, "p-1")).resolves.toBe("RUNNING");
+    await expect(pollRender(provider, "p-1")).resolves.toEqual({
+      status: "RUNNING",
+    });
   });
 
   it("propagates provider submission failures", async () => {
@@ -15,7 +17,7 @@ describe("render pipeline integration contract", () => {
       submit: async () => {
         throw new Error("PROVIDER_UNAVAILABLE");
       },
-      getStatus: async () => "FAILED" as const,
+      getStatus: async () => ({ status: "FAILED" as const }),
     };
     await expect(
       submitRender(provider, {

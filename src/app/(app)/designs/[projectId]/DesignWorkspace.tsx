@@ -26,13 +26,17 @@ type Recommendation = {
   totalMinor: string;
 };
 
-type RenderJobAsset = { id: string; type: string; contentType: string };
+type RenderJobAsset = {
+  id: string;
+  type: string;
+  contentType: string;
+  externalUrl: string | null;
+};
 type RenderJobState = {
   id: string;
   status: "QUEUED" | "RUNNING" | "SUCCEEDED" | "FAILED";
   errorMessage: string | null;
   assets: RenderJobAsset[];
-  downloadUrl?: string;
 };
 
 function formatRupees(minor: string | number): string {
@@ -247,33 +251,16 @@ export function DesignWorkspace({
     return () => clearInterval(interval);
   }, [renderJob, projectId]);
 
-  // Once a real asset is attached to a completed render job, fetch its
-  // real, signed download URL exactly once - not on every poll tick,
-  // since the asset itself doesn't change once the job has finished.
-  useEffect(() => {
-    if (
-      renderJob?.status !== "SUCCEEDED" ||
-      renderJob.assets.length === 0 ||
-      renderJob.downloadUrl
-    ) {
-      return;
-    }
-    const assetId = renderJob.assets[0]!.id;
-    fetch(`/api/assets/${assetId}/download-url`)
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (data?.downloadUrl) {
-          setRenderJob((prev) =>
-            prev ? { ...prev, downloadUrl: data.downloadUrl } : prev,
-          );
-        }
-      })
-      .catch(() => {
-        // Real, transient failure fetching the download URL - the asset
-        // itself is still real and succeeded; this just means the link
-        // isn't ready yet and a page refresh will pick it up.
-      });
-  }, [renderJob, projectId]);
+  // A real render's result is a real, external provider URL, already
+  // included directly in the poll response - no second API call is
+  // needed to "fetch" it, unlike this app's own internally-stored
+  // assets (floor plans, etc.) which do need a separate signed-URL
+  // request. Simply derived here whenever the polled job has a real
+  // asset with a real externalUrl attached.
+  const renderResultUrl =
+    renderJob?.status === "SUCCEEDED"
+      ? (renderJob.assets[0]?.externalUrl ?? null)
+      : null;
 
   return (
     <div className="mt-10 space-y-10">
@@ -466,13 +453,13 @@ export function DesignWorkspace({
                     Try again
                   </button>
                 </div>
-              ) : renderJob.downloadUrl ? (
+              ) : renderResultUrl ? (
                 <div>
                   <p className="font-body text-sm font-medium text-moss-deep">
                     Your render is ready.
                   </p>
                   <a
-                    href={renderJob.downloadUrl}
+                    href={renderResultUrl}
                     target="_blank"
                     rel="noreferrer noopener"
                     className="mt-2 inline-block font-body text-sm text-laterite hover:underline"
@@ -482,7 +469,8 @@ export function DesignWorkspace({
                 </div>
               ) : (
                 <p className="font-body text-sm text-ink-soft">
-                  Render complete — fetching the real, secure link to view it…
+                  Render complete — the real result should appear on the next
+                  check.
                 </p>
               )}
             </div>
