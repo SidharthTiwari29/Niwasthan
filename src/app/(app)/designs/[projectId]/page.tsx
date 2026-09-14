@@ -21,6 +21,14 @@ export default async function DesignProjectPage({
     projectId,
     userId,
   );
+  const latestUnderstanding = project.room?.roomUnderstandings[0] ?? null;
+  const rawDimensions = latestUnderstanding?.dimensions;
+  const dimensions =
+    rawDimensions && typeof rawDimensions === "object"
+      ? (rawDimensions as Record<string, unknown>)
+      : null;
+  const lengthFt = typeof dimensions?.lengthFt === "number" ? dimensions.lengthFt : null;
+  const widthFt = typeof dimensions?.widthFt === "number" ? dimensions.widthFt : null;
 
   return (
     <div>
@@ -45,8 +53,20 @@ export default async function DesignProjectPage({
 
       <DesignWorkspace
         projectId={projectId}
+        propertyId={project.propertyId}
         hasRoom={project.roomId !== null}
         initialDirections={directions}
+        roomEvidence={
+          project.room
+            ? {
+                roomId: project.room.id,
+                roomName: project.room.name,
+                status: latestUnderstanding?.status ?? null,
+                lengthFt,
+                widthFt,
+              }
+            : null
+        }
       />
     </div>
   );

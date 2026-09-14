@@ -51,12 +51,22 @@ function formatRupees(minor: string | number): string {
 
 export function DesignWorkspace({
   projectId,
+  propertyId,
   hasRoom,
   initialDirections,
+  roomEvidence,
 }: {
   projectId: string;
+  propertyId: string;
   hasRoom: boolean;
   initialDirections: Direction[];
+  roomEvidence: {
+    roomId: string;
+    roomName: string;
+    status: string | null;
+    lengthFt: number | null;
+    widthFt: number | null;
+  } | null;
 }) {
   const router = useRouter();
   const t = useTranslations("designWorkspace");
@@ -336,6 +346,21 @@ export function DesignWorkspace({
           <div className="mt-6 flex flex-wrap gap-2 text-[10px] font-mono uppercase tracking-[0.16em] text-paper/55"><span className="rounded-full border border-moss/50 px-2.5 py-1.5 text-[#b9c8af]">● confirmed</span><span className="rounded-full border border-brass/50 px-2.5 py-1.5 text-brass">✦ inferred</span><span className="rounded-full border border-paper/20 px-2.5 py-1.5">? unknown</span></div>
         </div>
       </section>
+      {hasRoom ? (
+        <section className="rounded-[1.5rem] border border-ink/10 bg-white p-6 md:p-8">
+          <div className="flex flex-wrap items-start justify-between gap-5">
+            <div><p className="font-mono text-[9px] uppercase tracking-[0.24em] text-laterite">Spatial gate</p><h2 className="mt-2 font-display text-3xl font-semibold tracking-[-0.04em]">Can this direction live in the room?</h2><p className="mt-3 max-w-2xl font-body text-sm leading-relaxed text-ink-soft">Reality checks use room dimensions and placed objects. We will not call a layout feasible until those inputs exist.</p></div>
+            <span className={`rounded-full px-3 py-1.5 font-mono text-[9px] uppercase tracking-[0.15em] ${roomEvidence?.status === "CONFIRMED" ? "bg-[#e1eadb] text-moss-deep" : "bg-paper-raised text-ink-soft"}`}>{roomEvidence?.status === "CONFIRMED" ? "Room confirmed" : "Room evidence needs review"}</span>
+          </div>
+          <div className="mt-6 grid gap-3 sm:grid-cols-3">
+            <div className="rounded-xl bg-paper/70 p-4"><p className="font-mono text-[9px] uppercase tracking-[0.15em] text-ink-soft">Room</p><p className="mt-2 font-body text-sm font-medium text-ink">{roomEvidence?.roomName ?? "Unknown"}</p></div>
+            <div className="rounded-xl bg-paper/70 p-4"><p className="font-mono text-[9px] uppercase tracking-[0.15em] text-ink-soft">Dimensions</p><p className="mt-2 font-body text-sm font-medium text-ink">{roomEvidence?.lengthFt && roomEvidence?.widthFt ? `${roomEvidence.lengthFt}ft × ${roomEvidence.widthFt}ft` : "Unknown"}</p></div>
+            <div className="rounded-xl bg-paper/70 p-4"><p className="font-mono text-[9px] uppercase tracking-[0.15em] text-ink-soft">Layout objects</p><p className="mt-2 font-body text-sm font-medium text-ink">Not placed yet</p></div>
+          </div>
+          <p className="mt-5 rounded-xl border border-brass/30 bg-brass/10 px-4 py-3 font-body text-xs leading-relaxed text-ink-soft">Buildability status: <strong className="text-ink">not yet assessed</strong>. This is different from “fits” and keeps the decision honest until a real layout is checked.</p>
+          {roomEvidence?.status !== "CONFIRMED" ? <a href={`/properties/${propertyId}/rooms/${roomEvidence?.roomId}/understanding`} className="mt-5 inline-flex font-body text-sm font-semibold text-laterite hover:underline">Review room evidence →</a> : null}
+        </section>
+      ) : null}
       {/* Directions */}
       <section className="rounded-[1.5rem] border border-ink/10 bg-white p-6 md:p-8">
         <div className="flex flex-wrap items-end justify-between gap-4">
