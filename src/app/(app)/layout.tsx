@@ -6,6 +6,7 @@ import { auth, signOut } from "@/auth";
 import { getCurrentPlan } from "@/server/services/currentPlanService";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { NotificationBell } from "@/components/NotificationBell";
+import { AssistantChat } from "@/components/AssistantChat";
 
 export default async function AppLayout({ children }: { children: ReactNode }) {
   const session = await auth();
@@ -59,6 +60,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
         </div>
       </header>
       <main className="mx-auto max-w-4xl px-6 py-10 md:px-10">{children}</main>
+      <AssistantChat />
     </div>
   );
 }
