@@ -4,6 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { requireAuth } from "@/server/middleware/requireAuth";
 import { getDesignProject } from "@/server/services/designProjectService";
 import { designDirectionService } from "@/server/services/designDirectionService";
+import { designLayoutObjectService } from "@/server/services/designLayoutObjectService";
 import { DesignWorkspace } from "./DesignWorkspace";
 
 export default async function DesignProjectPage({
@@ -21,6 +22,7 @@ export default async function DesignProjectPage({
     projectId,
     userId,
   );
+  const layoutObjects = await designLayoutObjectService.list(projectId, userId);
   const latestUnderstanding = project.room?.roomUnderstandings[0] ?? null;
   const rawDimensions = latestUnderstanding?.dimensions;
   const dimensions =
@@ -56,6 +58,7 @@ export default async function DesignProjectPage({
         propertyId={project.propertyId}
         hasRoom={project.roomId !== null}
         initialDirections={directions}
+        initialLayoutObjects={layoutObjects}
         roomEvidence={
           project.room
             ? {

@@ -36,6 +36,21 @@ type BudgetImpact = {
   priceKnown: boolean;
 };
 
+type LayoutObject = {
+  id: string;
+  name: string;
+  xMm: number;
+  yMm: number;
+  widthMm: number;
+  depthMm: number;
+};
+
+type RealityCheck = {
+  code: string;
+  severity: "warning" | "error";
+  message: string;
+};
+
 type RenderJobAsset = { id: string; type: string; contentType: string };
 type RenderJobState = {
   id: string;
@@ -54,12 +69,14 @@ export function DesignWorkspace({
   propertyId,
   hasRoom,
   initialDirections,
+  initialLayoutObjects,
   roomEvidence,
 }: {
   projectId: string;
   propertyId: string;
   hasRoom: boolean;
   initialDirections: Direction[];
+  initialLayoutObjects: LayoutObject[];
   roomEvidence: {
     roomId: string;
     roomName: string;
@@ -72,6 +89,16 @@ export function DesignWorkspace({
   const t = useTranslations("designWorkspace");
   const tStatus = useTranslations("directionStatus");
   const [directions, setDirections] = useState(initialDirections);
+  const [layoutObjects, setLayoutObjects] = useState(initialLayoutObjects);
+  const [newObject, setNewObject] = useState({
+    name: "",
+    xMm: "0",
+    yMm: "0",
+    widthMm: "1200",
+    depthMm: "600",
+  });
+  const [realityChecks, setRealityChecks] = useState<RealityCheck[] | null>(null);
+  const [realityBusy, setRealityBusy] = useState(false);
   const [newDirectionName, setNewDirectionName] = useState("");
   const [targetBudget, setTargetBudget] = useState("");
   const [recommendation, setRecommendation] = useState<Recommendation | null>(
@@ -96,6 +123,76 @@ export function DesignWorkspace({
     ALTERNATIVE: tStatus("alternative"),
     REJECTED: tStatus("rejected"),
   };
+
+  async function addLayoutObject() {
+    setError(null);
+    setRealityChecks(null);
+    setBusy(true);
+    try {
+      const response = await fetch(`/api/design-projects/${projectId}/layout-objects`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: newObject.name,
+          xMm: Number(newObject.xMm),
+          yMm: Number(newObject.yMm),
+          widthMm: Number(newObject.widthMm),
+          depthMm: Number(newObject.depthMm),
+        }),
+      });
+      if (!response.ok) throw new Error("Could not add this layout object.");
+      const { object } = await response.json();
+      setLayoutObjects((current) => [...current, object]);
+      setNewObject((current) => ({ ...current, name: "" }));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not add this layout object.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function removeLayoutObject(objectId: string) {
+    setError(null);
+    try {
+      const response = await fetch(`/api/design-projects/${projectId}/layout-objects/${objectId}`, { method: "DELETE" });
+      if (!response.ok) throw new Error("Could not remove this layout object.");
+      setLayoutObjects((current) => current.filter((object) => object.id !== objectId));
+      setRealityChecks(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not remove this layout object.");
+    }
+  }
+
+  async function runRealityCheck() {
+    setError(null);
+    setRealityChecks(null);
+    if (!roomEvidence?.lengthFt || !roomEvidence.widthFt) {
+      setError("Reality check needs confirmed room dimensions first.");
+      return;
+    }
+    if (layoutObjects.length === 0) {
+      setError("Add at least one layout object before running a reality check.");
+      return;
+    }
+    setRealityBusy(true);
+    try {
+      const response = await fetch(`/api/design-projects/${projectId}/reality-check`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          room: { widthMm: Math.round(roomEvidence.widthFt * 304.8), depthMm: Math.round(roomEvidence.lengthFt * 304.8) },
+          objects: layoutObjects,
+        }),
+      });
+      if (!response.ok) throw new Error("Reality check is not available yet.");
+      const { checks } = await response.json();
+      setRealityChecks(checks);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Reality check is not available yet.");
+    } finally {
+      setRealityBusy(false);
+    }
+  }
 
   async function createDirection() {
     setError(null);
@@ -358,6 +455,15 @@ export function DesignWorkspace({
             <div className="rounded-xl bg-paper/70 p-4"><p className="font-mono text-[9px] uppercase tracking-[0.15em] text-ink-soft">Layout objects</p><p className="mt-2 font-body text-sm font-medium text-ink">Not placed yet</p></div>
           </div>
           <p className="mt-5 rounded-xl border border-brass/30 bg-brass/10 px-4 py-3 font-body text-xs leading-relaxed text-ink-soft">Buildability status: <strong className="text-ink">not yet assessed</strong>. This is different from “fits” and keeps the decision honest until a real layout is checked.</p>
+          <div className="mt-6 border-t border-paper-raised pt-6">
+            <div className="flex flex-wrap items-end justify-between gap-4"><div><p className="font-mono text-[9px] uppercase tracking-[0.18em] text-laterite">Placed objects</p><p className="mt-2 font-body text-sm text-ink-soft">Add the furniture or fixtures you want checked in the room.</p></div><button onClick={runRealityCheck} disabled={realityBusy || layoutObjects.length === 0} className="rounded-full bg-ink px-4 py-2.5 font-body text-xs font-semibold text-paper disabled:opacity-40">{realityBusy ? "Checking…" : "Run reality check"}</button></div>
+            <div className="mt-4 grid gap-2 sm:grid-cols-[1.4fr_repeat(4,1fr)_auto]">
+              {(["name", "xMm", "yMm", "widthMm", "depthMm"] as const).map((field) => <input key={field} value={newObject[field]} onChange={(event) => setNewObject((current) => ({ ...current, [field]: event.target.value }))} placeholder={field === "name" ? "Object name" : field.replace("Mm", " (mm)")} type={field === "name" ? "text" : "number"} className="min-w-0 rounded-xl border border-ink/15 bg-paper/30 px-3 py-2.5 font-body text-xs text-ink outline-none focus-visible:border-laterite" />)}
+              <button onClick={addLayoutObject} disabled={busy || !newObject.name.trim()} className="rounded-xl bg-laterite px-3 py-2.5 font-body text-xs font-semibold text-paper disabled:opacity-40">Add</button>
+            </div>
+            {layoutObjects.length > 0 ? <ul className="mt-4 space-y-2">{layoutObjects.map((object) => <li key={object.id} className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-paper/70 px-4 py-3"><span className="font-body text-sm font-medium text-ink">{object.name}</span><span className="font-mono text-[10px] text-ink-soft">{object.widthMm} × {object.depthMm}mm at {object.xMm}, {object.yMm}</span><button onClick={() => removeLayoutObject(object.id)} className="font-body text-xs text-laterite hover:underline">Remove</button></li>)}</ul> : <p className="mt-4 font-body text-xs text-ink-soft">No placed objects yet.</p>}
+            {realityChecks ? <div className={`mt-4 rounded-xl border px-4 py-3 ${realityChecks.some((check) => check.severity === "error") ? "border-alert/40 bg-alert/5" : realityChecks.length > 0 ? "border-brass/40 bg-brass/10" : "border-moss/40 bg-moss/10"}`}><p className="font-mono text-[9px] uppercase tracking-[0.16em] text-ink-soft">Reality-check result</p><p className="mt-2 font-body text-sm font-semibold text-ink">{realityChecks.length === 0 ? "No spatial conflicts found in the placed objects." : `${realityChecks.length} issue${realityChecks.length === 1 ? "" : "s"} needs review.`}</p>{realityChecks.length > 0 ? <ul className="mt-2 space-y-1">{realityChecks.map((check) => <li key={`${check.code}-${check.message}`} className="font-body text-xs text-ink-soft">{check.severity === "error" ? "●" : "▲"} {check.message}</li>)}</ul> : null}</div> : null}
+          </div>
           {roomEvidence?.status !== "CONFIRMED" ? <a href={`/properties/${propertyId}/rooms/${roomEvidence?.roomId}/understanding`} className="mt-5 inline-flex font-body text-sm font-semibold text-laterite hover:underline">Review room evidence →</a> : null}
         </section>
       ) : null}

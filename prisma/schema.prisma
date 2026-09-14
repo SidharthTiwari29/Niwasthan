@@ -517,9 +517,24 @@ model DesignProject {
   boqs       Boq[]
   curationRecommendations CurationRecommendation[]
   directions DesignDirection[]
+  layoutObjects DesignLayoutObject[]
 
   @@index([ownerId, createdAt])
   @@index([propertyId])
+}
+
+model DesignLayoutObject {
+  id             String        @id @default(cuid())
+  projectId      String
+  name           String
+  xMm            Int
+  yMm            Int
+  widthMm        Int
+  depthMm        Int
+  createdAt      DateTime      @default(now())
+  project        DesignProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, createdAt])
 }
 
 model DesignVersion {
