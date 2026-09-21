@@ -283,6 +283,7 @@ model Property {
   homeDnaVersions  HomeDnaVersion[]
   procurementRequests ProcurementRequest[]
   assets           Asset[]
+  handovers        HandoverRecord[]
 
   @@index([ownerId, createdAt])
 }
@@ -1236,8 +1237,53 @@ model ExecutionRecord {
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
   order         Order           @relation(fields: [orderId], references: [id])
+  snags         Snag[]
+  handover      HandoverRecord?
 
   @@index([orderId])
+}
+
+enum SnagStatus {
+  OPEN
+  IN_REVIEW
+  RESOLVED
+  ACCEPTED
+}
+
+model Snag {
+  id               String          @id @default(cuid())
+  executionId      String
+  title            String
+  description      String           @db.Text
+  status           SnagStatus       @default(OPEN)
+  evidenceAssetIds Json?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  resolvedAt       DateTime?
+  execution        ExecutionRecord  @relation(fields: [executionId], references: [id], onDelete: Cascade)
+
+  @@index([executionId, status, createdAt])
+}
+
+enum HandoverStatus {
+  READY_FOR_REVIEW
+  ACCEPTED
+  REOPENED
+}
+
+model HandoverRecord {
+  id          String          @id @default(cuid())
+  propertyId  String
+  executionId String          @unique
+  status      HandoverStatus  @default(READY_FOR_REVIEW)
+  notes       String?         @db.Text
+  acceptedAt  DateTime?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  property    Property        @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  execution   ExecutionRecord @relation(fields: [executionId], references: [id], onDelete: Cascade)
+
+  @@index([propertyId, status, createdAt])
 }
 
 enum NotificationType {

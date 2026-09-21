@@ -12,10 +12,11 @@ export async function getPropertyLifecycle(propertyId: string, ownerId: string) 
           quotes: { orderBy: { createdAt: "desc" } },
           orders: {
             orderBy: { placedAt: "desc" },
-            include: { executions: { orderBy: { createdAt: "desc" } } },
+            include: { executions: { orderBy: { createdAt: "desc" }, include: { snags: { orderBy: { createdAt: "desc" } }, handover: true } } },
           },
         },
       },
+      handovers: { orderBy: { createdAt: "desc" }, take: 5 },
     },
   });
   if (!property) return null;
@@ -47,9 +48,11 @@ export async function getPropertyLifecycle(propertyId: string, ownerId: string) 
         completedAt: execution.completedAt,
         snagNotes: execution.snagNotes,
         resolvedAt: execution.resolvedAt,
+        snags: execution.snags.map((snag) => ({ id: snag.id, title: snag.title, description: snag.description, status: snag.status, evidenceAssetIds: snag.evidenceAssetIds, createdAt: snag.createdAt, resolvedAt: snag.resolvedAt })),
+        handover: execution.handover ? { id: execution.handover.id, status: execution.handover.status, notes: execution.handover.notes, acceptedAt: execution.handover.acceptedAt } : null,
       })),
     })),
   }));
 
-  return { id: property.id, name: property.name, requests };
+  return { id: property.id, name: property.name, requests, handovers: property.handovers };
 }
