@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type DragEvent } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 
@@ -163,6 +163,18 @@ export function DesignWorkspace({
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not remove this layout object.");
     }
+  }
+
+  async function moveLayoutObject(object: LayoutObject, event: DragEvent<HTMLDivElement>) {
+    if (!roomWidthMm || !roomDepthMm) return;
+    const bounds = event.currentTarget.parentElement?.getBoundingClientRect();
+    if (!bounds) return;
+    const xMm = Math.max(0, Math.min(Math.round(((event.clientX - bounds.left) / bounds.width) * roomWidthMm), Math.round(roomWidthMm - object.widthMm)));
+    const yMm = Math.max(0, Math.min(Math.round(((event.clientY - bounds.top) / bounds.height) * roomDepthMm), Math.round(roomDepthMm - object.depthMm)));
+    setLayoutObjects((current) => current.map((item) => item.id === object.id ? { ...item, xMm, yMm } : item));
+    const response = await fetch(`/api/design-projects/${projectId}/layout-objects/${object.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ xMm, yMm }) });
+    if (!response.ok) setError("The object moved visually but could not be saved. Refresh before running a reality check.");
+    setRealityChecks(null);
   }
 
   async function runRealityCheck() {
@@ -464,7 +476,7 @@ export function DesignWorkspace({
               <button onClick={addLayoutObject} disabled={busy || !newObject.name.trim()} className="rounded-xl bg-laterite px-3 py-2.5 font-body text-xs font-semibold text-paper disabled:opacity-40">Add</button>
             </div>
             {layoutObjects.length > 0 ? <ul className="mt-4 space-y-2">{layoutObjects.map((object) => <li key={object.id} className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-paper/70 px-4 py-3"><span className="font-body text-sm font-medium text-ink">{object.name}</span><span className="font-mono text-[10px] text-ink-soft">{object.widthMm} × {object.depthMm}mm at {object.xMm}, {object.yMm}</span><button onClick={() => removeLayoutObject(object.id)} className="font-body text-xs text-laterite hover:underline">Remove</button></li>)}</ul> : <p className="mt-4 font-body text-xs text-ink-soft">No placed objects yet.</p>}
-            {roomWidthMm && roomDepthMm && layoutObjects.length > 0 ? <div className="mt-5 overflow-hidden rounded-2xl border border-ink/10 bg-[#f5f0e7] p-4"><div className="mb-3 flex items-center justify-between gap-3"><p className="font-mono text-[9px] uppercase tracking-[0.16em] text-ink-soft">Top view · proportional, not to scale for construction</p><span className="font-mono text-[9px] text-ink-soft">{roomEvidence?.widthFt}ft × {roomEvidence?.lengthFt}ft</span></div><div className="relative mx-auto aspect-[1.5] max-w-2xl overflow-hidden rounded-lg border-2 border-ink/25 bg-paper"><div className="absolute inset-0 opacity-40" style={{ backgroundImage: "linear-gradient(to right, rgba(31,31,29,.08) 1px, transparent 1px), linear-gradient(to bottom, rgba(31,31,29,.08) 1px, transparent 1px)", backgroundSize: "5% 5%" }} />{layoutObjects.map((object, index) => <div key={object.id} title={`${object.name} · ${object.widthMm} × ${object.depthMm}mm`} className={`absolute flex items-center justify-center overflow-hidden rounded-md border px-1 text-center font-mono text-[8px] leading-tight ${index % 2 === 0 ? "border-laterite/60 bg-laterite/25 text-laterite-deep" : "border-moss/60 bg-moss/25 text-moss-deep"}`} style={{ left: `${(object.xMm / roomWidthMm) * 100}%`, top: `${(object.yMm / roomDepthMm) * 100}%`, width: `${Math.min((object.widthMm / roomWidthMm) * 100, 100)}%`, height: `${Math.min((object.depthMm / roomDepthMm) * 100, 100)}%` }}>{object.name}</div>)}</div></div> : null}
+            {roomWidthMm && roomDepthMm && layoutObjects.length > 0 ? <div className="mt-5 overflow-hidden rounded-2xl border border-ink/10 bg-[#f5f0e7] p-4"><div className="mb-3 flex items-center justify-between gap-3"><p className="font-mono text-[9px] uppercase tracking-[0.16em] text-ink-soft">Top view · drag to reposition · proportional, not to scale</p><span className="font-mono text-[9px] text-ink-soft">{roomEvidence?.widthFt}ft × {roomEvidence?.lengthFt}ft</span></div><div className="relative mx-auto aspect-[1.5] max-w-2xl overflow-hidden rounded-lg border-2 border-ink/25 bg-paper"><div className="absolute inset-0 opacity-40" style={{ backgroundImage: "linear-gradient(to right, rgba(31,31,29,.08) 1px, transparent 1px), linear-gradient(to bottom, rgba(31,31,29,.08) 1px, transparent 1px)", backgroundSize: "5% 5%" }} />{layoutObjects.map((object, index) => <div key={object.id} draggable onDragEnd={(event) => void moveLayoutObject(object, event)} title={`${object.name} · ${object.widthMm} × ${object.depthMm}mm`} className={`absolute flex cursor-grab items-center justify-center overflow-hidden rounded-md border px-1 text-center font-mono text-[8px] leading-tight active:cursor-grabbing ${index % 2 === 0 ? "border-laterite/60 bg-laterite/25 text-laterite-deep" : "border-moss/60 bg-moss/25 text-moss-deep"}`} style={{ left: `${(object.xMm / roomWidthMm) * 100}%`, top: `${(object.yMm / roomDepthMm) * 100}%`, width: `${Math.min((object.widthMm / roomWidthMm) * 100, 100)}%`, height: `${Math.min((object.depthMm / roomDepthMm) * 100, 100)}%` }}>{object.name}</div>)}</div></div> : null}
             {realityChecks ? <div className={`mt-4 rounded-xl border px-4 py-3 ${realityChecks.some((check) => check.severity === "error") ? "border-alert/40 bg-alert/5" : realityChecks.length > 0 ? "border-brass/40 bg-brass/10" : "border-moss/40 bg-moss/10"}`}><p className="font-mono text-[9px] uppercase tracking-[0.16em] text-ink-soft">Reality-check result</p><p className="mt-2 font-body text-sm font-semibold text-ink">{realityChecks.length === 0 ? "No spatial conflicts found in the placed objects." : `${realityChecks.length} issue${realityChecks.length === 1 ? "" : "s"} needs review.`}</p>{realityChecks.length > 0 ? <ul className="mt-2 space-y-1">{realityChecks.map((check) => <li key={`${check.code}-${check.message}`} className="font-body text-xs text-ink-soft">{check.severity === "error" ? "●" : "▲"} {check.message}</li>)}</ul> : null}</div> : null}
           </div>
           {roomEvidence?.status !== "CONFIRMED" ? <a href={`/properties/${propertyId}/rooms/${roomEvidence?.roomId}/understanding`} className="mt-5 inline-flex font-body text-sm font-semibold text-laterite hover:underline">Review room evidence →</a> : null}

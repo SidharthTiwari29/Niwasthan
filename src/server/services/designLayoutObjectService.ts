@@ -33,6 +33,16 @@ export const designLayoutObjectService = {
     return prisma.designLayoutObject.create({ data: { projectId, ...input } });
   },
 
+  async update(projectId: string, objectId: string, ownerId: string, input: Pick<DesignLayoutObjectInput, "xMm" | "yMm">) {
+    await assertProject(projectId, ownerId);
+    const result = await prisma.designLayoutObject.updateMany({
+      where: { id: objectId, projectId },
+      data: input,
+    });
+    if (result.count === 0) throw new NotFoundError("DesignLayoutObject");
+    return prisma.designLayoutObject.findUniqueOrThrow({ where: { id: objectId } });
+  },
+
   async remove(projectId: string, objectId: string, ownerId: string) {
     await assertProject(projectId, ownerId);
     const result = await prisma.designLayoutObject.deleteMany({

@@ -17,3 +17,16 @@ export const DELETE = withErrorHandling(async (_request: Request, { params }: Ro
   await designLayoutObjectService.remove(projectId, objectId, userId);
   return NextResponse.json({ success: true });
 });
+
+const positionSchema = z.object({
+  xMm: z.number().int().nonnegative(),
+  yMm: z.number().int().nonnegative(),
+});
+
+export const PATCH = withErrorHandling(async (request: Request, { params }: RouteParams) => {
+  const { userId } = await requireAuth();
+  const { projectId, objectId } = parseOrThrow(paramsSchema, await params);
+  const input = parseOrThrow(positionSchema, await request.json());
+  const object = await designLayoutObjectService.update(projectId, objectId, userId, input);
+  return NextResponse.json({ object });
+});
