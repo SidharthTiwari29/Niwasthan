@@ -1579,3 +1579,55 @@ model AgentIncident {
   @@index([affectedCapability])
   @@index([propertyId])
 }
+
+enum AgentActionStatus {
+  PLANNED
+  EXECUTED
+  SKIPPED
+  FAILED
+  VERIFIED
+}
+
+model AgentObservation {
+  id                  String   @id @default(cuid())
+  agentName           String
+  capability          String
+  classification      String
+  evidence            Json
+  userId              String?
+  propertyId          String?
+  projectId           String?
+  triggeringEventId   String?
+  createdAt           DateTime @default(now())
+  decisions           AgentDecision[]
+
+  @@index([agentName, capability, createdAt])
+  @@index([propertyId, createdAt])
+}
+
+model AgentDecision {
+  id             String          @id @default(cuid())
+  observationId  String
+  actionClass    String
+  decision       String
+  reasoning      String          @db.Text
+  createdAt      DateTime        @default(now())
+  observation    AgentObservation @relation(fields: [observationId], references: [id], onDelete: Cascade)
+  actions        AgentAction[]
+
+  @@index([observationId, createdAt])
+}
+
+model AgentAction {
+  id             String           @id @default(cuid())
+  decisionId     String
+  actionType     String
+  status         AgentActionStatus @default(PLANNED)
+  idempotencyKey String           @unique
+  result         Json?
+  createdAt      DateTime         @default(now())
+  completedAt    DateTime?
+  decision       AgentDecision    @relation(fields: [decisionId], references: [id], onDelete: Cascade)
+
+  @@index([actionType, status, createdAt])
+}

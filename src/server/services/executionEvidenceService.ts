@@ -1,6 +1,7 @@
 import { ConflictError, NotFoundError } from "@/server/errors/AppError";
 import { prisma } from "@/server/db/prisma";
 import { notificationService } from "@/server/services/notificationService";
+import { observeExecutionAndAct } from "@/server/agents/executionQualityAgent";
 
 export const executionEvidenceService = {
   async listSnags(executionId: string, ownerId: string) {
@@ -27,6 +28,7 @@ export const executionEvidenceService = {
       relatedEntityType: "Snag",
       relatedEntityId: snag.id,
     });
+    await observeExecutionAndAct(executionId, ownerId);
     return snag;
   },
 
@@ -34,7 +36,9 @@ export const executionEvidenceService = {
     const snag = await prisma.snag.findFirst({ where: { id: snagId, execution: { order: { procurementRequest: { ownerId } } } } });
     if (!snag) throw new NotFoundError("Snag");
     if (snag.status === "ACCEPTED" && status !== "ACCEPTED") throw new ConflictError("An accepted snag cannot be reopened from this workflow");
-    return prisma.snag.update({ where: { id: snagId }, data: { status, resolvedAt: status === "RESOLVED" || status === "ACCEPTED" ? new Date() : null } });
+    const updated = await prisma.snag.update({ where: { id: snagId }, data: { status, resolvedAt: status === "RESOLVED" || status === "ACCEPTED" ? new Date() : null } });
+    await observeExecutionAndAct(updated.executionId, ownerId);
+    return updated;
   },
 
   async getHandover(propertyId: string, ownerId: string) {
