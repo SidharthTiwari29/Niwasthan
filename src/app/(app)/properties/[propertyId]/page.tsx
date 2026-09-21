@@ -131,6 +131,12 @@ export default async function PropertyDetailPage({
       >
         {t("reviewDetectedRooms")}
       </Link>
+      <Link
+        href={`/properties/${propertyId}/procurement`}
+        className="mt-1 block font-body text-sm font-medium text-laterite hover:underline"
+      >
+        Track your order →
+      </Link>
 
       <div className="mt-10">
         <h2 className="font-display text-lg font-semibold">

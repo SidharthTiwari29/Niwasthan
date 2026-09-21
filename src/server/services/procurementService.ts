@@ -44,6 +44,10 @@ export const procurementService = {
     return request;
   },
 
+  async listForProperty(propertyId: string, ownerId: string) {
+    return procurementRepository.listForProperty(propertyId, ownerId);
+  },
+
   async submitQuote(
     procurementRequestId: string,
     ownerId: string,

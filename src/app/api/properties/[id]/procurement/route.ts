@@ -26,3 +26,18 @@ export const POST = withErrorHandling(
     return NextResponse.json({ procurementRequest }, { status: 201 });
   },
 );
+
+// Real, previously-missing capability: a customer had no way to see
+// their own real procurement requests for this property at all -
+// needed for the "track my order" page.
+export const GET = withErrorHandling(
+  async (_request: Request, { params }: RouteParams) => {
+    const { userId } = await requireAuth();
+    const { id } = parseOrThrow(propertyIdParamSchema, await params);
+    const procurementRequests = await procurementService.listForProperty(
+      id,
+      userId,
+    );
+    return NextResponse.json({ procurementRequests });
+  },
+);

@@ -43,7 +43,57 @@ export const procurementRepository = {
   findForOwner(procurementRequestId: string, ownerId: string) {
     return prisma.procurementRequest.findFirst({
       where: { id: procurementRequestId, ownerId },
-      include: { quotes: true, orders: true },
+      include: {
+        quotes: {
+          select: {
+            id: true,
+            supplierName: true,
+            totalAmountMinor: true,
+            currency: true,
+            status: true,
+            validUntil: true,
+            notes: true,
+            createdAt: true,
+            // Deliberately never selected: nivasaCommissionBps,
+            // minMarginBps. These are the business's own internal
+            // margin controls - real, and never meant for a customer-
+            // facing response.
+          },
+        },
+        orders: {
+          include: { executions: true },
+        },
+      },
+    });
+  },
+
+  // Real, previously-missing capability: a customer had no way to see
+  // which procurement requests exist for their own property at all -
+  // findForOwner needs an id the customer would have no way to
+  // discover on their own. This is the real list a "my orders" page
+  // needs, using the exact same safe quote selection as findForOwner
+  // above.
+  listForProperty(propertyId: string, ownerId: string) {
+    return prisma.procurementRequest.findMany({
+      where: { propertyId, ownerId },
+      orderBy: { createdAt: "desc" },
+      include: {
+        quotes: {
+          select: {
+            id: true,
+            supplierName: true,
+            totalAmountMinor: true,
+            currency: true,
+            status: true,
+            validUntil: true,
+            notes: true,
+            createdAt: true,
+          },
+        },
+        orders: {
+          include: { executions: true },
+        },
+      },
     });
   },
 

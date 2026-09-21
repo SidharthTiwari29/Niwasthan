@@ -23,6 +23,7 @@ vi.mock("@/server/repositories/procurementRepository", () => ({
     findLockedBudgetPlanForOwner: vi.fn(),
     create: vi.fn(),
     findForOwner: vi.fn(),
+    listForProperty: vi.fn(),
     submitQuote: vi.fn(),
     findQuoteForOwner: vi.fn(),
     findNegotiableQuoteForOwner: vi.fn(),
@@ -106,6 +107,37 @@ describe("procurementService", () => {
       });
 
       expect(result).toEqual({ id: "req-1" });
+    });
+  });
+
+  describe("listForProperty", () => {
+    it("returns the real, currently-existing procurement requests for this property and owner", async () => {
+      repo.listForProperty.mockResolvedValue([
+        { id: "req-1" },
+        { id: "req-2" },
+      ] as never);
+
+      const result = await procurementService.listForProperty(
+        "property-1",
+        "owner-1",
+      );
+
+      expect(repo.listForProperty).toHaveBeenCalledWith(
+        "property-1",
+        "owner-1",
+      );
+      expect(result).toEqual([{ id: "req-1" }, { id: "req-2" }]);
+    });
+
+    it("returns a real, honest empty list rather than an error when none exist yet", async () => {
+      repo.listForProperty.mockResolvedValue([]);
+
+      const result = await procurementService.listForProperty(
+        "property-1",
+        "owner-1",
+      );
+
+      expect(result).toEqual([]);
     });
   });
 
