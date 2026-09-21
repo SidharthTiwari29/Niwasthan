@@ -35,6 +35,11 @@ export const designBoqGenerationService = {
         "This design project is not tied to a specific room - generating a real BOQ needs to know which room's needs to curate for",
       );
     }
+    if (project.directions && project.directions.length === 0) {
+      throw new ConflictError(
+        "Choose and activate a design direction before generating a BOQ - procurement must follow an explicit customer decision",
+      );
+    }
 
     const needs = getRoomCategoryNeeds(project.room.type);
     if (needs.length === 0) {

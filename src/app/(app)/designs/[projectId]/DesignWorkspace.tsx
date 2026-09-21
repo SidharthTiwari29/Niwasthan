@@ -468,7 +468,7 @@ export function DesignWorkspace({
             <div className="rounded-xl bg-paper/70 p-4"><p className="font-mono text-[9px] uppercase tracking-[0.15em] text-ink-soft">Dimensions</p><p className="mt-2 font-body text-sm font-medium text-ink">{roomEvidence?.lengthFt && roomEvidence?.widthFt ? `${roomEvidence.lengthFt}ft × ${roomEvidence.widthFt}ft` : "Unknown"}</p></div>
             <div className="rounded-xl bg-paper/70 p-4"><p className="font-mono text-[9px] uppercase tracking-[0.15em] text-ink-soft">Layout objects</p><p className="mt-2 font-body text-sm font-medium text-ink">Not placed yet</p></div>
           </div>
-          <p className="mt-5 rounded-xl border border-brass/30 bg-brass/10 px-4 py-3 font-body text-xs leading-relaxed text-ink-soft">Buildability status: <strong className="text-ink">not yet assessed</strong>. This is different from “fits” and keeps the decision honest until a real layout is checked.</p>
+          <p className="mt-5 rounded-xl border border-brass/30 bg-brass/10 px-4 py-3 font-body text-xs leading-relaxed text-ink-soft">Buildability status: <strong className="text-ink">{realityChecks === null ? "not yet assessed" : realityChecks.length === 0 ? "no conflicts found in the current model" : "review required"}</strong>. This is different from “fits” and keeps the decision honest until a real layout is checked.</p>
           <div className="mt-6 border-t border-paper-raised pt-6">
             <div className="flex flex-wrap items-end justify-between gap-4"><div><p className="font-mono text-[9px] uppercase tracking-[0.18em] text-laterite">Placed objects</p><p className="mt-2 font-body text-sm text-ink-soft">Add the furniture or fixtures you want checked in the room.</p></div><button onClick={runRealityCheck} disabled={realityBusy || layoutObjects.length === 0} className="rounded-full bg-ink px-4 py-2.5 font-body text-xs font-semibold text-paper disabled:opacity-40">{realityBusy ? "Checking…" : "Run reality check"}</button></div>
             <div className="mt-4 grid gap-2 sm:grid-cols-[1.4fr_repeat(4,1fr)_auto]">
@@ -517,7 +517,7 @@ export function DesignWorkspace({
                       disabled={busy}
                       className="font-body text-xs font-medium text-laterite hover:underline disabled:opacity-50"
                     >
-                      {t("makeActive")}
+                      Approve this direction
                     </button>
                   ) : null}
                 </div>
