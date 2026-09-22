@@ -1600,6 +1600,7 @@ model AgentObservation {
   triggeringEventId   String?
   createdAt           DateTime @default(now())
   decisions           AgentDecision[]
+  escalations         AgentEscalation[]
 
   @@index([agentName, capability, createdAt])
   @@index([propertyId, createdAt])
@@ -1614,6 +1615,7 @@ model AgentDecision {
   createdAt      DateTime        @default(now())
   observation    AgentObservation @relation(fields: [observationId], references: [id], onDelete: Cascade)
   actions        AgentAction[]
+  escalations    AgentEscalation[]
 
   @@index([observationId, createdAt])
 }
@@ -1628,8 +1630,82 @@ model AgentAction {
   createdAt      DateTime         @default(now())
   completedAt    DateTime?
   decision       AgentDecision    @relation(fields: [decisionId], references: [id], onDelete: Cascade)
+  attempts       AgentActionAttempt[]
 
   @@index([actionType, status, createdAt])
+}
+
+model AgentActionAttempt {
+  id          String           @id @default(cuid())
+  actionId    String
+  attemptNo   Int
+  status      AgentActionStatus
+  startedAt   DateTime         @default(now())
+  completedAt DateTime?
+  error       String?
+  result      Json?
+  action      AgentAction       @relation(fields: [actionId], references: [id], onDelete: Cascade)
+
+  @@unique([actionId, attemptNo])
+  @@index([status, startedAt])
+}
+
+model AgentEscalation {
+  id            String          @id @default(cuid())
+  agentName     String
+  severity      EventSeverity
+  reason        String          @db.Text
+  status        String          @default("OPEN")
+  humanRequired Boolean         @default(true)
+  observationId String?
+  decisionId    String?
+  incidentId    String?
+  createdAt     DateTime        @default(now())
+  resolvedAt    DateTime?
+  observation   AgentObservation? @relation(fields: [observationId], references: [id], onDelete: SetNull)
+  decision      AgentDecision?  @relation(fields: [decisionId], references: [id], onDelete: SetNull)
+
+  @@index([status, severity, createdAt])
+  @@index([agentName, createdAt])
+}
+
+model OperationalMetricSnapshot {
+  id          String   @id @default(cuid())
+  metricName  String
+  classification String
+  value       Decimal? @db.Decimal(20, 4)
+  numerator   Decimal? @db.Decimal(20, 4)
+  denominator Decimal? @db.Decimal(20, 4)
+  periodStart DateTime
+  periodEnd   DateTime
+  source      Json
+  createdAt   DateTime @default(now())
+
+  @@index([metricName, periodStart, periodEnd])
+  @@index([classification, createdAt])
+}
+
+model AgentPolicy {
+  id                       String   @id @default(cuid())
+  agentName                String   @unique
+  workflow                 String
+  readableScopes           Json
+  allowedTools             Json
+  autonomousActionClasses Json
+  prohibitedActions        Json
+  maxActionAttempts        Int      @default(1)
+  maxRetries               Int      @default(0)
+  escalationThreshold      Int      @default(1)
+  financialLimitMinor      BigInt?
+  customerImpactRule       String
+  modelProvider            String?
+  timeoutMs                Int      @default(10000)
+  enabled                  Boolean  @default(true)
+  version                  Int      @default(1)
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+
+  @@index([workflow, enabled])
 }
 
 // Reproducible founder/Process Lead report snapshots. The payload is the

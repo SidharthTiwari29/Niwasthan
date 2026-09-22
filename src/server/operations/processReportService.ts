@@ -5,14 +5,18 @@ import {
   type FounderReportMetrics,
   type ReportPeriod,
 } from "./founderReportService";
+import { correlateProcessLead } from "./processLeadService";
 
 function reportKey(period: ReportPeriod) {
   return `founder-report:email:${period.start.toISOString()}:${period.end.toISOString()}`;
 }
 
 export async function createFounderReportSnapshot(period: ReportPeriod) {
-  const metrics = await generateFounderReportMetrics(period);
-  const payload = JSON.parse(JSON.stringify(metrics)) as object;
+  const [metrics, processLead] = await Promise.all([
+    generateFounderReportMetrics(period),
+    correlateProcessLead(period),
+  ]);
+  const payload = JSON.parse(JSON.stringify({ ...metrics, processLead })) as object;
   return prisma.processReport.create({
     data: {
       reportType: "FOUNDER_DAILY",

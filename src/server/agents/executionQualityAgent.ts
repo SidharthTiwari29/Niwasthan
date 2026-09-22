@@ -1,5 +1,11 @@
 import { prisma } from "@/server/db/prisma";
 import { notificationService } from "@/server/services/notificationService";
+import {
+  assertAgentActionAllowed,
+  beginActionAttempt,
+  createAgentEscalation,
+  finishActionAttempt,
+} from "./agentGovernanceService";
 
 const AGENT_NAME = "EXECUTION_QUALITY";
 
@@ -48,6 +54,18 @@ export async function observeExecutionAndAct(executionId: string, ownerId: strin
       ? "Execution is complete and no unresolved snags remain; notifying the owner is a safe, reversible action. Handover acceptance remains human-controlled."
       : "Execution is not complete and there is no safe autonomous action to take.";
   const decision = await prisma.agentDecision.create({ data: { observationId: observation.id, actionClass, decision: actionType, reasoning } });
+  if (classification === "UNRESOLVED_SNAGS") {
+    await createAgentEscalation({
+      agentName: AGENT_NAME,
+      severity: "WARNING",
+      reason: `${unresolvedCount} unresolved snag(s) require human/customer attention.`,
+      observationId: observation.id,
+      decisionId: decision.id,
+    });
+  }
+  if (actionType !== "NO_AUTONOMOUS_ACTION") {
+    await assertAgentActionAllowed({ agentName: AGENT_NAME, actionClass, actionType });
+  }
   const idempotencyKey = `execution-quality:${executionId}:${classification}:${execution.updatedAt.toISOString()}`;
   let action;
   try {
@@ -60,6 +78,7 @@ export async function observeExecutionAndAct(executionId: string, ownerId: strin
     return prisma.agentAction.update({ where: { id: action.id }, data: { status: "SKIPPED", completedAt: new Date(), result: { reason: "No safe action" } } });
   }
 
+  const attempt = await beginActionAttempt(action.id, 1);
   try {
     await notificationService.notify({
       userId: ownerId,
@@ -71,8 +90,10 @@ export async function observeExecutionAndAct(executionId: string, ownerId: strin
       relatedEntityType: "ExecutionRecord",
       relatedEntityId: executionId,
     });
+    await finishActionAttempt(attempt.id, { status: "VERIFIED", result: { notificationSent: true, unresolvedCount } });
     return prisma.agentAction.update({ where: { id: action.id }, data: { status: "VERIFIED", completedAt: new Date(), result: { notificationSent: true, unresolvedCount } } });
   } catch (error) {
+    await finishActionAttempt(attempt.id, { status: "FAILED", error: error instanceof Error ? error.message : "Unknown notification failure" });
     await prisma.agentAction.update({ where: { id: action.id }, data: { status: "FAILED", completedAt: new Date(), result: { error: error instanceof Error ? error.message : "Unknown notification failure" } } });
     return action;
   }

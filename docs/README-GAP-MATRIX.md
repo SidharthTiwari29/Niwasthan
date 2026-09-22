@@ -19,8 +19,8 @@ The README is the canonical product contract. This matrix separates capabilities
 | Assistant | Anthropic tool-grounded assistant API with FAQ, budget, room context; authenticated Humsafar workspace | **Customer workspace implemented** | Add design, catalogue, lifecycle, and Home Memory tools |
 | Notifications | Authenticated list/read/mark-all APIs and notification service | **Implemented API** | Complete event coverage, push adapter, and customer notification center UI |
 | Home Memory / DNA | Property memory route and DNA API | **Implemented core** | Add edit/history controls and mobile parity |
-| Agentic operations | Events, incidents, agent memory primitives, bounded Execution & Quality agent; admin agent-operation query | **Partial** | Add specialist roster, Process Lead correlation, policy records, and operational UI |
-| Process Lead reporting | Authoritative metrics, persisted validated snapshots, idempotent email delivery, snapshot retrieval, admin report listing | **Persisted daily/on-demand foundation** | Add scheduled cadence, trend reports, report validation, and delivery worker |
+| Agentic operations | Events, incidents, agent memory primitives, bounded Execution & Quality agent; action attempts, escalations, metric snapshots, persisted AgentPolicy, admin agent-operation query | **Governed specialist slice implemented** | Add specialist roster, broader event triggers, and operational UI |
+| Process Lead reporting | Authoritative metrics, cross-agent correlation, persisted validated snapshots, idempotent email delivery, snapshot retrieval, admin report listing | **Persisted on-demand foundation** | Add scheduled daily/weekly cadence, trend reports, and delivery worker |
 | Mobile | First-class Expo client shell and truth-state UX | **Prototype surface, not shared authenticated client** | Connect auth/session, governed APIs, uploads, push, offline queue, and shared Home Memory |
 | Production operations | Tests, migrations, rate limits, authorization foundations | **Strong foundation** | Verify deployment secrets/providers, CI on main, background workers, push/email delivery, and production health |
 
