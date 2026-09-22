@@ -1631,3 +1631,36 @@ model AgentAction {
 
   @@index([actionType, status, createdAt])
 }
+
+// Reproducible founder/Process Lead report snapshots. The payload is the
+// exact validated report generated for a period; delivery records never
+// recompute a different report behind the audit trail.
+model ProcessReport {
+  id          String                  @id @default(cuid())
+  reportType  String
+  periodStart DateTime
+  periodEnd   DateTime
+  generatedAt DateTime                @default(now())
+  payload     Json
+  validation  String                  @default("VALIDATED")
+  deliveries  ProcessReportDelivery[]
+
+  @@index([reportType, periodStart, periodEnd])
+  @@index([generatedAt])
+}
+
+model ProcessReportDelivery {
+  id          String       @id @default(cuid())
+  reportId    String
+  channel     String
+  destination String
+  status      String       @default("PENDING")
+  idempotencyKey String    @unique
+  deliveredAt DateTime?
+  failure     String?
+  createdAt   DateTime     @default(now())
+  report      ProcessReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+
+  @@index([reportId, createdAt])
+  @@index([channel, status, createdAt])
+}

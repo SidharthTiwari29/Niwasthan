@@ -5,11 +5,13 @@ import { withErrorHandling } from "@/server/errors/handler";
 import { parseOrThrow } from "@/server/validators/parse";
 import {
   getAIUsageSummary,
+  listAgentOperations,
   listCatalogueForAdmin,
   listEntitlements,
   listJobs,
   listOperationalEvents,
   listPackages,
+  listProcessReports,
 } from "@/server/services/adminOperationsService";
 
 const querySchema = z.object({
@@ -20,6 +22,8 @@ const querySchema = z.object({
     "ai-usage",
     "catalogue",
     "events",
+    "agents",
+    "reports",
   ]),
   limit: z.coerce.number().int().positive().max(500).optional(),
   type: z.string().trim().min(1).max(100).optional(),
@@ -58,5 +62,9 @@ export const GET = withErrorHandling(async (request: Request) => {
       return NextResponse.json({
         events: await listOperationalEvents(limit, { type, severity }),
       });
+    case "agents":
+      return NextResponse.json({ agents: await listAgentOperations(limit) });
+    case "reports":
+      return NextResponse.json({ reports: await listProcessReports(limit) });
   }
 });
