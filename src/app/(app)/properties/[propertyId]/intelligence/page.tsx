@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { requireAuth } from "@/server/middleware/requireAuth";
 import { propertyService } from "@/server/services/propertyService";
 import { IntelligenceWorkspace } from "./IntelligenceWorkspace";
@@ -11,13 +12,14 @@ export default async function PropertyIntelligencePage({ params }: PageProps) {
   const { userId } = await requireAuth();
   const property = await propertyService.get(propertyId, userId);
   if (!property) notFound();
+  const t = await getTranslations("intelligenceWorkspace");
   return (
     <div className="space-y-6">
       <Link
         href={`/properties/${propertyId}`}
         className="font-body text-sm text-ink-soft transition-colors hover:text-ink"
       >
-        ← Back to {property.name}
+        {t("backToProperty", { name: property.name })}
       </Link>
       <IntelligenceWorkspace
         propertyId={propertyId}
