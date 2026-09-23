@@ -99,6 +99,16 @@ enum AssetType {
   OTHER
 }
 
+enum UploadSessionStatus {
+  CREATED
+  UPLOADING
+  CLIENT_VERIFIED
+  UNKNOWN
+  COMPLETED
+  EXPIRED
+  CANCELLED
+}
+
 enum PurchaseStatus {
   CREATED
   PAID
@@ -592,10 +602,31 @@ model Asset {
   // asset attached to a property, before any design work exists.
   propertyId      String?
   property        Property?      @relation(fields: [propertyId], references: [id])
+  uploadSession   UploadSession?
 
   @@index([type, createdAt])
   @@index([jobId])
   @@index([propertyId])
+}
+
+model UploadSession {
+  id               String              @id @default(cuid())
+  userId           String
+  assetId          String              @unique
+  idempotencyKey   String
+  expectedBytes    BigInt?
+  expectedChecksum String?
+  chunkSizeBytes   Int                 @default(5242880)
+  uploadedRanges   Json
+  status           UploadSessionStatus @default(CREATED)
+  expiresAt        DateTime
+  completedAt      DateTime?
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+  asset            Asset               @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  @@unique([userId, idempotencyKey])
+  @@index([userId, status, createdAt])
+  @@index([expiresAt, status])
 }
 
 model AIJob {
