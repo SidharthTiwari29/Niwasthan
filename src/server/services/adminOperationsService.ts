@@ -53,6 +53,35 @@ export function listJobs(limit = 100) {
     },
   });
 }
+
+export function listAgentOperations(limit = 100) {
+  return prisma.agentObservation.findMany({
+    orderBy: { createdAt: "desc" },
+    take: Math.min(limit, 500),
+    include: { decisions: { include: { actions: true } } },
+  });
+}
+
+export function listProcessReports(limit = 50) {
+  return prisma.processReport.findMany({
+    orderBy: { generatedAt: "desc" },
+    take: Math.min(limit, 100),
+    select: {
+      id: true,
+      reportType: true,
+      periodStart: true,
+      periodEnd: true,
+      generatedAt: true,
+      validation: true,
+      deliveries: {
+        orderBy: { createdAt: "desc" },
+        take: 5,
+        select: { id: true, channel: true, status: true, deliveredAt: true, failure: true },
+      },
+    },
+  });
+}
+
 export async function getAIUsageSummary() {
   const rows = await prisma.aIJob.groupBy({
     by: ["provider", "status"],

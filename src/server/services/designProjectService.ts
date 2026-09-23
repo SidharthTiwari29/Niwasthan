@@ -123,6 +123,15 @@ export async function listDesignProjectsForProperty(
 export async function getDesignProject(projectId: string, ownerId: string) {
   return prisma.designProject.findFirst({
     where: { id: projectId, ownerId },
-    include: { room: true },
+    include: {
+      room: {
+        include: {
+          roomUnderstandings: {
+            orderBy: { version: "desc" },
+            take: 1,
+          },
+        },
+      },
+    },
   });
 }

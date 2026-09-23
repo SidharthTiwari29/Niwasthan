@@ -4,6 +4,7 @@ import { procurementRepository } from "@/server/repositories/procurementReposito
 import { evaluateNegotiation } from "@/server/services/negotiationEngine";
 import { notificationService } from "@/server/services/notificationService";
 import { referralService } from "@/server/services/referralService";
+import { observeExecutionAndAct } from "@/server/agents/executionQualityAgent";
 import type { OrderState } from "@/server/execution/orderWorkflow";
 import type {
   CreateProcurementRequestInput,
@@ -186,6 +187,7 @@ export const procurementService = {
       relatedEntityType: "ExecutionRecord",
       relatedEntityId: executionId,
     });
+    await observeExecutionAndAct(executionId, ownerId);
     return execution;
   },
 

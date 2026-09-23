@@ -62,6 +62,23 @@ describe("designBoqGenerationService.generateForProject", () => {
     expect(curation.recommend).not.toHaveBeenCalled();
   });
 
+  it("requires an active customer-approved direction before downstream BOQ generation", async () => {
+    repo.findProjectWithRoomForOwner.mockResolvedValue({
+      id: "project-1",
+      room: { type: "LIVING_ROOM" },
+      directions: [],
+    } as never);
+
+    await expect(
+      designBoqGenerationService.generateForProject(
+        "project-1",
+        "user-1",
+        500_000n,
+      ),
+    ).rejects.toThrow("Choose and activate a design direction");
+    expect(curation.recommend).not.toHaveBeenCalled();
+  });
+
   it("generates a real recommendation using the room's real category needs", async () => {
     repo.findProjectWithRoomForOwner.mockResolvedValue({
       id: "project-1",
