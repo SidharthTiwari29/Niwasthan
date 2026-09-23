@@ -16,7 +16,9 @@ export async function createFounderReportSnapshot(period: ReportPeriod) {
     generateFounderReportMetrics(period),
     correlateProcessLead(period),
   ]);
-  const payload = JSON.parse(JSON.stringify({ ...metrics, processLead })) as object;
+  const payload = JSON.parse(
+    JSON.stringify({ ...metrics, processLead }),
+  ) as object;
   return prisma.processReport.create({
     data: {
       reportType: "FOUNDER_DAILY",
@@ -29,29 +31,45 @@ export async function createFounderReportSnapshot(period: ReportPeriod) {
 }
 
 export async function deliverFounderReportSnapshot(reportId: string) {
-  const report = await prisma.processReport.findUnique({ where: { id: reportId } });
+  const report = await prisma.processReport.findUnique({
+    where: { id: reportId },
+  });
   if (!report) throw new Error("PROCESS_REPORT_NOT_FOUND");
-  const stored = report.payload as unknown as Omit<FounderReportMetrics, "period" | "generatedAt"> & {
+  const stored = report.payload as unknown as Omit<
+    FounderReportMetrics,
+    "period" | "generatedAt"
+  > & {
     period: { start: string; end: string };
     generatedAt: string;
   };
   const metrics: FounderReportMetrics = {
     ...stored,
-    period: { start: new Date(stored.period.start), end: new Date(stored.period.end) },
+    period: {
+      start: new Date(stored.period.start),
+      end: new Date(stored.period.end),
+    },
     generatedAt: new Date(stored.generatedAt),
   };
-  const idempotencyKey = reportKey({ start: report.periodStart, end: report.periodEnd });
-  const existing = await prisma.processReportDelivery.findUnique({ where: { idempotencyKey } });
-  if (existing?.status === "DELIVERED") return { report, delivery: existing, deduplicated: true };
-
-  const delivery = existing ?? await prisma.processReportDelivery.create({
-    data: {
-      reportId,
-      channel: "EMAIL",
-      destination: "FOUNDER_REPORT_EMAIL",
-      idempotencyKey,
-    },
+  const idempotencyKey = reportKey({
+    start: report.periodStart,
+    end: report.periodEnd,
   });
+  const existing = await prisma.processReportDelivery.findUnique({
+    where: { idempotencyKey },
+  });
+  if (existing?.status === "DELIVERED")
+    return { report, delivery: existing, deduplicated: true };
+
+  const delivery =
+    existing ??
+    (await prisma.processReportDelivery.create({
+      data: {
+        reportId,
+        channel: "EMAIL",
+        destination: "FOUNDER_REPORT_EMAIL",
+        idempotencyKey,
+      },
+    }));
 
   try {
     await sendFounderReportEmail(metrics);
@@ -63,7 +81,11 @@ export async function deliverFounderReportSnapshot(reportId: string) {
   } catch (error) {
     await prisma.processReportDelivery.update({
       where: { id: delivery.id },
-      data: { status: "FAILED", failure: error instanceof Error ? error.message : "UNKNOWN_DELIVERY_FAILURE" },
+      data: {
+        status: "FAILED",
+        failure:
+          error instanceof Error ? error.message : "UNKNOWN_DELIVERY_FAILURE",
+      },
     });
     throw error;
   }

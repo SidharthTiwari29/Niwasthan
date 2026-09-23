@@ -3,6 +3,7 @@ import { ConflictError, NotFoundError } from "@/server/errors/AppError";
 import { procurementRepository } from "@/server/repositories/procurementRepository";
 import { notificationService } from "@/server/services/notificationService";
 import { referralService } from "@/server/services/referralService";
+import { observeExecutionAndAct } from "@/server/agents/executionQualityAgent";
 import { procurementService } from "./procurementService";
 
 vi.mock("@/server/services/referralService", () => ({
@@ -15,6 +16,10 @@ vi.mock("@/server/services/notificationService", () => ({
   notificationService: {
     notify: vi.fn(),
   },
+}));
+
+vi.mock("@/server/agents/executionQualityAgent", () => ({
+  observeExecutionAndAct: vi.fn(),
 }));
 
 vi.mock("@/server/repositories/procurementRepository", () => ({

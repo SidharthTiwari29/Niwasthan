@@ -106,7 +106,9 @@ export function DesignWorkspace({
     widthMm: "1200",
     depthMm: "600",
   });
-  const [realityChecks, setRealityChecks] = useState<RealityCheck[] | null>(null);
+  const [realityChecks, setRealityChecks] = useState<RealityCheck[] | null>(
+    null,
+  );
   const [realityBusy, setRealityBusy] = useState(false);
   const [newDirectionName, setNewDirectionName] = useState("");
   const [targetBudget, setTargetBudget] = useState("");
@@ -132,31 +134,42 @@ export function DesignWorkspace({
     ALTERNATIVE: tStatus("alternative"),
     REJECTED: tStatus("rejected"),
   };
-  const roomWidthMm = roomEvidence?.widthFt ? roomEvidence.widthFt * 304.8 : null;
-  const roomDepthMm = roomEvidence?.lengthFt ? roomEvidence.lengthFt * 304.8 : null;
+  const roomWidthMm = roomEvidence?.widthFt
+    ? roomEvidence.widthFt * 304.8
+    : null;
+  const roomDepthMm = roomEvidence?.lengthFt
+    ? roomEvidence.lengthFt * 304.8
+    : null;
 
   async function addLayoutObject() {
     setError(null);
     setRealityChecks(null);
     setBusy(true);
     try {
-      const response = await fetch(`/api/design-projects/${projectId}/layout-objects`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: newObject.name,
-          xMm: Number(newObject.xMm),
-          yMm: Number(newObject.yMm),
-          widthMm: Number(newObject.widthMm),
-          depthMm: Number(newObject.depthMm),
-        }),
-      });
+      const response = await fetch(
+        `/api/design-projects/${projectId}/layout-objects`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: newObject.name,
+            xMm: Number(newObject.xMm),
+            yMm: Number(newObject.yMm),
+            widthMm: Number(newObject.widthMm),
+            depthMm: Number(newObject.depthMm),
+          }),
+        },
+      );
       if (!response.ok) throw new Error("Could not add this layout object.");
       const { object } = await response.json();
       setLayoutObjects((current) => [...current, object]);
       setNewObject((current) => ({ ...current, name: "" }));
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Could not add this layout object.");
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Could not add this layout object.",
+      );
     } finally {
       setBusy(false);
     }
@@ -165,24 +178,66 @@ export function DesignWorkspace({
   async function removeLayoutObject(objectId: string) {
     setError(null);
     try {
-      const response = await fetch(`/api/design-projects/${projectId}/layout-objects/${objectId}`, { method: "DELETE" });
+      const response = await fetch(
+        `/api/design-projects/${projectId}/layout-objects/${objectId}`,
+        { method: "DELETE" },
+      );
       if (!response.ok) throw new Error("Could not remove this layout object.");
-      setLayoutObjects((current) => current.filter((object) => object.id !== objectId));
+      setLayoutObjects((current) =>
+        current.filter((object) => object.id !== objectId),
+      );
       setRealityChecks(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Could not remove this layout object.");
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Could not remove this layout object.",
+      );
     }
   }
 
-  async function moveLayoutObject(object: LayoutObject, event: DragEvent<HTMLDivElement>) {
+  async function moveLayoutObject(
+    object: LayoutObject,
+    event: DragEvent<HTMLDivElement>,
+  ) {
     if (!roomWidthMm || !roomDepthMm) return;
     const bounds = event.currentTarget.parentElement?.getBoundingClientRect();
     if (!bounds) return;
-    const xMm = Math.max(0, Math.min(Math.round(((event.clientX - bounds.left) / bounds.width) * roomWidthMm), Math.round(roomWidthMm - object.widthMm)));
-    const yMm = Math.max(0, Math.min(Math.round(((event.clientY - bounds.top) / bounds.height) * roomDepthMm), Math.round(roomDepthMm - object.depthMm)));
-    setLayoutObjects((current) => current.map((item) => item.id === object.id ? { ...item, xMm, yMm } : item));
-    const response = await fetch(`/api/design-projects/${projectId}/layout-objects/${object.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ xMm, yMm }) });
-    if (!response.ok) setError("The object moved visually but could not be saved. Refresh before running a reality check.");
+    const xMm = Math.max(
+      0,
+      Math.min(
+        Math.round(
+          ((event.clientX - bounds.left) / bounds.width) * roomWidthMm,
+        ),
+        Math.round(roomWidthMm - object.widthMm),
+      ),
+    );
+    const yMm = Math.max(
+      0,
+      Math.min(
+        Math.round(
+          ((event.clientY - bounds.top) / bounds.height) * roomDepthMm,
+        ),
+        Math.round(roomDepthMm - object.depthMm),
+      ),
+    );
+    setLayoutObjects((current) =>
+      current.map((item) =>
+        item.id === object.id ? { ...item, xMm, yMm } : item,
+      ),
+    );
+    const response = await fetch(
+      `/api/design-projects/${projectId}/layout-objects/${object.id}`,
+      {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ xMm, yMm }),
+      },
+    );
+    if (!response.ok)
+      setError(
+        "The object moved visually but could not be saved. Refresh before running a reality check.",
+      );
     setRealityChecks(null);
   }
 
@@ -194,24 +249,36 @@ export function DesignWorkspace({
       return;
     }
     if (layoutObjects.length === 0) {
-      setError("Add at least one layout object before running a reality check.");
+      setError(
+        "Add at least one layout object before running a reality check.",
+      );
       return;
     }
     setRealityBusy(true);
     try {
-      const response = await fetch(`/api/design-projects/${projectId}/reality-check`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          room: { widthMm: Math.round(roomEvidence.widthFt * 304.8), depthMm: Math.round(roomEvidence.lengthFt * 304.8) },
-          objects: layoutObjects,
-        }),
-      });
+      const response = await fetch(
+        `/api/design-projects/${projectId}/reality-check`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            room: {
+              widthMm: Math.round(roomEvidence.widthFt * 304.8),
+              depthMm: Math.round(roomEvidence.lengthFt * 304.8),
+            },
+            objects: layoutObjects,
+          }),
+        },
+      );
       if (!response.ok) throw new Error("Reality check is not available yet.");
       const { checks } = await response.json();
       setRealityChecks(checks);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Reality check is not available yet.");
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Reality check is not available yet.",
+      );
     } finally {
       setRealityBusy(false);
     }
@@ -441,50 +508,267 @@ export function DesignWorkspace({
         <div className="pointer-events-none absolute -right-24 -top-28 h-72 w-72 rounded-full border border-brass/25" />
         <div className="relative max-w-3xl">
           <div className="flex flex-wrap items-center gap-2 font-mono text-[9px] uppercase tracking-[0.22em] text-paper/55">
-            <span className="rounded-full bg-paper/10 px-2.5 py-1 text-brass">Design decision room</span>
+            <span className="rounded-full bg-paper/10 px-2.5 py-1 text-brass">
+              Design decision room
+            </span>
             <span>Real home context</span>
           </div>
-          <h2 className="mt-5 font-display text-[clamp(2.7rem,6vw,5.2rem)] font-semibold leading-[0.86] tracking-[-0.06em] text-paper">Make the beautiful choice buildable.</h2>
-          <p className="mt-5 max-w-2xl font-body text-sm leading-relaxed text-paper/65 md:text-base">Compare directions, then see what each choice changes in materials, budget, maintenance, confidence, and execution. A render can inspire the decision; evidence earns it.</p>
-          <div className="mt-6 flex flex-wrap gap-2 text-[10px] font-mono uppercase tracking-[0.16em] text-paper/55"><span className="rounded-full border border-moss/50 px-2.5 py-1.5 text-[#b9c8af]">● confirmed</span><span className="rounded-full border border-brass/50 px-2.5 py-1.5 text-brass">✦ inferred</span><span className="rounded-full border border-paper/20 px-2.5 py-1.5">? unknown</span></div>
+          <h2 className="mt-5 font-display text-[clamp(2.7rem,6vw,5.2rem)] font-semibold leading-[0.86] tracking-[-0.06em] text-paper">
+            Make the beautiful choice buildable.
+          </h2>
+          <p className="mt-5 max-w-2xl font-body text-sm leading-relaxed text-paper/65 md:text-base">
+            Compare directions, then see what each choice changes in materials,
+            budget, maintenance, confidence, and execution. A render can inspire
+            the decision; evidence earns it.
+          </p>
+          <div className="mt-6 flex flex-wrap gap-2 text-[10px] font-mono uppercase tracking-[0.16em] text-paper/55">
+            <span className="rounded-full border border-moss/50 px-2.5 py-1.5 text-[#b9c8af]">
+              ● confirmed
+            </span>
+            <span className="rounded-full border border-brass/50 px-2.5 py-1.5 text-brass">
+              ✦ inferred
+            </span>
+            <span className="rounded-full border border-paper/20 px-2.5 py-1.5">
+              ? unknown
+            </span>
+          </div>
         </div>
       </section>
       {hasRoom ? (
         <section className="rounded-[1.5rem] border border-ink/10 bg-white p-6 md:p-8">
           <div className="flex flex-wrap items-start justify-between gap-5">
-            <div><p className="font-mono text-[9px] uppercase tracking-[0.24em] text-laterite">Spatial gate</p><h2 className="mt-2 font-display text-3xl font-semibold tracking-[-0.04em]">Can this direction live in the room?</h2><p className="mt-3 max-w-2xl font-body text-sm leading-relaxed text-ink-soft">Reality checks use room dimensions and placed objects. We will not call a layout feasible until those inputs exist.</p></div>
-            <span className={`rounded-full px-3 py-1.5 font-mono text-[9px] uppercase tracking-[0.15em] ${roomEvidence?.status === "CONFIRMED" ? "bg-[#e1eadb] text-moss-deep" : "bg-paper-raised text-ink-soft"}`}>{roomEvidence?.status === "CONFIRMED" ? "Room confirmed" : "Room evidence needs review"}</span>
+            <div>
+              <p className="font-mono text-[9px] uppercase tracking-[0.24em] text-laterite">
+                Spatial gate
+              </p>
+              <h2 className="mt-2 font-display text-3xl font-semibold tracking-[-0.04em]">
+                Can this direction live in the room?
+              </h2>
+              <p className="mt-3 max-w-2xl font-body text-sm leading-relaxed text-ink-soft">
+                Reality checks use room dimensions and placed objects. We will
+                not call a layout feasible until those inputs exist.
+              </p>
+            </div>
+            <span
+              className={`rounded-full px-3 py-1.5 font-mono text-[9px] uppercase tracking-[0.15em] ${roomEvidence?.status === "CONFIRMED" ? "bg-[#e1eadb] text-moss-deep" : "bg-paper-raised text-ink-soft"}`}
+            >
+              {roomEvidence?.status === "CONFIRMED"
+                ? "Room confirmed"
+                : "Room evidence needs review"}
+            </span>
           </div>
           <div className="mt-6 grid gap-3 sm:grid-cols-3">
-            <div className="rounded-xl bg-paper/70 p-4"><p className="font-mono text-[9px] uppercase tracking-[0.15em] text-ink-soft">Room</p><p className="mt-2 font-body text-sm font-medium text-ink">{roomEvidence?.roomName ?? "Unknown"}</p></div>
-            <div className="rounded-xl bg-paper/70 p-4"><p className="font-mono text-[9px] uppercase tracking-[0.15em] text-ink-soft">Dimensions</p><p className="mt-2 font-body text-sm font-medium text-ink">{roomEvidence?.lengthFt && roomEvidence?.widthFt ? `${roomEvidence.lengthFt}ft × ${roomEvidence.widthFt}ft` : "Unknown"}</p></div>
-            <div className="rounded-xl bg-paper/70 p-4"><p className="font-mono text-[9px] uppercase tracking-[0.15em] text-ink-soft">Layout objects</p><p className="mt-2 font-body text-sm font-medium text-ink">Not placed yet</p></div>
-          </div>
-          <p className="mt-5 rounded-xl border border-brass/30 bg-brass/10 px-4 py-3 font-body text-xs leading-relaxed text-ink-soft">Buildability status: <strong className="text-ink">{realityChecks === null ? "not yet assessed" : realityChecks.length === 0 ? "no conflicts found in the current model" : "review required"}</strong>. This is different from “fits” and keeps the decision honest until a real layout is checked.</p>
-          <div className="mt-6 border-t border-paper-raised pt-6">
-            <div className="flex flex-wrap items-end justify-between gap-4"><div><p className="font-mono text-[9px] uppercase tracking-[0.18em] text-laterite">Placed objects</p><p className="mt-2 font-body text-sm text-ink-soft">Add the furniture or fixtures you want checked in the room.</p></div><button onClick={runRealityCheck} disabled={realityBusy || layoutObjects.length === 0} className="rounded-full bg-ink px-4 py-2.5 font-body text-xs font-semibold text-paper disabled:opacity-40">{realityBusy ? "Checking…" : "Run reality check"}</button></div>
-            <div className="mt-4 grid gap-2 sm:grid-cols-[1.4fr_repeat(4,1fr)_auto]">
-              {(["name", "xMm", "yMm", "widthMm", "depthMm"] as const).map((field) => <input key={field} value={newObject[field]} onChange={(event) => setNewObject((current) => ({ ...current, [field]: event.target.value }))} placeholder={field === "name" ? "Object name" : field.replace("Mm", " (mm)")} type={field === "name" ? "text" : "number"} className="min-w-0 rounded-xl border border-ink/15 bg-paper/30 px-3 py-2.5 font-body text-xs text-ink outline-none focus-visible:border-laterite" />)}
-              <button onClick={addLayoutObject} disabled={busy || !newObject.name.trim()} className="rounded-xl bg-laterite px-3 py-2.5 font-body text-xs font-semibold text-paper disabled:opacity-40">Add</button>
+            <div className="rounded-xl bg-paper/70 p-4">
+              <p className="font-mono text-[9px] uppercase tracking-[0.15em] text-ink-soft">
+                Room
+              </p>
+              <p className="mt-2 font-body text-sm font-medium text-ink">
+                {roomEvidence?.roomName ?? "Unknown"}
+              </p>
             </div>
-            {layoutObjects.length > 0 ? <ul className="mt-4 space-y-2">{layoutObjects.map((object) => <li key={object.id} className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-paper/70 px-4 py-3"><span className="font-body text-sm font-medium text-ink">{object.name}</span><span className="font-mono text-[10px] text-ink-soft">{object.widthMm} × {object.depthMm}mm at {object.xMm}, {object.yMm}</span><button onClick={() => removeLayoutObject(object.id)} className="font-body text-xs text-laterite hover:underline">Remove</button></li>)}</ul> : <p className="mt-4 font-body text-xs text-ink-soft">No placed objects yet.</p>}
-            {roomWidthMm && roomDepthMm && layoutObjects.length > 0 ? <div className="mt-5 overflow-hidden rounded-2xl border border-ink/10 bg-[#f5f0e7] p-4"><div className="mb-3 flex items-center justify-between gap-3"><p className="font-mono text-[9px] uppercase tracking-[0.16em] text-ink-soft">Top view · drag to reposition · proportional, not to scale</p><span className="font-mono text-[9px] text-ink-soft">{roomEvidence?.widthFt}ft × {roomEvidence?.lengthFt}ft</span></div><div className="relative mx-auto aspect-[1.5] max-w-2xl overflow-hidden rounded-lg border-2 border-ink/25 bg-paper"><div className="absolute inset-0 opacity-40" style={{ backgroundImage: "linear-gradient(to right, rgba(31,31,29,.08) 1px, transparent 1px), linear-gradient(to bottom, rgba(31,31,29,.08) 1px, transparent 1px)", backgroundSize: "5% 5%" }} />{layoutObjects.map((object, index) => <div key={object.id} draggable onDragEnd={(event) => void moveLayoutObject(object, event)} title={`${object.name} · ${object.widthMm} × ${object.depthMm}mm`} className={`absolute flex cursor-grab items-center justify-center overflow-hidden rounded-md border px-1 text-center font-mono text-[8px] leading-tight active:cursor-grabbing ${index % 2 === 0 ? "border-laterite/60 bg-laterite/25 text-laterite-deep" : "border-moss/60 bg-moss/25 text-moss-deep"}`} style={{ left: `${(object.xMm / roomWidthMm) * 100}%`, top: `${(object.yMm / roomDepthMm) * 100}%`, width: `${Math.min((object.widthMm / roomWidthMm) * 100, 100)}%`, height: `${Math.min((object.depthMm / roomDepthMm) * 100, 100)}%` }}>{object.name}</div>)}</div></div> : null}
-            {realityChecks ? <div className={`mt-4 rounded-xl border px-4 py-3 ${realityChecks.some((check) => check.severity === "error") ? "border-alert/40 bg-alert/5" : realityChecks.length > 0 ? "border-brass/40 bg-brass/10" : "border-moss/40 bg-moss/10"}`}><p className="font-mono text-[9px] uppercase tracking-[0.16em] text-ink-soft">Reality-check result</p><p className="mt-2 font-body text-sm font-semibold text-ink">{realityChecks.length === 0 ? "No spatial conflicts found in the placed objects." : `${realityChecks.length} issue${realityChecks.length === 1 ? "" : "s"} needs review.`}</p>{realityChecks.length > 0 ? <ul className="mt-2 space-y-1">{realityChecks.map((check) => <li key={`${check.code}-${check.message}`} className="font-body text-xs text-ink-soft">{check.severity === "error" ? "●" : "▲"} {check.message}</li>)}</ul> : null}</div> : null}
+            <div className="rounded-xl bg-paper/70 p-4">
+              <p className="font-mono text-[9px] uppercase tracking-[0.15em] text-ink-soft">
+                Dimensions
+              </p>
+              <p className="mt-2 font-body text-sm font-medium text-ink">
+                {roomEvidence?.lengthFt && roomEvidence?.widthFt
+                  ? `${roomEvidence.lengthFt}ft × ${roomEvidence.widthFt}ft`
+                  : "Unknown"}
+              </p>
+            </div>
+            <div className="rounded-xl bg-paper/70 p-4">
+              <p className="font-mono text-[9px] uppercase tracking-[0.15em] text-ink-soft">
+                Layout objects
+              </p>
+              <p className="mt-2 font-body text-sm font-medium text-ink">
+                Not placed yet
+              </p>
+            </div>
           </div>
-          {roomEvidence?.status !== "CONFIRMED" ? <a href={`/properties/${propertyId}/rooms/${roomEvidence?.roomId}/understanding`} className="mt-5 inline-flex font-body text-sm font-semibold text-laterite hover:underline">Review room evidence →</a> : null}
+          <p className="mt-5 rounded-xl border border-brass/30 bg-brass/10 px-4 py-3 font-body text-xs leading-relaxed text-ink-soft">
+            Buildability status:{" "}
+            <strong className="text-ink">
+              {realityChecks === null
+                ? "not yet assessed"
+                : realityChecks.length === 0
+                  ? "no conflicts found in the current model"
+                  : "review required"}
+            </strong>
+            . This is different from “fits” and keeps the decision honest until
+            a real layout is checked.
+          </p>
+          <div className="mt-6 border-t border-paper-raised pt-6">
+            <div className="flex flex-wrap items-end justify-between gap-4">
+              <div>
+                <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-laterite">
+                  Placed objects
+                </p>
+                <p className="mt-2 font-body text-sm text-ink-soft">
+                  Add the furniture or fixtures you want checked in the room.
+                </p>
+              </div>
+              <button
+                onClick={runRealityCheck}
+                disabled={realityBusy || layoutObjects.length === 0}
+                className="rounded-full bg-ink px-4 py-2.5 font-body text-xs font-semibold text-paper disabled:opacity-40"
+              >
+                {realityBusy ? "Checking…" : "Run reality check"}
+              </button>
+            </div>
+            <div className="mt-4 grid gap-2 sm:grid-cols-[1.4fr_repeat(4,1fr)_auto]">
+              {(["name", "xMm", "yMm", "widthMm", "depthMm"] as const).map(
+                (field) => (
+                  <input
+                    key={field}
+                    value={newObject[field]}
+                    onChange={(event) =>
+                      setNewObject((current) => ({
+                        ...current,
+                        [field]: event.target.value,
+                      }))
+                    }
+                    placeholder={
+                      field === "name"
+                        ? "Object name"
+                        : field.replace("Mm", " (mm)")
+                    }
+                    type={field === "name" ? "text" : "number"}
+                    className="min-w-0 rounded-xl border border-ink/15 bg-paper/30 px-3 py-2.5 font-body text-xs text-ink outline-none focus-visible:border-laterite"
+                  />
+                ),
+              )}
+              <button
+                onClick={addLayoutObject}
+                disabled={busy || !newObject.name.trim()}
+                className="rounded-xl bg-laterite px-3 py-2.5 font-body text-xs font-semibold text-paper disabled:opacity-40"
+              >
+                Add
+              </button>
+            </div>
+            {layoutObjects.length > 0 ? (
+              <ul className="mt-4 space-y-2">
+                {layoutObjects.map((object) => (
+                  <li
+                    key={object.id}
+                    className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-paper/70 px-4 py-3"
+                  >
+                    <span className="font-body text-sm font-medium text-ink">
+                      {object.name}
+                    </span>
+                    <span className="font-mono text-[10px] text-ink-soft">
+                      {object.widthMm} × {object.depthMm}mm at {object.xMm},{" "}
+                      {object.yMm}
+                    </span>
+                    <button
+                      onClick={() => removeLayoutObject(object.id)}
+                      className="font-body text-xs text-laterite hover:underline"
+                    >
+                      Remove
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="mt-4 font-body text-xs text-ink-soft">
+                No placed objects yet.
+              </p>
+            )}
+            {roomWidthMm && roomDepthMm && layoutObjects.length > 0 ? (
+              <div className="mt-5 overflow-hidden rounded-2xl border border-ink/10 bg-[#f5f0e7] p-4">
+                <div className="mb-3 flex items-center justify-between gap-3">
+                  <p className="font-mono text-[9px] uppercase tracking-[0.16em] text-ink-soft">
+                    Top view · drag to reposition · proportional, not to scale
+                  </p>
+                  <span className="font-mono text-[9px] text-ink-soft">
+                    {roomEvidence?.widthFt}ft × {roomEvidence?.lengthFt}ft
+                  </span>
+                </div>
+                <div className="relative mx-auto aspect-[1.5] max-w-2xl overflow-hidden rounded-lg border-2 border-ink/25 bg-paper">
+                  <div
+                    className="absolute inset-0 opacity-40"
+                    style={{
+                      backgroundImage:
+                        "linear-gradient(to right, rgba(31,31,29,.08) 1px, transparent 1px), linear-gradient(to bottom, rgba(31,31,29,.08) 1px, transparent 1px)",
+                      backgroundSize: "5% 5%",
+                    }}
+                  />
+                  {layoutObjects.map((object, index) => (
+                    <div
+                      key={object.id}
+                      draggable
+                      onDragEnd={(event) =>
+                        void moveLayoutObject(object, event)
+                      }
+                      title={`${object.name} · ${object.widthMm} × ${object.depthMm}mm`}
+                      className={`absolute flex cursor-grab items-center justify-center overflow-hidden rounded-md border px-1 text-center font-mono text-[8px] leading-tight active:cursor-grabbing ${index % 2 === 0 ? "border-laterite/60 bg-laterite/25 text-laterite-deep" : "border-moss/60 bg-moss/25 text-moss-deep"}`}
+                      style={{
+                        left: `${(object.xMm / roomWidthMm) * 100}%`,
+                        top: `${(object.yMm / roomDepthMm) * 100}%`,
+                        width: `${Math.min((object.widthMm / roomWidthMm) * 100, 100)}%`,
+                        height: `${Math.min((object.depthMm / roomDepthMm) * 100, 100)}%`,
+                      }}
+                    >
+                      {object.name}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+            {realityChecks ? (
+              <div
+                className={`mt-4 rounded-xl border px-4 py-3 ${realityChecks.some((check) => check.severity === "error") ? "border-alert/40 bg-alert/5" : realityChecks.length > 0 ? "border-brass/40 bg-brass/10" : "border-moss/40 bg-moss/10"}`}
+              >
+                <p className="font-mono text-[9px] uppercase tracking-[0.16em] text-ink-soft">
+                  Reality-check result
+                </p>
+                <p className="mt-2 font-body text-sm font-semibold text-ink">
+                  {realityChecks.length === 0
+                    ? "No spatial conflicts found in the placed objects."
+                    : `${realityChecks.length} issue${realityChecks.length === 1 ? "" : "s"} needs review.`}
+                </p>
+                {realityChecks.length > 0 ? (
+                  <ul className="mt-2 space-y-1">
+                    {realityChecks.map((check) => (
+                      <li
+                        key={`${check.code}-${check.message}`}
+                        className="font-body text-xs text-ink-soft"
+                      >
+                        {check.severity === "error" ? "●" : "▲"} {check.message}
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
+              </div>
+            ) : null}
+          </div>
+          {roomEvidence?.status !== "CONFIRMED" ? (
+            <a
+              href={`/properties/${propertyId}/rooms/${roomEvidence?.roomId}/understanding`}
+              className="mt-5 inline-flex font-body text-sm font-semibold text-laterite hover:underline"
+            >
+              Review room evidence →
+            </a>
+          ) : null}
         </section>
       ) : null}
       {/* Directions */}
       <section className="rounded-[1.5rem] border border-ink/10 bg-white p-6 md:p-8">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="font-mono text-[9px] uppercase tracking-[0.24em] text-laterite">01 · options</p>
+            <p className="font-mono text-[9px] uppercase tracking-[0.24em] text-laterite">
+              01 · options
+            </p>
             <h2 className="mt-2 font-display text-3xl font-semibold tracking-[-0.04em]">
-          {t("directionsHeading")}
+              {t("directionsHeading")}
             </h2>
-            <p className="mt-2 max-w-xl font-body text-sm leading-relaxed text-ink-soft">Start with three strong directions. The active direction is the one you can carry into budget and buildability review.</p>
+            <p className="mt-2 max-w-xl font-body text-sm leading-relaxed text-ink-soft">
+              Start with three strong directions. The active direction is the
+              one you can carry into budget and buildability review.
+            </p>
           </div>
-          <span className="rounded-full bg-paper-raised px-3 py-1.5 font-mono text-[9px] uppercase tracking-[0.16em] text-ink-soft">{directions.length} directions · user controlled</span>
+          <span className="rounded-full bg-paper-raised px-3 py-1.5 font-mono text-[9px] uppercase tracking-[0.16em] text-ink-soft">
+            {directions.length} directions · user controlled
+          </span>
         </div>
         {directions.length === 0 ? (
           <p className="mt-2 font-body text-sm text-ink-soft">
@@ -497,7 +781,14 @@ export function DesignWorkspace({
                 key={direction.id}
                 className={`flex min-h-24 flex-col justify-between rounded-2xl border p-4 transition-all hover:-translate-y-0.5 hover:shadow-md ${direction.status === "ACTIVE" ? "border-laterite/50 bg-[#fbf5ef]" : "border-paper-raised bg-paper/40"}`}
               >
-                <div className="flex items-start justify-between gap-3"><span className="font-display text-xl font-semibold tracking-[-0.03em] text-ink">{direction.name}</span><span className="font-mono text-[9px] uppercase tracking-[0.15em] text-ink-soft">{direction.status === "ACTIVE" ? "● active" : "○ option"}</span></div>
+                <div className="flex items-start justify-between gap-3">
+                  <span className="font-display text-xl font-semibold tracking-[-0.03em] text-ink">
+                    {direction.name}
+                  </span>
+                  <span className="font-mono text-[9px] uppercase tracking-[0.15em] text-ink-soft">
+                    {direction.status === "ACTIVE" ? "● active" : "○ option"}
+                  </span>
+                </div>
                 <div className="flex items-center gap-3">
                   <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-ink-soft">
                     {statusLabels[direction.status] ?? direction.status}
@@ -518,15 +809,27 @@ export function DesignWorkspace({
           </ul>
         )}
         <div className="mt-6 grid gap-3 border-t border-paper-raised pt-6 md:grid-cols-4">
-          {["Look & feeling", "Budget impact", "Buildability", "Evidence"].map((lens, index) => (
-            <div key={lens} className="rounded-xl bg-paper/70 p-4">
-              <p className="font-mono text-[9px] uppercase tracking-[0.16em] text-ink-soft">{lens}</p>
-              <p className="mt-3 font-body text-xs leading-relaxed text-ink-soft">
-                {index === 0 ? "Direction imagery and material intent." : index === 1 ? "Generate a BOQ to see the real cost basis." : index === 2 ? "Review spatial evidence before locking." : "Source, freshness, and confidence stay visible."}
-              </p>
-              <span className="mt-3 inline-flex rounded-full bg-paper-raised px-2 py-1 font-mono text-[9px] uppercase tracking-[0.12em] text-ink-soft">Awaiting project data</span>
-            </div>
-          ))}
+          {["Look & feeling", "Budget impact", "Buildability", "Evidence"].map(
+            (lens, index) => (
+              <div key={lens} className="rounded-xl bg-paper/70 p-4">
+                <p className="font-mono text-[9px] uppercase tracking-[0.16em] text-ink-soft">
+                  {lens}
+                </p>
+                <p className="mt-3 font-body text-xs leading-relaxed text-ink-soft">
+                  {index === 0
+                    ? "Direction imagery and material intent."
+                    : index === 1
+                      ? "Generate a BOQ to see the real cost basis."
+                      : index === 2
+                        ? "Review spatial evidence before locking."
+                        : "Source, freshness, and confidence stay visible."}
+                </p>
+                <span className="mt-3 inline-flex rounded-full bg-paper-raised px-2 py-1 font-mono text-[9px] uppercase tracking-[0.12em] text-ink-soft">
+                  Awaiting project data
+                </span>
+              </div>
+            ),
+          )}
         </div>
         <div className="mt-5 flex flex-col gap-3 sm:flex-row">
           <input
@@ -582,10 +885,51 @@ export function DesignWorkspace({
           </h2>
           <div className="mt-4 rounded-2xl bg-[#e9e1d5] p-5">
             <div className="flex flex-wrap items-start justify-between gap-4">
-              <div><p className="font-mono text-[9px] uppercase tracking-[0.18em] text-laterite">Consequence preview</p><p className="mt-2 max-w-xl font-body text-sm leading-relaxed text-ink-soft">Known prices are included in the total. Anything without a verified unit price remains visible as unknown—not silently estimated.</p></div>
-              {budgetPreviewBusy ? <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-ink-soft">Calculating…</span> : budgetPreview ? <span className="font-display text-2xl font-semibold">{formatRupees(budgetPreview.totalKnownImpactMinor)}</span> : <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-ink-soft">Preview unavailable</span>}
+              <div>
+                <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-laterite">
+                  Consequence preview
+                </p>
+                <p className="mt-2 max-w-xl font-body text-sm leading-relaxed text-ink-soft">
+                  Known prices are included in the total. Anything without a
+                  verified unit price remains visible as unknown—not silently
+                  estimated.
+                </p>
+              </div>
+              {budgetPreviewBusy ? (
+                <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-ink-soft">
+                  Calculating…
+                </span>
+              ) : budgetPreview ? (
+                <span className="font-display text-2xl font-semibold">
+                  {formatRupees(budgetPreview.totalKnownImpactMinor)}
+                </span>
+              ) : (
+                <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-ink-soft">
+                  Preview unavailable
+                </span>
+              )}
             </div>
-            {budgetPreview ? <div className="mt-4 grid gap-2 sm:grid-cols-2">{budgetPreview.impacts.map((impact) => <div key={impact.selectionId} className="flex items-center justify-between rounded-xl bg-paper/70 px-3 py-2.5"><span className="min-w-0 truncate font-body text-xs text-ink-soft">{impact.description}</span><span className={`ml-3 shrink-0 font-mono text-[10px] ${impact.priceKnown ? "text-moss-deep" : "text-laterite"}`}>{impact.priceKnown ? formatRupees(impact.impactMinor ?? 0) : "price unknown"}</span></div>)}</div> : null}
+            {budgetPreview ? (
+              <div className="mt-4 grid gap-2 sm:grid-cols-2">
+                {budgetPreview.impacts.map((impact) => (
+                  <div
+                    key={impact.selectionId}
+                    className="flex items-center justify-between rounded-xl bg-paper/70 px-3 py-2.5"
+                  >
+                    <span className="min-w-0 truncate font-body text-xs text-ink-soft">
+                      {impact.description}
+                    </span>
+                    <span
+                      className={`ml-3 shrink-0 font-mono text-[10px] ${impact.priceKnown ? "text-moss-deep" : "text-laterite"}`}
+                    >
+                      {impact.priceKnown
+                        ? formatRupees(impact.impactMinor ?? 0)
+                        : "price unknown"}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            ) : null}
           </div>
           <ul className="mt-4 divide-y divide-paper-raised">
             {recommendation.selections.map((selection) => (

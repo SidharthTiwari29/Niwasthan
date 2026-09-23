@@ -15,17 +15,25 @@ const objectSchema = z.object({
 });
 type RouteParams = { params: Promise<{ projectId: string }> };
 
-export const GET = withErrorHandling(async (_request: Request, { params }: RouteParams) => {
-  const { userId } = await requireAuth();
-  const { projectId } = parseOrThrow(paramsSchema, await params);
-  const objects = await designLayoutObjectService.list(projectId, userId);
-  return NextResponse.json({ objects });
-});
+export const GET = withErrorHandling(
+  async (_request: Request, { params }: RouteParams) => {
+    const { userId } = await requireAuth();
+    const { projectId } = parseOrThrow(paramsSchema, await params);
+    const objects = await designLayoutObjectService.list(projectId, userId);
+    return NextResponse.json({ objects });
+  },
+);
 
-export const POST = withErrorHandling(async (request: Request, { params }: RouteParams) => {
-  const { userId } = await requireAuth();
-  const { projectId } = parseOrThrow(paramsSchema, await params);
-  const input = parseOrThrow(objectSchema, await request.json());
-  const object = await designLayoutObjectService.create(projectId, userId, input);
-  return NextResponse.json({ object }, { status: 201 });
-});
+export const POST = withErrorHandling(
+  async (request: Request, { params }: RouteParams) => {
+    const { userId } = await requireAuth();
+    const { projectId } = parseOrThrow(paramsSchema, await params);
+    const input = parseOrThrow(objectSchema, await request.json());
+    const object = await designLayoutObjectService.create(
+      projectId,
+      userId,
+      input,
+    );
+    return NextResponse.json({ object }, { status: 201 });
+  },
+);

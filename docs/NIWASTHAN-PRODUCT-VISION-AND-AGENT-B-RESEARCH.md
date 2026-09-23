@@ -8,26 +8,26 @@ The repository already contains a serious backend foundation. It includes proper
 
 ## Current-state audit
 
-| Area | Evidence found | Assessment |
-|---|---|---|
-| Product vision | Root `README.md` defines the North Star, principles, canonical sequence, product surfaces, and integrity rules | Strong and unusually explicit |
-| Backend architecture | `ARCHITECTURE.md`, `src/server`, Prisma schema, API routes, durable jobs, provider adapters | Substantial foundation; production completeness must still be verified by CI and configured providers |
-| Web surface | `src/app` includes cinematic home, how-it-works, pricing, onboarding, properties, designs, catalogue, checkout, and legal pages | Present but needs a consistent workspace system and stronger cross-surface UX |
-| Mobile surface | Handoff says no frontend UI existed at the earlier checkpoint; the current checkout has a Capacitor-related branch but no complete first-class mobile product was found on the active tree | Primary implementation gap |
-| Commercial integrity | README and architecture distinguish estimates, potential savings, accepted savings, and verified savings | Preserve this as a product differentiator |
-| Agentic operations | The repository contains specialist agents and a process-lead model with bounded actions and auditability | Useful for reliability and operations; should not be confused with customer-facing AI autonomy |
+| Area                 | Evidence found                                                                                                                                                                             | Assessment                                                                                            |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------- |
+| Product vision       | Root `README.md` defines the North Star, principles, canonical sequence, product surfaces, and integrity rules                                                                             | Strong and unusually explicit                                                                         |
+| Backend architecture | `ARCHITECTURE.md`, `src/server`, Prisma schema, API routes, durable jobs, provider adapters                                                                                                | Substantial foundation; production completeness must still be verified by CI and configured providers |
+| Web surface          | `src/app` includes cinematic home, how-it-works, pricing, onboarding, properties, designs, catalogue, checkout, and legal pages                                                            | Present but needs a consistent workspace system and stronger cross-surface UX                         |
+| Mobile surface       | Handoff says no frontend UI existed at the earlier checkpoint; the current checkout has a Capacitor-related branch but no complete first-class mobile product was found on the active tree | Primary implementation gap                                                                            |
+| Commercial integrity | README and architecture distinguish estimates, potential savings, accepted savings, and verified savings                                                                                   | Preserve this as a product differentiator                                                             |
+| Agentic operations   | The repository contains specialist agents and a process-lead model with bounded actions and auditability                                                                                   | Useful for reliability and operations; should not be confused with customer-facing AI autonomy        |
 
 ## Product vision synthesis
 
 The product should be organized around five customer questions.
 
-| Customer question | Product answer | Trust requirement |
-|---|---|---|
-| What is actually true about my home? | Property profile, plan/photo capture, room and element model, confidence review | Unknown and inferred values remain visibly labeled |
-| What could my home become? | Multiple strong design directions grounded in the actual property | Visual output is not proof of buildability |
-| What will it cost and what are the trade-offs? | Live budget, BOQ, substitutions, What-If scenarios, savings modes | Every price has a source, freshness, basis, and confidence |
-| How do I turn the decision into reality? | Procurement, quotes, execution milestones, snagging, handover | Locked decisions cannot be silently changed |
-| How will the product remember and help later? | Home Memory and NIWASTHAN DNA | Durable ownership, history, and explicit permissions |
+| Customer question                              | Product answer                                                                  | Trust requirement                                          |
+| ---------------------------------------------- | ------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| What is actually true about my home?           | Property profile, plan/photo capture, room and element model, confidence review | Unknown and inferred values remain visibly labeled         |
+| What could my home become?                     | Multiple strong design directions grounded in the actual property               | Visual output is not proof of buildability                 |
+| What will it cost and what are the trade-offs? | Live budget, BOQ, substitutions, What-If scenarios, savings modes               | Every price has a source, freshness, basis, and confidence |
+| How do I turn the decision into reality?       | Procurement, quotes, execution milestones, snagging, handover                   | Locked decisions cannot be silently changed                |
+| How will the product remember and help later?  | Home Memory and NIWASTHAN DNA                                                   | Durable ownership, history, and explicit permissions       |
 
 ## Agent B competitive audit
 
@@ -39,15 +39,15 @@ The public launch announcement describes Agent B’s larger thesis as connecting
 
 ### What Niwasthan should incorporate
 
-| Agent B pattern | Niwasthan adaptation | Why it matters |
-|---|---|---|
-| Unified space plus product workflow | A single design workspace that binds rooms, elements, products, materials, and downstream budget lines | Prevents disconnected inspiration and purchasing |
-| Smart Project from layout to render | Home intelligence pipeline from plan/photo to spatial review to design direction to governed visualization | Keeps the actual property as source of truth |
-| Product customization | Product/material swap with compatibility, price delta, quality, maintenance, and buildability consequences | Makes alternatives useful rather than merely visual |
-| Floor-plan and layout editing | Prompt-assisted layout review with explicit inferred geometry and user confirmation | Increases trust and reduces bad downstream decisions |
-| Rapid focused tools | A small set of customer-facing tools: capture, compare, What-If, budget, review, and Humsafar | Avoids a confusing 20-tool toolbox while preserving speed |
-| Team workspace | Family, designer, supplier, and execution roles with decision locks and audit trail | Fits Indian household and delivery realities |
-| Catalog surface | Evidence-backed catalogue with source, freshness, geography, seller, warranty, and confidence | Differentiates from generic generated product imagery |
+| Agent B pattern                     | Niwasthan adaptation                                                                                       | Why it matters                                            |
+| ----------------------------------- | ---------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
+| Unified space plus product workflow | A single design workspace that binds rooms, elements, products, materials, and downstream budget lines     | Prevents disconnected inspiration and purchasing          |
+| Smart Project from layout to render | Home intelligence pipeline from plan/photo to spatial review to design direction to governed visualization | Keeps the actual property as source of truth              |
+| Product customization               | Product/material swap with compatibility, price delta, quality, maintenance, and buildability consequences | Makes alternatives useful rather than merely visual       |
+| Floor-plan and layout editing       | Prompt-assisted layout review with explicit inferred geometry and user confirmation                        | Increases trust and reduces bad downstream decisions      |
+| Rapid focused tools                 | A small set of customer-facing tools: capture, compare, What-If, budget, review, and Humsafar              | Avoids a confusing 20-tool toolbox while preserving speed |
+| Team workspace                      | Family, designer, supplier, and execution roles with decision locks and audit trail                        | Fits Indian household and delivery realities              |
+| Catalog surface                     | Evidence-backed catalogue with source, freshness, geography, seller, warranty, and confidence              | Differentiates from generic generated product imagery     |
 
 ### What Niwasthan should not copy
 

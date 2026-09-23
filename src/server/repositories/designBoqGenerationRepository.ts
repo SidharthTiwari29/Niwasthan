@@ -6,7 +6,11 @@ export const designBoqGenerationRepository = {
       where: { id: projectId, ownerId },
       include: {
         room: { select: { type: true } },
-        directions: { where: { status: "ACTIVE" }, select: { id: true }, take: 1 },
+        directions: {
+          where: { status: "ACTIVE" },
+          select: { id: true },
+          take: 1,
+        },
       },
     });
   },

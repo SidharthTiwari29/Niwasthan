@@ -1,6 +1,9 @@
 import { prisma } from "@/server/db/prisma";
 
-export async function getPropertyLifecycle(propertyId: string, ownerId: string) {
+export async function getPropertyLifecycle(
+  propertyId: string,
+  ownerId: string,
+) {
   const property = await prisma.property.findFirst({
     where: { id: propertyId, ownerId },
     select: {
@@ -12,7 +15,15 @@ export async function getPropertyLifecycle(propertyId: string, ownerId: string) 
           quotes: { orderBy: { createdAt: "desc" } },
           orders: {
             orderBy: { placedAt: "desc" },
-            include: { executions: { orderBy: { createdAt: "desc" }, include: { snags: { orderBy: { createdAt: "desc" } }, handover: true } } },
+            include: {
+              executions: {
+                orderBy: { createdAt: "desc" },
+                include: {
+                  snags: { orderBy: { createdAt: "desc" } },
+                  handover: true,
+                },
+              },
+            },
           },
         },
       },
@@ -48,11 +59,31 @@ export async function getPropertyLifecycle(propertyId: string, ownerId: string) 
         completedAt: execution.completedAt,
         snagNotes: execution.snagNotes,
         resolvedAt: execution.resolvedAt,
-        snags: execution.snags.map((snag) => ({ id: snag.id, title: snag.title, description: snag.description, status: snag.status, evidenceAssetIds: snag.evidenceAssetIds, createdAt: snag.createdAt, resolvedAt: snag.resolvedAt })),
-        handover: execution.handover ? { id: execution.handover.id, status: execution.handover.status, notes: execution.handover.notes, acceptedAt: execution.handover.acceptedAt } : null,
+        snags: execution.snags.map((snag) => ({
+          id: snag.id,
+          title: snag.title,
+          description: snag.description,
+          status: snag.status,
+          evidenceAssetIds: snag.evidenceAssetIds,
+          createdAt: snag.createdAt,
+          resolvedAt: snag.resolvedAt,
+        })),
+        handover: execution.handover
+          ? {
+              id: execution.handover.id,
+              status: execution.handover.status,
+              notes: execution.handover.notes,
+              acceptedAt: execution.handover.acceptedAt,
+            }
+          : null,
       })),
     })),
   }));
 
-  return { id: property.id, name: property.name, requests, handovers: property.handovers };
+  return {
+    id: property.id,
+    name: property.name,
+    requests,
+    handovers: property.handovers,
+  };
 }

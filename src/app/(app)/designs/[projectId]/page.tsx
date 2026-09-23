@@ -29,8 +29,10 @@ export default async function DesignProjectPage({
     rawDimensions && typeof rawDimensions === "object"
       ? (rawDimensions as Record<string, unknown>)
       : null;
-  const lengthFt = typeof dimensions?.lengthFt === "number" ? dimensions.lengthFt : null;
-  const widthFt = typeof dimensions?.widthFt === "number" ? dimensions.widthFt : null;
+  const lengthFt =
+    typeof dimensions?.lengthFt === "number" ? dimensions.lengthFt : null;
+  const widthFt =
+    typeof dimensions?.widthFt === "number" ? dimensions.widthFt : null;
 
   return (
     <div>

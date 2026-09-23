@@ -76,7 +76,13 @@ export function listProcessReports(limit = 50) {
       deliveries: {
         orderBy: { createdAt: "desc" },
         take: 5,
-        select: { id: true, channel: true, status: true, deliveredAt: true, failure: true },
+        select: {
+          id: true,
+          channel: true,
+          status: true,
+          deliveredAt: true,
+          failure: true,
+        },
       },
     },
   });

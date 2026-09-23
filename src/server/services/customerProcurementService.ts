@@ -1,6 +1,9 @@
 import { prisma } from "@/server/db/prisma";
 
-export async function getCustomerProcurement(propertyId: string, ownerId: string) {
+export async function getCustomerProcurement(
+  propertyId: string,
+  ownerId: string,
+) {
   const property = await prisma.property.findFirst({
     where: { id: propertyId, ownerId },
     select: {

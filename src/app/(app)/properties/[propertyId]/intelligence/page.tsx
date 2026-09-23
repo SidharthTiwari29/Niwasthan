@@ -11,5 +11,18 @@ export default async function PropertyIntelligencePage({ params }: PageProps) {
   const { userId } = await requireAuth();
   const property = await propertyService.get(propertyId, userId);
   if (!property) notFound();
-  return <div className="space-y-6"><Link href={`/properties/${propertyId}`} className="font-body text-sm text-ink-soft transition-colors hover:text-ink">← Back to {property.name}</Link><IntelligenceWorkspace propertyId={propertyId} propertyName={property.name} /></div>;
+  return (
+    <div className="space-y-6">
+      <Link
+        href={`/properties/${propertyId}`}
+        className="font-body text-sm text-ink-soft transition-colors hover:text-ink"
+      >
+        ← Back to {property.name}
+      </Link>
+      <IntelligenceWorkspace
+        propertyId={propertyId}
+        propertyName={property.name}
+      />
+    </div>
+  );
 }

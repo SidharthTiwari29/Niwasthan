@@ -26,21 +26,35 @@ export const designLayoutObjectService = {
     });
   },
 
-  async create(projectId: string, ownerId: string, input: DesignLayoutObjectInput) {
+  async create(
+    projectId: string,
+    ownerId: string,
+    input: DesignLayoutObjectInput,
+  ) {
     await assertProject(projectId, ownerId);
-    const count = await prisma.designLayoutObject.count({ where: { projectId } });
-    if (count >= 50) throw new Error("A design can contain at most 50 layout objects");
+    const count = await prisma.designLayoutObject.count({
+      where: { projectId },
+    });
+    if (count >= 50)
+      throw new Error("A design can contain at most 50 layout objects");
     return prisma.designLayoutObject.create({ data: { projectId, ...input } });
   },
 
-  async update(projectId: string, objectId: string, ownerId: string, input: Pick<DesignLayoutObjectInput, "xMm" | "yMm">) {
+  async update(
+    projectId: string,
+    objectId: string,
+    ownerId: string,
+    input: Pick<DesignLayoutObjectInput, "xMm" | "yMm">,
+  ) {
     await assertProject(projectId, ownerId);
     const result = await prisma.designLayoutObject.updateMany({
       where: { id: objectId, projectId },
       data: input,
     });
     if (result.count === 0) throw new NotFoundError("DesignLayoutObject");
-    return prisma.designLayoutObject.findUniqueOrThrow({ where: { id: objectId } });
+    return prisma.designLayoutObject.findUniqueOrThrow({
+      where: { id: objectId },
+    });
   },
 
   async remove(projectId: string, objectId: string, ownerId: string) {

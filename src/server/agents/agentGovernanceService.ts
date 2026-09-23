@@ -11,23 +11,30 @@ export async function assertAgentActionAllowed(input: {
 }) {
   const policy = await getAgentPolicy(input.agentName);
   if (!policy || !policy.enabled) throw new Error("AGENT_POLICY_UNAVAILABLE");
-  const allowed = Array.isArray(policy.autonomousActionClasses)
-    && (policy.autonomousActionClasses as unknown[]).includes(input.actionClass);
-  const prohibited = Array.isArray(policy.prohibitedActions)
-    && (policy.prohibitedActions as unknown[]).includes(input.actionType);
+  const allowed =
+    Array.isArray(policy.autonomousActionClasses) &&
+    (policy.autonomousActionClasses as unknown[]).includes(input.actionClass);
+  const prohibited =
+    Array.isArray(policy.prohibitedActions) &&
+    (policy.prohibitedActions as unknown[]).includes(input.actionType);
   if (!allowed || prohibited) throw new Error("AGENT_ACTION_NOT_AUTHORIZED");
   return policy;
 }
 
 export async function beginActionAttempt(actionId: string, attemptNo: number) {
-  return prisma.agentActionAttempt.create({ data: { actionId, attemptNo, status: "EXECUTED" } });
+  return prisma.agentActionAttempt.create({
+    data: { actionId, attemptNo, status: "EXECUTED" },
+  });
 }
 
-export async function finishActionAttempt(attemptId: string, input: {
-  status: "VERIFIED" | "FAILED" | "SKIPPED";
-  result?: Record<string, unknown>;
-  error?: string;
-}) {
+export async function finishActionAttempt(
+  attemptId: string,
+  input: {
+    status: "VERIFIED" | "FAILED" | "SKIPPED";
+    result?: Record<string, unknown>;
+    error?: string;
+  },
+) {
   return prisma.agentActionAttempt.update({
     where: { id: attemptId },
     data: {
