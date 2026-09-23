@@ -124,7 +124,18 @@
     "total": "Total",
     "commitBoq": "Commit this BOQ",
     "committedBoqHeading": "Real, committed BOQ",
-    "committedBoqDescription": "Committed. Your budget has been automatically reconciled against this real total."
+    "committedBoqDescription": "Committed. Your budget has been automatically reconciled against this real total.",
+    "renderSectionHeading": "See your future room",
+    "renderSectionDescription": "A real 3D scene or a full walkthrough, generated from this room's actual spatial data and your active design direction — not a stock rendering.",
+    "generate3dScene": "Generate 3D scene",
+    "generateWalkthrough": "Generate walkthrough",
+    "renderingInProgress": "Rendering your room — this can take a few minutes. Feel free to leave this page; we'll keep working on it.",
+    "renderFailed": "This render didn't complete.",
+    "renderTryAgain": "Try again",
+    "renderReady": "Your render is ready.",
+    "viewRealResult": "View the real result",
+    "renderCompleteFallback": "Render complete — the real result should appear on the next check.",
+    "renderStartError": "Couldn't start this render."
   },
   "directionStatus": {
     "active": "Active",

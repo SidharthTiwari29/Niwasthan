@@ -124,7 +124,18 @@
     "total": "ਕੁੱਲ",
     "commitBoq": "ਇਹ ਬੀਓਕਿਊ ਕਮਿਟ ਕਰੋ",
     "committedBoqHeading": "ਅਸਲੀ, ਕਮਿਟਿਡ ਬੀਓਕਿਊ",
-    "committedBoqDescription": "ਕਮਿਟ ਹੋ ਗਿਆ। ਤੁਹਾਡਾ ਬਜਟ ਇਸ ਅਸਲੀ ਕੁੱਲ ਰਕਮ ਦੇ ਅਨੁਸਾਰ ਆਪਣੇ ਆਪ ਮੇਲ ਖਾ ਗਿਆ ਹੈ।"
+    "committedBoqDescription": "ਕਮਿਟ ਹੋ ਗਿਆ। ਤੁਹਾਡਾ ਬਜਟ ਇਸ ਅਸਲੀ ਕੁੱਲ ਰਕਮ ਦੇ ਅਨੁਸਾਰ ਆਪਣੇ ਆਪ ਮੇਲ ਖਾ ਗਿਆ ਹੈ।",
+    "renderSectionHeading": "ਆਪਣਾ ਭਵਿੱਖ ਦਾ ਕਮਰਾ ਦੇਖੋ",
+    "renderSectionDescription": "ਇਸ ਕਮਰੇ ਦੇ ਅਸਲ ਸਥਾਨਕ ਡੇਟਾ ਅਤੇ ਤੁਹਾਡੀ ਸਰਗਰਮ ਡਿਜ਼ਾਈਨ ਦਿਸ਼ਾ ਤੋਂ ਬਣਾਇਆ ਗਿਆ ਅਸਲ 3D ਦ੍ਰਿਸ਼ ਜਾਂ ਪੂਰਾ ਵਾਕਥਰੂ — ਸਟਾਕ ਰੈਂਡਰਿੰਗ ਨਹੀਂ।",
+    "generate3dScene": "3D ਦ੍ਰਿਸ਼ ਬਣਾਓ",
+    "generateWalkthrough": "ਵਾਕਥਰੂ ਬਣਾਓ",
+    "renderingInProgress": "ਤੁਹਾਡਾ ਕਮਰਾ ਰੈਂਡਰ ਹੋ ਰਿਹਾ ਹੈ — ਇਸ ਵਿੱਚ ਕੁਝ ਮਿੰਟ ਲੱਗ ਸਕਦੇ ਹਨ। ਇਹ ਪੰਨਾ ਛੱਡਣ ਲਈ ਬੇਝਿਜਕ ਰਹੋ; ਅਸੀਂ ਕੰਮ ਜਾਰੀ ਰੱਖਾਂਗੇ।",
+    "renderFailed": "ਇਹ ਰੈਂਡਰ ਪੂਰਾ ਨਹੀਂ ਹੋਇਆ।",
+    "renderTryAgain": "ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ",
+    "renderReady": "ਤੁਹਾਡਾ ਰੈਂਡਰ ਤਿਆਰ ਹੈ।",
+    "viewRealResult": "ਅਸਲ ਨਤੀਜਾ ਦੇਖੋ",
+    "renderCompleteFallback": "ਰੈਂਡਰ ਪੂਰਾ ਹੋਇਆ — ਅਗਲੀ ਜਾਂਚ ਵਿੱਚ ਅਸਲ ਨਤੀਜਾ ਦਿਖਣਾ ਚਾਹੀਦਾ ਹੈ।",
+    "renderStartError": "ਇਹ ਰੈਂਡਰ ਸ਼ੁਰੂ ਨਹੀਂ ਹੋ ਸਕਿਆ।"
   },
   "directionStatus": {
     "active": "ਸਰਗਰਮ",

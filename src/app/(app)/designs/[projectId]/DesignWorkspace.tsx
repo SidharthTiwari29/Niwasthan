@@ -433,7 +433,7 @@ export function DesignWorkspace({
       });
       if (!response.ok) {
         const body = await response.json().catch(() => null);
-        throw new Error(body?.error?.message ?? "Couldn't start this render.");
+        throw new Error(body?.error?.message ?? t("renderStartError"));
       }
       const { job } = await response.json();
       setRenderJob({
@@ -443,9 +443,7 @@ export function DesignWorkspace({
         assets: job.assets ?? [],
       });
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Couldn't start this render.",
-      );
+      setError(err instanceof Error ? err.message : t("renderStartError"));
     } finally {
       setBusy(false);
     }
@@ -984,12 +982,10 @@ export function DesignWorkspace({
       {hasRoom ? (
         <section className="border-t border-paper-raised pt-8">
           <h2 className="font-display text-lg font-semibold">
-            See your future room
+            {t("renderSectionHeading")}
           </h2>
           <p className="mt-2 font-body text-sm text-ink-soft">
-            A real 3D scene or a full walkthrough, generated from this
-            room&apos;s actual spatial data and your active design direction -
-            not a stock rendering.
+            {t("renderSectionDescription")}
           </p>
           {!renderJob ? (
             <div className="mt-4 flex gap-3">
@@ -998,14 +994,14 @@ export function DesignWorkspace({
                 disabled={busy}
                 className="rounded-sm bg-indigo px-4 py-2 font-body text-sm font-medium text-paper transition-colors hover:bg-indigo-soft disabled:opacity-50"
               >
-                Generate 3D scene
+                {t("generate3dScene")}
               </button>
               <button
                 onClick={() => requestRender("WALKTHROUGH")}
                 disabled={busy}
                 className="rounded-sm bg-laterite px-4 py-2 font-body text-sm font-medium text-paper transition-colors hover:bg-laterite-deep disabled:opacity-50"
               >
-                Generate walkthrough
+                {t("generateWalkthrough")}
               </button>
             </div>
           ) : (
@@ -1014,26 +1010,25 @@ export function DesignWorkspace({
               renderJob.status === "RUNNING" ? (
                 <p className="flex items-center gap-2 font-body text-sm text-ink-soft">
                   <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-laterite" />
-                  Rendering your room — this can take a few minutes. Feel free
-                  to leave this page; we&apos;ll keep working on it.
+                  {t("renderingInProgress")}
                 </p>
               ) : renderJob.status === "FAILED" ? (
                 <div>
                   <p className="font-body text-sm text-alert">
-                    This render didn&apos;t complete.
+                    {t("renderFailed")}
                     {renderJob.errorMessage ? ` ${renderJob.errorMessage}` : ""}
                   </p>
                   <button
                     onClick={() => setRenderJob(null)}
                     className="mt-2 font-body text-xs text-laterite hover:underline"
                   >
-                    Try again
+                    {t("renderTryAgain")}
                   </button>
                 </div>
               ) : renderResultUrl ? (
                 <div>
                   <p className="font-body text-sm font-medium text-moss-deep">
-                    Your render is ready.
+                    {t("renderReady")}
                   </p>
                   <a
                     href={renderResultUrl}
@@ -1041,13 +1036,12 @@ export function DesignWorkspace({
                     rel="noreferrer noopener"
                     className="mt-2 inline-block font-body text-sm text-laterite hover:underline"
                   >
-                    View the real result →
+                    {t("viewRealResult")} →
                   </a>
                 </div>
               ) : (
                 <p className="font-body text-sm text-ink-soft">
-                  Render complete — the real result should appear on the next
-                  check.
+                  {t("renderCompleteFallback")}
                 </p>
               )}
             </div>
