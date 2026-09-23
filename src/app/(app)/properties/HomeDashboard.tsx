@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import {
   ArrowRight,
   Check,
@@ -21,39 +22,11 @@ export type DashboardProperty = {
   designCount: number;
 };
 
-const steps = [
-  {
-    number: "01",
-    title: "Tell us about your home",
-    description:
-      "Start with the real property, priorities, and budget you want to stay honest about.",
-    icon: House,
-  },
-  {
-    number: "02",
-    title: "Understand the space",
-    description:
-      "Upload a floor plan so rooms, dimensions, and unknowns can be reviewed before design decisions.",
-    icon: FileUp,
-  },
-  {
-    number: "03",
-    title: "Shape the direction",
-    description:
-      "Compare strong design directions grounded in your home—not a generic room.",
-    icon: Compass,
-  },
-  {
-    number: "04",
-    title: "Know what happens next",
-    description:
-      "See materials, budget impact, and execution choices before you commit.",
-    icon: Sparkles,
-  },
-] as const;
-
-function formatBudget(minor: number | null) {
-  if (!minor) return "Not set";
+function formatBudget(
+  minor: number | null,
+  t: Awaited<ReturnType<typeof getTranslations>>,
+) {
+  if (!minor) return t("budgetNotSet");
   return `₹${Math.round(minor / 100).toLocaleString("en-IN")}`;
 }
 function getProgress(property: DashboardProperty) {
@@ -61,25 +34,62 @@ function getProgress(property: DashboardProperty) {
   if (property.roomCount > 0) return 50;
   return 25;
 }
-function nextStep(property: DashboardProperty) {
+function nextStep(
+  property: DashboardProperty,
+  t: Awaited<ReturnType<typeof getTranslations>>,
+) {
   if (property.roomCount === 0)
     return {
-      label: "Upload your floor plan",
+      label: t("nextStepUploadFloorPlan"),
       href: `/properties/${property.id}/floor-plan`,
     };
   if (property.designCount === 0)
-    return { label: "Open your home", href: `/properties/${property.id}` };
-  return { label: "Continue designing", href: `/properties/${property.id}` };
+    return {
+      label: t("nextStepOpenHome"),
+      href: `/properties/${property.id}`,
+    };
+  return {
+    label: t("nextStepContinueDesigning"),
+    href: `/properties/${property.id}`,
+  };
 }
 
-export function HomeDashboard({
+export async function HomeDashboard({
   properties,
 }: {
   properties: DashboardProperty[];
 }) {
+  const t = await getTranslations("homeDashboard");
+  const steps = [
+    {
+      number: "01",
+      title: t("step1Title"),
+      description: t("step1Description"),
+      icon: House,
+    },
+    {
+      number: "02",
+      title: t("step2Title"),
+      description: t("step2Description"),
+      icon: FileUp,
+    },
+    {
+      number: "03",
+      title: t("step3Title"),
+      description: t("step3Description"),
+      icon: Compass,
+    },
+    {
+      number: "04",
+      title: t("step4Title"),
+      description: t("step4Description"),
+      icon: Sparkles,
+    },
+  ] as const;
+
   const featured = properties[0];
   const progress = featured ? getProgress(featured) : 0;
-  const action = featured ? nextStep(featured) : null;
+  const action = featured ? nextStep(featured, t) : null;
 
   return (
     <div className="space-y-12">
@@ -88,28 +98,26 @@ export function HomeDashboard({
         <div className="pointer-events-none absolute -bottom-44 left-1/2 h-96 w-96 rounded-full bg-laterite/15 blur-3xl" />
         <div className="relative max-w-4xl">
           <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-brass">
-            Your home intelligence
+            {t("eyebrowHomeIntelligence")}
           </p>
           <h1 className="mt-5 max-w-3xl font-display text-[clamp(3.6rem,8vw,7.2rem)] font-semibold leading-[0.82] tracking-[-0.06em]">
-            Build with more clarity.
+            {t("heroTitle")}
           </h1>
           <p className="mt-7 max-w-2xl font-body text-base leading-relaxed text-paper/65 md:text-lg">
-            Niwasthan connects your real home to design, materials, budget, and
-            execution—so you can see the important decisions before they become
-            expensive ones.
+            {t("heroDescription")}
           </p>
           <div className="mt-9 flex flex-wrap gap-3">
             <Link
               href={featured ? `/properties/${featured.id}` : "#your-homes"}
               className="inline-flex items-center gap-2 rounded-full bg-brass px-5 py-3 font-body text-sm font-semibold text-ink transition-transform hover:-translate-y-0.5 active:scale-[0.98]"
             >
-              Continue your journey <ArrowRight size={16} />
+              {t("continueYourJourney")} <ArrowRight size={16} />
             </Link>
             <Link
               href="#how-it-works"
               className="inline-flex items-center gap-2 rounded-full border border-paper/20 px-5 py-3 font-body text-sm text-paper/80 transition-colors hover:border-brass/60 hover:text-paper"
             >
-              See the system <ArrowRight size={15} />
+              {t("seeTheSystem")} <ArrowRight size={15} />
             </Link>
           </div>
         </div>
@@ -119,20 +127,20 @@ export function HomeDashboard({
         <div className="flex flex-wrap items-end justify-between gap-5">
           <div>
             <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-laterite">
-              Your projects
+              {t("yourProjectsEyebrow")}
             </p>
             <h2
               id="homes-heading"
               className="mt-3 font-display text-4xl font-semibold tracking-[-0.045em] md:text-5xl"
             >
-              The homes you are shaping.
+              {t("homesHeading")}
             </h2>
           </div>
           <Link
             href="#add-home"
             className="inline-flex items-center gap-2 rounded-full border border-ink/15 px-4 py-2.5 font-body text-sm font-medium text-ink transition-colors hover:border-laterite hover:text-laterite"
           >
-            Add another home <ArrowRight size={15} />
+            {t("addAnotherHome")} <ArrowRight size={15} />
           </Link>
         </div>
         {featured ? (
@@ -144,7 +152,7 @@ export function HomeDashboard({
               <div className="flex items-start justify-between gap-5">
                 <div>
                   <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-laterite">
-                    Active home
+                    {t("activeHomeLabel")}
                   </p>
                   <h3 className="mt-3 font-display text-4xl font-semibold tracking-[-0.05em]">
                     {featured.name}
@@ -152,7 +160,7 @@ export function HomeDashboard({
                   <p className="mt-2 font-body text-sm text-ink-soft">
                     {featured.city ??
                       featured.address ??
-                      "Location to be confirmed"}
+                      t("locationToBeConfirmed")}
                   </p>
                 </div>
                 <ArrowRight className="text-ink-soft transition-transform group-hover:translate-x-1 group-hover:text-laterite" />
@@ -160,7 +168,7 @@ export function HomeDashboard({
               <div className="mt-10 grid gap-5 border-t border-paper-raised pt-6 sm:grid-cols-3">
                 <div>
                   <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-ink-soft">
-                    Progress
+                    {t("progressLabel")}
                   </p>
                   <p className="mt-2 font-display text-2xl font-semibold">
                     {progress}%
@@ -168,7 +176,7 @@ export function HomeDashboard({
                 </div>
                 <div>
                   <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-ink-soft">
-                    Rooms understood
+                    {t("roomsUnderstoodLabel")}
                   </p>
                   <p className="mt-2 font-display text-2xl font-semibold">
                     {featured.roomCount}
@@ -176,10 +184,10 @@ export function HomeDashboard({
                 </div>
                 <div>
                   <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-ink-soft">
-                    Target budget
+                    {t("targetBudgetLabel")}
                   </p>
                   <p className="mt-2 font-display text-2xl font-semibold">
-                    {formatBudget(featured.targetBudgetMinor)}
+                    {formatBudget(featured.targetBudgetMinor, t)}
                   </p>
                 </div>
               </div>
@@ -195,16 +203,16 @@ export function HomeDashboard({
             </Link>
             <div className="rounded-[1.5rem] bg-paper-raised/60 p-7 md:p-9">
               <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-laterite">
-                Next best step
+                {t("nextBestStepEyebrow")}
               </p>
               <h3 className="mt-4 font-display text-3xl font-semibold leading-[0.95] tracking-[-0.04em]">
-                Keep the real home as your source of truth.
+                {t("keepRealHomeTitle")}
               </h3>
               <ul className="mt-7 space-y-4">
                 {[
-                  "Upload the floor plan or photos",
-                  "Review what is known and what is inferred",
-                  "Explore directions before locking decisions",
+                  t("uploadFloorPlanOrPhotos"),
+                  t("reviewKnownInferred"),
+                  t("exploreDirectionsBeforeLocking"),
                 ].map((item) => (
                   <li
                     key={item}
@@ -219,18 +227,18 @@ export function HomeDashboard({
                 href={action?.href ?? "#"}
                 className="mt-8 inline-flex items-center gap-2 font-body text-sm font-semibold text-laterite hover:underline"
               >
-                Continue with {featured.name} <ArrowRight size={15} />
+                {t("continueWithName", { name: featured.name })}{" "}
+                <ArrowRight size={15} />
               </Link>
             </div>
           </div>
         ) : (
           <div className="mt-8 rounded-[1.5rem] border border-dashed border-ink/20 bg-white px-7 py-12 text-center">
             <p className="font-display text-2xl font-semibold">
-              Your first home starts here.
+              {t("firstHomeStartsHere")}
             </p>
             <p className="mx-auto mt-3 max-w-md font-body text-sm leading-relaxed text-ink-soft">
-              Add the property you want to understand and we will guide you from
-              the real space to the next decision.
+              {t("firstHomeDescription")}
             </p>
           </div>
         )}
@@ -249,7 +257,7 @@ export function HomeDashboard({
                   <span className="mt-1 block font-body text-sm text-ink-soft">
                     {property.city ??
                       property.address ??
-                      "Location to be confirmed"}
+                      t("locationToBeConfirmed")}
                   </span>
                 </span>
                 <ArrowRight size={17} className="text-ink-soft" />
@@ -263,17 +271,17 @@ export function HomeDashboard({
         <div className="flex items-end justify-between gap-6">
           <div>
             <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-laterite">
-              The journey
+              {t("journeyEyebrow")}
             </p>
             <h2
               id="how-heading"
               className="mt-3 font-display text-4xl font-semibold tracking-[-0.045em] md:text-5xl"
             >
-              From real home to better decisions.
+              {t("fromRealHomeHeading")}
             </h2>
           </div>
           <span className="hidden font-mono text-[10px] uppercase tracking-[0.18em] text-ink-soft md:block">
-            04 steps · one connected context
+            {t("fourStepsLabel")}
           </span>
         </div>
         <div className="mt-8 grid gap-px overflow-hidden rounded-[1.5rem] border border-paper-raised bg-paper-raised md:grid-cols-2 xl:grid-cols-4">
@@ -314,33 +322,31 @@ export function HomeDashboard({
           <div className="rounded-[1.5rem] bg-[#e9e1d5] p-7 md:p-9">
             <Upload className="text-laterite" size={22} />
             <h2 className="mt-6 font-display text-4xl font-semibold tracking-[-0.045em]">
-              Bring the real home into the room.
+              {t("bringHomeIntoRoomTitle")}
             </h2>
             <p className="mt-4 max-w-md font-body text-sm leading-relaxed text-ink-soft">
-              Upload a plan, photo, video, or measurement. Unknowns stay visible
-              until you confirm them.
+              {t("bringHomeIntoRoomDescription")}
             </p>
             <Link
               href={featured ? `/properties/${featured.id}/floor-plan` : "#"}
               className="mt-7 inline-flex items-center gap-2 font-body text-sm font-semibold text-laterite"
             >
-              Upload a floor plan <ArrowRight size={15} />
+              {t("uploadFloorPlanCta")} <ArrowRight size={15} />
             </Link>
           </div>
           <div className="rounded-[1.5rem] bg-ink p-7 text-paper md:p-9">
             <WalletCards className="text-brass" size={22} />
             <h2 className="mt-6 font-display text-4xl font-semibold tracking-[-0.045em]">
-              A beautiful option should explain its consequences.
+              {t("beautifulOptionTitle")}
             </h2>
             <p className="mt-4 max-w-md font-body text-sm leading-relaxed text-paper/65">
-              Compare cost, maintenance, availability, confidence, and
-              buildability—not just the picture.
+              {t("beautifulOptionDescription")}
             </p>
             <Link
               href="/catalogue"
               className="mt-7 inline-flex items-center gap-2 font-body text-sm font-semibold text-brass"
             >
-              Explore catalogue intelligence <ArrowRight size={15} />
+              {t("exploreCatalogueCta")} <ArrowRight size={15} />
             </Link>
           </div>
         </div>
