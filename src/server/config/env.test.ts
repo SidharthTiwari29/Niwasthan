@@ -66,4 +66,26 @@ describe("getEnv", () => {
 
     expect(() => getEnv()).toThrow();
   });
+
+  it("does not throw when CRON_SECRET is unset or an empty string - not every environment runs cron", () => {
+    delete process.env.CRON_SECRET;
+    expect(() => getEnv()).not.toThrow();
+    expect(getEnv().CRON_SECRET).toBeUndefined();
+
+    process.env.CRON_SECRET = "";
+    expect(() => getEnv()).not.toThrow();
+    expect(getEnv().CRON_SECRET).toBeUndefined();
+  });
+
+  it("accepts a genuinely provided CRON_SECRET of real minimum length", () => {
+    process.env.CRON_SECRET = "a".repeat(16);
+
+    expect(getEnv().CRON_SECRET).toBe("a".repeat(16));
+  });
+
+  it("rejects a real but too-short CRON_SECRET rather than silently accepting a weak one", () => {
+    process.env.CRON_SECRET = "short";
+
+    expect(() => getEnv()).toThrow();
+  });
 });

@@ -46,6 +46,14 @@ const schema = z.object({
   FOUNDER_REPORT_EMAIL: emptyToUndefined(z.string().email()).default(
     "founder@niwasthan.com",
   ),
+  // Verifies that a scheduled report request genuinely came from
+  // Vercel's own Cron infrastructure, not an arbitrary caller who
+  // discovered the route - Vercel sends this exact value in the
+  // request's Authorization header for every real cron invocation.
+  // Optional here (not every environment runs cron), but the cron
+  // route itself refuses to run at all when it's unset, rather than
+  // silently allowing an unauthenticated trigger.
+  CRON_SECRET: emptyToUndefined(z.string().min(16)),
 });
 
 export function getEnv() {
