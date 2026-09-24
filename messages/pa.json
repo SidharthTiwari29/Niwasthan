@@ -230,5 +230,24 @@
     "whatIfPreviewError": "ਜੇ-ਤਾਂ ਪ੍ਰੀਵਿਊ ਦੀ ਗਣਨਾ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ।",
     "whatIfPreviewCalculated": "ਪ੍ਰੀਵਿਊ ਦੀ ਗਣਨਾ ਕੀਤੀ ਗਈ। ਇਹ ਇੱਕ ਸੰਭਾਵੀ ਤਬਦੀਲੀ ਹੈ, ਸਵੀਕਾਰ ਕੀਤੀ ਜਾਂ ਅਸਲ ਬੱਚਤ ਨਹੀਂ।",
     "humsafarNotConfigured": "ਇਸ ਵਾਤਾਵਰਣ ਵਿੱਚ ਹਮਸਫ਼ਰ ਅਜੇ ਕੌਂਫਿਗਰ ਨਹੀਂ ਕੀਤਾ ਗਿਆ ਹੈ।"
+  },
+  "propertyMemory": {
+    "backToProperty": "← {name} 'ਤੇ ਵਾਪਸ ਜਾਓ",
+    "eyebrowDna": "NIWASTHAN DNA™ · ਹੋਮ ਮੈਮੋਰੀ",
+    "heading": "ਇੱਕ ਘਰ ਨੂੰ ਉਹ ਯਾਦ ਰੱਖਣਾ ਚਾਹੀਦਾ ਹੈ ਜੋ ਤੁਹਾਡੇ ਲਈ ਮਾਇਨੇ ਰੱਖਦਾ ਹੈ।",
+    "description": "ਇਹ ਮੈਮੋਰੀ ਕਮਰਿਆਂ ਅਤੇ ਪ੍ਰੋਜੈਕਟਾਂ ਵਿੱਚ ਸਿਫ਼ਾਰਸ਼ਾਂ ਦੀ ਅਗਵਾਈ ਕਰਦੀ ਹੈ। ਇਹ ਇੱਕ ਉਪਭੋਗਤਾ-ਮਲਕੀਅਤ ਤਰਜੀਹ ਰਿਕਾਰਡ ਹੈ, ਭੌਤਿਕ ਘਰ ਬਾਰੇ ਕੋਈ ਦਾਅਵਾ ਨਹੀਂ।",
+    "recordedMemoryLabel": "ਦਰਜ ਮੈਮੋਰੀ",
+    "versionLanguage": "ਸੰਸਕਰਣ {version} · ਭਾਸ਼ਾ {language}",
+    "userStatedBadge": "ਉਪਭੋਗਤਾ ਦੁਆਰਾ ਦੱਸਿਆ ਗਿਆ",
+    "fieldHousehold": "ਪਰਿਵਾਰ",
+    "fieldLifestyle": "ਜੀਵਨ ਸ਼ੈਲੀ",
+    "fieldDesignPersonality": "ਡਿਜ਼ਾਈਨ ਸ਼ਖਸੀਅਤ",
+    "fieldStorageNeeds": "ਸਟੋਰੇਜ ਲੋੜਾਂ",
+    "fieldFunctionalNeeds": "ਕਾਰਜਸ਼ੀਲ ਲੋੜਾਂ",
+    "fieldFutureNeeds": "ਭਵਿੱਖ ਦੀਆਂ ਲੋੜਾਂ",
+    "fieldSmartHomePreferences": "ਸਮਾਰਟ-ਹੋਮ ਤਰਜੀਹਾਂ",
+    "notRecorded": "ਦਰਜ ਨਹੀਂ",
+    "emptyHeading": "ਹੋਮ ਮੈਮੋਰੀ ਅਜੇ ਦਰਜ ਨਹੀਂ ਕੀਤੀ ਗਈ ਹੈ।",
+    "emptyDescription": "Niwasthan ਕਿਸੇ ਤਿਆਰ ਕੀਤੀ ਤਸਵੀਰ ਜਾਂ ਕਲਿੱਕ ਤੋਂ ਜੀਵਨ ਸ਼ੈਲੀ ਤਰਜੀਹ ਦਾ ਅਨੁਮਾਨ ਨਹੀਂ ਲਗਾਏਗਾ। ਜਦੋਂ ਤੁਸੀਂ ਤਿਆਰ ਹੋਵੋ ਤਾਂ ਇਸਨੂੰ ਗਾਈਡਡ ਹੋਮ-ਇੰਟੈਲੀਜੈਂਸ ਪ੍ਰਵਾਹ ਰਾਹੀਂ ਸ਼ਾਮਲ ਕਰੋ।"
   }
 }

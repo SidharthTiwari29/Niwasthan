@@ -230,5 +230,24 @@
     "whatIfPreviewError": "काय-तर पूर्वावलोकनाची गणना करता आली नाही.",
     "whatIfPreviewCalculated": "पूर्वावलोकनाची गणना केली. हा एक संभाव्य बदल आहे, स्वीकारलेली किंवा वास्तविक बचत नाही.",
     "humsafarNotConfigured": "हमसफर अद्याप या वातावरणात कॉन्फिगर केलेला नाही."
+  },
+  "propertyMemory": {
+    "backToProperty": "← {name} कडे परत जा",
+    "eyebrowDna": "NIWASTHAN DNA™ · होम मेमरी",
+    "heading": "घराला तुमच्यासाठी काय महत्त्वाचे आहे हे लक्षात ठेवायला हवे.",
+    "description": "ही मेमरी खोल्या आणि प्रकल्पांमध्ये शिफारसींना मार्गदर्शन करते. हा एक वापरकर्ता-मालकीचा प्राधान्य रेकॉर्ड आहे, भौतिक घराबद्दलचा दावा नाही.",
+    "recordedMemoryLabel": "नोंदवलेली मेमरी",
+    "versionLanguage": "आवृत्ती {version} · भाषा {language}",
+    "userStatedBadge": "वापरकर्त्याने सांगितले",
+    "fieldHousehold": "कुटुंब",
+    "fieldLifestyle": "जीवनशैली",
+    "fieldDesignPersonality": "डिझाइन व्यक्तिमत्त्व",
+    "fieldStorageNeeds": "साठवण गरजा",
+    "fieldFunctionalNeeds": "कार्यात्मक गरजा",
+    "fieldFutureNeeds": "भविष्यातील गरजा",
+    "fieldSmartHomePreferences": "स्मार्ट-होम प्राधान्ये",
+    "notRecorded": "नोंदवलेले नाही",
+    "emptyHeading": "होम मेमरी अद्याप नोंदवली गेलेली नाही.",
+    "emptyDescription": "Niwasthan तयार केलेल्या प्रतिमेवरून किंवा क्लिकवरून जीवनशैली प्राधान्याचा अंदाज लावणार नाही. तुम्ही तयार असाल तेव्हा मार्गदर्शित होम-इंटेलिजन्स प्रवाहाद्वारे ते जोडा."
   }
 }

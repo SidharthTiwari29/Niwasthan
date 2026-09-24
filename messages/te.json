@@ -230,5 +230,24 @@
     "whatIfPreviewError": "ఏమైతే ప్రివ్యూను లెక్కించలేకపోయాము.",
     "whatIfPreviewCalculated": "ప్రివ్యూ లెక్కించబడింది. ఇది సంభావ్య మార్పు, ఆమోదించబడిన లేదా సాకారమైన పొదుపు కాదు.",
     "humsafarNotConfigured": "ఈ పరిసరంలో హమ్‌సఫర్ ఇంకా కాన్ఫిగర్ చేయబడలేదు."
+  },
+  "propertyMemory": {
+    "backToProperty": "← {name} కి తిరిగి వెళ్ళండి",
+    "eyebrowDna": "NIWASTHAN DNA™ · హోమ్ మెమరీ",
+    "heading": "ఒక ఇల్లు మీకు ముఖ్యమైనది గుర్తుంచుకోవాలి.",
+    "description": "ఈ మెమరీ గదులు మరియు ప్రాజెక్టులలో సిఫార్సులకు మార్గనిర్దేశం చేస్తుంది. ఇది వినియోగదారు-స్వంత ప్రాధాన్య రికార్డు, భౌతిక ఇంటి గురించి క్లెయిమ్ కాదు.",
+    "recordedMemoryLabel": "నమోదు చేయబడిన మెమరీ",
+    "versionLanguage": "వెర్షన్ {version} · భాష {language}",
+    "userStatedBadge": "వినియోగదారు తెలిపారు",
+    "fieldHousehold": "కుటుంబం",
+    "fieldLifestyle": "జీవనశైలి",
+    "fieldDesignPersonality": "డిజైన్ వ్యక్తిత్వం",
+    "fieldStorageNeeds": "నిల్వ అవసరాలు",
+    "fieldFunctionalNeeds": "క్రియాత్మక అవసరాలు",
+    "fieldFutureNeeds": "భవిష్యత్ అవసరాలు",
+    "fieldSmartHomePreferences": "స్మార్ట్-హోమ్ ప్రాధాన్యతలు",
+    "notRecorded": "నమోదు కాలేదు",
+    "emptyHeading": "హోమ్ మెమరీ ఇంకా నమోదు కాలేదు.",
+    "emptyDescription": "సృష్టించబడిన చిత్రం లేదా క్లిక్ నుండి Niwasthan జీవనశైలి ప్రాధాన్యతను ఊహించదు. మీరు సిద్ధంగా ఉన్నప్పుడు గైడెడ్ హోమ్-ఇంటెలిజెన్స్ ఫ్లో ద్వారా దాన్ని జోడించండి."
   }
 }

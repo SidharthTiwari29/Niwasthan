@@ -230,5 +230,24 @@
     "whatIfPreviewError": "ಏನಾದರೆ ಪೂರ್ವವೀಕ್ಷಣೆಯನ್ನು ಲೆಕ್ಕಹಾಕಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.",
     "whatIfPreviewCalculated": "ಪೂರ್ವವೀಕ್ಷಣೆಯನ್ನು ಲೆಕ್ಕಹಾಕಲಾಗಿದೆ. ಇದು ಸಂಭಾವ್ಯ ಬದಲಾವಣೆ, ಅಂಗೀಕರಿಸಲ್ಪಟ್ಟ ಅಥವಾ ನಿಜವಾದ ಉಳಿತಾಯವಲ್ಲ.",
     "humsafarNotConfigured": "ಈ ಪರಿಸರದಲ್ಲಿ ಹಮ್‌ಸಫರ್ ಇನ್ನೂ ಕಾನ್ಫಿಗರ್ ಆಗಿಲ್ಲ."
+  },
+  "propertyMemory": {
+    "backToProperty": "← {name} ಗೆ ಹಿಂತಿರುಗಿ",
+    "eyebrowDna": "NIWASTHAN DNA™ · ಹೋಮ್ ಮೆಮೊರಿ",
+    "heading": "ಒಂದು ಮನೆ ನಿಮಗೆ ಮುಖ್ಯವಾದುದನ್ನು ನೆನಪಿಟ್ಟುಕೊಳ್ಳಬೇಕು.",
+    "description": "ಈ ಮೆಮೊರಿ ಕೋಣೆಗಳು ಮತ್ತು ಯೋಜನೆಗಳಾದ್ಯಂತ ಶಿಫಾರಸುಗಳಿಗೆ ಮಾರ್ಗದರ್ಶನ ನೀಡುತ್ತದೆ. ಇದು ಬಳಕೆದಾರ-ಸ್ವಂತ ಆದ್ಯತೆಯ ದಾಖಲೆಯಾಗಿದೆ, ಭೌತಿಕ ಮನೆಯ ಬಗ್ಗೆ ಹಕ್ಕು ಅಲ್ಲ.",
+    "recordedMemoryLabel": "ದಾಖಲಾದ ಮೆಮೊರಿ",
+    "versionLanguage": "ಆವೃತ್ತಿ {version} · ಭಾಷೆ {language}",
+    "userStatedBadge": "ಬಳಕೆದಾರರು ತಿಳಿಸಿದ್ದಾರೆ",
+    "fieldHousehold": "ಕುಟುಂಬ",
+    "fieldLifestyle": "ಜೀವನಶೈಲಿ",
+    "fieldDesignPersonality": "ವಿನ್ಯಾಸ ವ್ಯಕ್ತಿತ್ವ",
+    "fieldStorageNeeds": "ಸಂಗ್ರಹಣೆ ಅಗತ್ಯಗಳು",
+    "fieldFunctionalNeeds": "ಕ್ರಿಯಾತ್ಮಕ ಅಗತ್ಯಗಳು",
+    "fieldFutureNeeds": "ಭವಿಷ್ಯದ ಅಗತ್ಯಗಳು",
+    "fieldSmartHomePreferences": "ಸ್ಮಾರ್ಟ್-ಹೋಮ್ ಆದ್ಯತೆಗಳು",
+    "notRecorded": "ದಾಖಲಾಗಿಲ್ಲ",
+    "emptyHeading": "ಹೋಮ್ ಮೆಮೊರಿ ಇನ್ನೂ ದಾಖಲಾಗಿಲ್ಲ.",
+    "emptyDescription": "ರಚಿಸಲಾದ ಚಿತ್ರ ಅಥವಾ ಕ್ಲಿಕ್‌ನಿಂದ Niwasthan ಜೀವನಶೈಲಿ ಆದ್ಯತೆಯನ್ನು ಊಹಿಸುವುದಿಲ್ಲ. ನೀವು ಸಿದ್ಧರಾದಾಗ ಮಾರ್ಗದರ್ಶಿ ಹೋಮ್-ಇಂಟೆಲಿಜೆನ್ಸ್ ಫ್ಲೋ ಮೂಲಕ ಅದನ್ನು ಸೇರಿಸಿ."
   }
 }

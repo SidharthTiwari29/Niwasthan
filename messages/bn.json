@@ -230,5 +230,24 @@
     "whatIfPreviewError": "যদি-তবে পূর্বরূপ গণনা করা যায়নি।",
     "whatIfPreviewCalculated": "পূর্বরূপ গণনা করা হয়েছে। এটি একটি সম্ভাব্য পরিবর্তন, গৃহীত বা বাস্তবায়িত সঞ্চয় নয়।",
     "humsafarNotConfigured": "এই পরিবেশে হামসফর এখনও কনফিগার করা হয়নি।"
+  },
+  "propertyMemory": {
+    "backToProperty": "← {name} এ ফিরে যান",
+    "eyebrowDna": "NIWASTHAN DNA™ · হোম মেমরি",
+    "heading": "একটি বাড়ির মনে রাখা উচিত আপনার কাছে কী গুরুত্বপূর্ণ।",
+    "description": "এই মেমরি ঘর এবং প্রকল্প জুড়ে সুপারিশগুলি পরিচালনা করে। এটি একটি ব্যবহারকারীর মালিকানাধীন পছন্দের রেকর্ড, ভৌত বাড়ি সম্পর্কে দাবি নয়।",
+    "recordedMemoryLabel": "রেকর্ড করা মেমরি",
+    "versionLanguage": "সংস্করণ {version} · ভাষা {language}",
+    "userStatedBadge": "ব্যবহারকারী বলেছেন",
+    "fieldHousehold": "পরিবার",
+    "fieldLifestyle": "জীবনধারা",
+    "fieldDesignPersonality": "ডিজাইন ব্যক্তিত্ব",
+    "fieldStorageNeeds": "স্টোরেজ প্রয়োজনীয়তা",
+    "fieldFunctionalNeeds": "কার্যকরী প্রয়োজনীয়তা",
+    "fieldFutureNeeds": "ভবিষ্যতের প্রয়োজনীয়তা",
+    "fieldSmartHomePreferences": "স্মার্ট-হোম পছন্দসমূহ",
+    "notRecorded": "রেকর্ড করা হয়নি",
+    "emptyHeading": "হোম মেমরি এখনও রেকর্ড করা হয়নি।",
+    "emptyDescription": "Niwasthan একটি তৈরি করা ছবি বা ক্লিক থেকে জীবনধারার পছন্দ অনুমান করবে না। আপনি প্রস্তুত হলে গাইডেড হোম-ইন্টেলিজেন্স ফ্লোর মাধ্যমে এটি যোগ করুন।"
   }
 }

@@ -230,5 +230,24 @@
     "whatIfPreviewError": "What-if preview could not be calculated.",
     "whatIfPreviewCalculated": "Preview calculated. This is a potential change, not an accepted or realised saving.",
     "humsafarNotConfigured": "Humsafar is not configured in this environment yet."
+  },
+  "propertyMemory": {
+    "backToProperty": "← Back to {name}",
+    "eyebrowDna": "NIWASTHAN DNA™ · Home Memory",
+    "heading": "A home should remember what matters to you.",
+    "description": "This memory guides recommendations across rooms and projects. It is a user-owned preference record, not a claim about the physical home.",
+    "recordedMemoryLabel": "Recorded memory",
+    "versionLanguage": "Version {version} · language {language}",
+    "userStatedBadge": "User stated",
+    "fieldHousehold": "Household",
+    "fieldLifestyle": "Lifestyle",
+    "fieldDesignPersonality": "Design personality",
+    "fieldStorageNeeds": "Storage needs",
+    "fieldFunctionalNeeds": "Functional needs",
+    "fieldFutureNeeds": "Future needs",
+    "fieldSmartHomePreferences": "Smart-home preferences",
+    "notRecorded": "Not recorded",
+    "emptyHeading": "Home Memory is not recorded yet.",
+    "emptyDescription": "Niwasthan will not infer a lifestyle preference from a generated image or a click. Add it through the guided home-intelligence flow when you are ready."
   }
 }

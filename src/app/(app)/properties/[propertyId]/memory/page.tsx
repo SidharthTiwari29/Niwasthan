@@ -1,22 +1,28 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { requireAuth } from "@/server/middleware/requireAuth";
 import { getPropertyMemory } from "@/server/services/propertyMemoryService";
 
-const fields = [
-  ["household", "Household"],
-  ["lifestyle", "Lifestyle"],
-  ["designPersonality", "Design personality"],
-  ["storageNeeds", "Storage needs"],
-  ["functionalNeeds", "Functional needs"],
-  ["futureNeeds", "Future needs"],
-  ["smartHomePreferences", "Smart-home preferences"],
-] as const;
+function fieldKeys(t: Awaited<ReturnType<typeof getTranslations>>) {
+  return [
+    ["household", t("fieldHousehold")],
+    ["lifestyle", t("fieldLifestyle")],
+    ["designPersonality", t("fieldDesignPersonality")],
+    ["storageNeeds", t("fieldStorageNeeds")],
+    ["functionalNeeds", t("fieldFunctionalNeeds")],
+    ["futureNeeds", t("fieldFutureNeeds")],
+    ["smartHomePreferences", t("fieldSmartHomePreferences")],
+  ] as const;
+}
 
-function readable(value: unknown) {
-  if (!value || typeof value !== "object") return "Not recorded";
+function readable(
+  value: unknown,
+  t: Awaited<ReturnType<typeof getTranslations>>,
+) {
+  if (!value || typeof value !== "object") return t("notRecorded");
   const entries = Object.entries(value as Record<string, unknown>);
-  if (!entries.length) return "Not recorded";
+  if (!entries.length) return t("notRecorded");
   return entries
     .map(
       ([key, item]) =>
@@ -34,7 +40,9 @@ export default async function PropertyMemoryPage({
   const { userId } = await requireAuth();
   const property = await getPropertyMemory(propertyId, userId);
   if (!property) notFound();
+  const t = await getTranslations("propertyMemory");
   const memory = property.homeDnaVersions[0];
+  const fields = fieldKeys(t);
 
   return (
     <div className="space-y-8">
@@ -42,18 +50,17 @@ export default async function PropertyMemoryPage({
         href={`/properties/${propertyId}`}
         className="font-body text-sm text-ink-soft hover:text-ink"
       >
-        ← Back to {property.name}
+        {t("backToProperty", { name: property.name })}
       </Link>
       <section className="rounded-[1.75rem] bg-ink px-6 py-8 text-paper md:px-10 md:py-10">
         <p className="font-mono text-[9px] uppercase tracking-[0.24em] text-brass">
-          NIWASTHAN DNA™ · Home Memory
+          {t("eyebrowDna")}
         </p>
         <h1 className="mt-4 max-w-3xl font-display text-[clamp(2.8rem,7vw,5.8rem)] font-semibold leading-[0.86] tracking-[-0.06em]">
-          A home should remember what matters to you.
+          {t("heading")}
         </h1>
         <p className="mt-5 max-w-2xl font-body text-sm leading-relaxed text-paper/65">
-          This memory guides recommendations across rooms and projects. It is a
-          user-owned preference record, not a claim about the physical home.
+          {t("description")}
         </p>
       </section>
       {memory ? (
@@ -61,14 +68,17 @@ export default async function PropertyMemoryPage({
           <section className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-moss/30 bg-moss/10 px-5 py-4">
             <div>
               <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-moss-deep">
-                Recorded memory
+                {t("recordedMemoryLabel")}
               </p>
               <p className="mt-2 font-body text-sm text-ink">
-                Version {memory.version} · language {memory.language}
+                {t("versionLanguage", {
+                  version: memory.version,
+                  language: memory.language,
+                })}
               </p>
             </div>
             <span className="rounded-full bg-moss px-3 py-1.5 font-mono text-[9px] uppercase tracking-[0.14em] text-paper">
-              User stated
+              {t("userStatedBadge")}
             </span>
           </section>
           <section className="grid gap-4 md:grid-cols-2">
@@ -81,7 +91,7 @@ export default async function PropertyMemoryPage({
                   {label}
                 </p>
                 <p className="mt-4 font-body text-sm leading-relaxed text-ink-soft">
-                  {readable(memory[key])}
+                  {readable(memory[key], t)}
                 </p>
               </article>
             ))}
@@ -90,12 +100,10 @@ export default async function PropertyMemoryPage({
       ) : (
         <section className="rounded-[1.5rem] border border-dashed border-ink/20 bg-white px-7 py-12 text-center">
           <p className="font-display text-2xl font-semibold">
-            Home Memory is not recorded yet.
+            {t("emptyHeading")}
           </p>
           <p className="mx-auto mt-3 max-w-lg font-body text-sm leading-relaxed text-ink-soft">
-            Niwasthan will not infer a lifestyle preference from a generated
-            image or a click. Add it through the guided home-intelligence flow
-            when you are ready.
+            {t("emptyDescription")}
           </p>
         </section>
       )}
