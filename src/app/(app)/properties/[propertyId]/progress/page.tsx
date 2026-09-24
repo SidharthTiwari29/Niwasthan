@@ -1,21 +1,26 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { requireAuth } from "@/server/middleware/requireAuth";
 import { getPropertyLifecycle } from "@/server/services/propertyLifecycleService";
 import { ExecutionReview } from "./ExecutionReview";
 
-const stages = [
-  "Design lock",
-  "BOQ / quote",
-  "Purchase",
-  "Delivery",
-  "Installation",
-  "Quality / snags",
-  "Handover",
+// Real, stable internal identifiers - never translated, never shown to
+// the customer directly. Kept separate from the translated display
+// labels below so stageState's own comparisons never depend on which
+// language is active.
+const STAGE_IDS = [
+  "designLock",
+  "boqQuote",
+  "purchase",
+  "delivery",
+  "installation",
+  "qualitySnags",
+  "handover",
 ] as const;
 
 function stageState(
-  stage: (typeof stages)[number],
+  stage: (typeof STAGE_IDS)[number],
   requests: NonNullable<
     Awaited<ReturnType<typeof getPropertyLifecycle>>
   >["requests"],
@@ -23,37 +28,37 @@ function stageState(
   const request = requests[0];
   const order = request?.orders[0];
   const execution = order?.executions[0];
-  if (stage === "BOQ / quote")
+  if (stage === "boqQuote")
     return request
       ? request.quoteCount > 0
         ? "active"
         : "started"
       : "not-started";
-  if (stage === "Purchase")
+  if (stage === "purchase")
     return order
       ? "complete"
       : request?.status === "ORDERED"
         ? "active"
         : "not-started";
-  if (stage === "Delivery")
+  if (stage === "delivery")
     return order?.status === "DELIVERED"
       ? "complete"
       : order
         ? "active"
         : "not-started";
-  if (stage === "Installation")
+  if (stage === "installation")
     return execution?.status === "COMPLETED" || execution?.status === "RESOLVED"
       ? "complete"
       : execution
         ? "active"
         : "not-started";
-  if (stage === "Quality / snags")
+  if (stage === "qualitySnags")
     return execution?.status === "SNAGGED"
       ? "attention"
       : execution?.status === "RESOLVED"
         ? "complete"
         : "not-started";
-  if (stage === "Handover")
+  if (stage === "handover")
     return execution?.status === "RESOLVED" ? "ready" : "not-started";
   return "not-started";
 }
@@ -67,17 +72,34 @@ export default async function PropertyProgressPage({
   const { userId } = await requireAuth();
   const lifecycle = await getPropertyLifecycle(propertyId, userId);
   if (!lifecycle) notFound();
+  const t = await getTranslations("propertyProgress");
 
   const request = lifecycle.requests[0];
   const order = request?.orders[0];
   const execution = order?.executions[0];
   const statusCopy: Record<string, string> = {
-    complete: "Complete",
-    active: "In progress",
-    started: "Started",
-    attention: "Needs your attention",
-    ready: "Ready to review",
-    "not-started": "Not started",
+    complete: t("statusComplete"),
+    active: t("statusInProgress"),
+    started: t("statusStarted"),
+    attention: t("statusAttention"),
+    ready: t("statusReady"),
+    "not-started": t("statusNotStarted"),
+  };
+  const stageLabels: Record<(typeof STAGE_IDS)[number], string> = {
+    designLock: t("stageDesignLock"),
+    boqQuote: t("stageBoqQuote"),
+    purchase: t("stagePurchase"),
+    delivery: t("stageDelivery"),
+    installation: t("stageInstallation"),
+    qualitySnags: t("stageQualitySnags"),
+    handover: t("stageHandover"),
+  };
+  const executionStatusLabels: Record<string, string> = {
+    SCHEDULED: t("executionStatusScheduled"),
+    IN_PROGRESS: t("executionStatusInProgress"),
+    COMPLETED: t("executionStatusCompleted"),
+    SNAGGED: t("executionStatusSnagged"),
+    RESOLVED: t("executionStatusResolved"),
   };
 
   return (
@@ -87,44 +109,42 @@ export default async function PropertyProgressPage({
           href={`/properties/${propertyId}`}
           className="font-body text-sm text-ink-soft hover:text-ink"
         >
-          ← Back to {lifecycle.name}
+          {t("backToProperty", { name: lifecycle.name })}
         </Link>
         <Link
           href={`/properties/${propertyId}/memory`}
           className="font-body text-sm font-semibold text-laterite hover:underline"
         >
-          Open Home Memory →
+          {t("openHomeMemory")}
         </Link>
       </div>
       <section className="rounded-[1.75rem] bg-ink px-6 py-8 text-paper md:px-10 md:py-10">
         <p className="font-mono text-[9px] uppercase tracking-[0.24em] text-brass">
-          Build & handover
+          {t("eyebrowBuildHandover")}
         </p>
         <h1 className="mt-4 max-w-3xl font-display text-[clamp(2.8rem,7vw,5.8rem)] font-semibold leading-[0.86] tracking-[-0.06em]">
-          Know what happens after the beautiful choice.
+          {t("heading")}
         </h1>
         <p className="mt-5 max-w-2xl font-body text-sm leading-relaxed text-paper/65">
-          Every state below comes from the project record. Unknown does not mean
-          delayed; it means Niwasthan has no authoritative update yet.
+          {t("description")}
         </p>
       </section>
       <section className="rounded-[1.5rem] border border-ink/10 bg-white p-6 md:p-8">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-laterite">
-              Project lifecycle
+              {t("projectLifecycleLabel")}
             </p>
             <h2 className="mt-2 font-display text-3xl font-semibold">
-              From lock to handover
+              {t("fromLockToHandover")}
             </h2>
           </div>
           <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-ink-soft">
-            {lifecycle.requests.length} procurement record
-            {lifecycle.requests.length === 1 ? "" : "s"}
+            {t("procurementRecordCount", { count: lifecycle.requests.length })}
           </span>
         </div>
         <ol className="mt-7 grid gap-3 md:grid-cols-7">
-          {stages.map((stage, index) => {
+          {STAGE_IDS.map((stage, index) => {
             const state = stageState(stage, lifecycle.requests);
             return (
               <li key={stage} className="rounded-2xl bg-paper/70 p-4">
@@ -134,7 +154,7 @@ export default async function PropertyProgressPage({
                   {index + 1}
                 </div>
                 <p className="mt-4 font-body text-sm font-semibold text-ink">
-                  {stage}
+                  {stageLabels[stage]}
                 </p>
                 <p className="mt-2 font-mono text-[9px] uppercase tracking-[0.12em] text-ink-soft">
                   {statusCopy[state]}
@@ -147,12 +167,12 @@ export default async function PropertyProgressPage({
       <div className="grid gap-5 md:grid-cols-2">
         <section className="rounded-[1.5rem] border border-ink/10 bg-white p-6">
           <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-laterite">
-            Quote evidence
+            {t("quoteEvidenceLabel")}
           </p>
           <h2 className="mt-2 font-display text-2xl font-semibold">
             {request?.quoteCount
-              ? `${request.quoteCount} quote${request.quoteCount === 1 ? "" : "s"} received`
-              : "No quote received yet"}
+              ? t("quotesReceived", { count: request.quoteCount })
+              : t("noQuoteReceivedYet")}
           </h2>
           {request?.quotes.length ? (
             <ul className="mt-5 divide-y divide-paper-raised">
@@ -180,29 +200,31 @@ export default async function PropertyProgressPage({
             </ul>
           ) : (
             <p className="mt-3 font-body text-sm leading-relaxed text-ink-soft">
-              Procurement becomes available after a budget is locked. Niwasthan
-              will not imply that a quote exists before a supplier submits one.
+              {t("procurementAvailableNote")}
             </p>
           )}
         </section>
         <section className="rounded-[1.5rem] bg-[#e9e1d5] p-6">
           <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-laterite">
-            Execution truth
+            {t("executionTruthLabel")}
           </p>
           <h2 className="mt-2 font-display text-2xl font-semibold">
             {execution
-              ? execution.status.replaceAll("_", " ")
-              : "Awaiting execution record"}
+              ? (executionStatusLabels[execution.status] ?? execution.status)
+              : t("awaitingExecutionRecord")}
           </h2>
           <p className="mt-3 font-body text-sm leading-relaxed text-ink-soft">
             {execution?.snagNotes
-              ? `Latest issue: ${execution.snagNotes}`
-              : "Delivery, installation, quality checks, and snags will appear here when the execution record changes."}
+              ? t("latestIssue", { notes: execution.snagNotes })
+              : t("executionWillAppear")}
           </p>
           {execution?.scheduledDate ? (
             <p className="mt-5 font-mono text-[10px] uppercase tracking-[0.14em] text-ink-soft">
-              Scheduled{" "}
-              {new Date(execution.scheduledDate).toLocaleDateString("en-IN")}
+              {t("scheduledDate", {
+                date: new Date(execution.scheduledDate).toLocaleDateString(
+                  "en-IN",
+                ),
+              })}
             </p>
           ) : null}
         </section>

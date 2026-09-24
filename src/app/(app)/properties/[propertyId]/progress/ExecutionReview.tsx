@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 type Snag = {
   id: string;
@@ -31,30 +32,50 @@ export function ExecutionReview({
   propertyId: string;
   execution: Execution | undefined;
 }) {
+  const t = useTranslations("propertyProgress");
   const router = useRouter();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+
+  const snagStatusLabels: Record<string, string> = {
+    OPEN: t("snagStatusOpen"),
+    IN_REVIEW: t("snagStatusInReview"),
+    RESOLVED: t("snagStatusResolved"),
+    ACCEPTED: t("snagStatusAccepted"),
+  };
+  const executionStatusLabels: Record<string, string> = {
+    SCHEDULED: t("executionStatusScheduled"),
+    IN_PROGRESS: t("executionStatusInProgress"),
+    COMPLETED: t("executionStatusCompleted"),
+    SNAGGED: t("executionStatusSnagged"),
+    RESOLVED: t("executionStatusResolved"),
+  };
+  const handoverStatusLabels: Record<string, string> = {
+    READY_FOR_REVIEW: t("handoverStatusReadyForReview"),
+    ACCEPTED: t("handoverStatusAccepted"),
+    REOPENED: t("handoverStatusReopened"),
+  };
+
   if (!execution)
     return (
       <section className="rounded-[1.5rem] border border-dashed border-ink/20 bg-white p-6">
         <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-laterite">
-          Execution review
+          {t("executionReviewLabel")}
         </p>
         <h2 className="mt-2 font-display text-2xl font-semibold">
-          Awaiting an execution record
+          {t("awaitingExecutionHeading")}
         </h2>
         <p className="mt-3 font-body text-sm leading-relaxed text-ink-soft">
-          This workspace will open when an order has a scheduled installation or
-          delivery execution record.
+          {t("awaitingExecutionDescription")}
         </p>
       </section>
     );
   const activeExecution = execution;
   async function createSnag() {
     if (!title.trim() || !description.trim()) {
-      setMessage("Add a title and description so the issue can be acted on.");
+      setMessage(t("addTitleDescription"));
       return;
     }
     setBusy(true);
@@ -70,14 +91,12 @@ export function ExecutionReview({
     const body = await response.json().catch(() => ({}));
     setBusy(false);
     if (!response.ok) {
-      setMessage(body.error?.message ?? "Could not record this snag.");
+      setMessage(body.error?.message ?? t("couldNotRecordSnag"));
       return;
     }
     setTitle("");
     setDescription("");
-    setMessage(
-      "Snag recorded. It remains open until explicitly resolved or accepted.",
-    );
+    setMessage(t("snagRecorded"));
     router.refresh();
   }
   async function updateSnag(snagId: string, status: string) {
@@ -94,7 +113,7 @@ export function ExecutionReview({
     const body = await response.json().catch(() => ({}));
     setBusy(false);
     if (!response.ok) {
-      setMessage(body.error?.message ?? "Could not update this snag.");
+      setMessage(body.error?.message ?? t("couldNotUpdateSnag"));
       return;
     }
     router.refresh();
@@ -112,15 +131,11 @@ export function ExecutionReview({
     const body = await response.json().catch(() => ({}));
     setBusy(false);
     if (!response.ok) {
-      setMessage(
-        body.error?.message ?? "Handover is not ready for this action.",
-      );
+      setMessage(body.error?.message ?? t("handoverNotReady"));
       return;
     }
     setMessage(
-      status === "ACCEPTED"
-        ? "Handover accepted. The record is now part of your home history."
-        : "Handover review state updated.",
+      status === "ACCEPTED" ? t("handoverAccepted") : t("handoverStateUpdated"),
     );
     router.refresh();
   }
@@ -132,18 +147,17 @@ export function ExecutionReview({
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-laterite">
-            Execution review
+            {t("executionReviewLabel")}
           </p>
           <h2 className="mt-2 font-display text-3xl font-semibold">
-            Quality before handover
+            {t("qualityBeforeHandover")}
           </h2>
           <p className="mt-3 max-w-2xl font-body text-sm leading-relaxed text-ink-soft">
-            Record issues with enough detail to act on them. Resolving a snag is
-            not the same as accepting the handover; both remain explicit.
+            {t("recordIssuesDescription")}
           </p>
         </div>
         <span className="rounded-full bg-paper-raised px-3 py-1.5 font-mono text-[9px] uppercase tracking-[0.14em] text-ink-soft">
-          {execution.status.replaceAll("_", " ")}
+          {executionStatusLabels[execution.status] ?? execution.status}
         </span>
       </div>
       {message ? (
@@ -158,10 +172,10 @@ export function ExecutionReview({
         <div>
           <div className="flex items-center justify-between gap-3">
             <p className="font-mono text-[9px] uppercase tracking-[0.16em] text-ink-soft">
-              Snags
+              {t("snagsLabel")}
             </p>
             <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-ink-soft">
-              {unresolved.length} unresolved
+              {t("unresolvedCount", { count: unresolved.length })}
             </span>
           </div>
           {execution.snags.length ? (
@@ -173,7 +187,7 @@ export function ExecutionReview({
                       {snag.title}
                     </h3>
                     <span className="rounded-full bg-white px-2 py-1 font-mono text-[9px] uppercase tracking-[0.12em] text-ink-soft">
-                      {snag.status.replaceAll("_", " ")}
+                      {snagStatusLabels[snag.status] ?? snag.status}
                     </span>
                   </div>
                   <p className="mt-2 font-body text-sm leading-relaxed text-ink-soft">
@@ -187,7 +201,7 @@ export function ExecutionReview({
                           onClick={() => updateSnag(snag.id, "IN_REVIEW")}
                           className="font-body text-xs font-semibold text-laterite hover:underline"
                         >
-                          Start review
+                          {t("startReview")}
                         </button>
                       ) : null}
                       {snag.status === "IN_REVIEW" ? (
@@ -196,7 +210,7 @@ export function ExecutionReview({
                           onClick={() => updateSnag(snag.id, "RESOLVED")}
                           className="font-body text-xs font-semibold text-moss-deep hover:underline"
                         >
-                          Mark resolved
+                          {t("markResolved")}
                         </button>
                       ) : null}
                       {snag.status === "RESOLVED" ? (
@@ -205,7 +219,7 @@ export function ExecutionReview({
                           onClick={() => updateSnag(snag.id, "ACCEPTED")}
                           className="font-body text-xs font-semibold text-ink hover:underline"
                         >
-                          Accept resolution
+                          {t("acceptResolution")}
                         </button>
                       ) : null}
                     </div>
@@ -215,23 +229,23 @@ export function ExecutionReview({
             </div>
           ) : (
             <p className="mt-3 rounded-xl border border-dashed border-ink/15 px-4 py-5 font-body text-sm text-ink-soft">
-              No structured snags recorded yet.
+              {t("noSnagsYet")}
             </p>
           )}
           <div className="mt-5 rounded-2xl border border-ink/10 p-4">
             <p className="font-mono text-[9px] uppercase tracking-[0.15em] text-laterite">
-              Record an issue
+              {t("recordAnIssue")}
             </p>
             <input
               value={title}
               onChange={(event) => setTitle(event.target.value)}
-              placeholder="Short issue title"
+              placeholder={t("shortIssueTitlePlaceholder")}
               className="mt-3 w-full rounded-xl border border-ink/15 bg-paper px-3 py-2.5 font-body text-sm outline-none focus:border-laterite"
             />
             <textarea
               value={description}
               onChange={(event) => setDescription(event.target.value)}
-              placeholder="What needs attention? Include room, item, and observable evidence."
+              placeholder={t("issueDescriptionPlaceholder")}
               rows={3}
               className="mt-2 w-full rounded-xl border border-ink/15 bg-paper px-3 py-2.5 font-body text-sm outline-none focus:border-laterite"
             />
@@ -240,28 +254,30 @@ export function ExecutionReview({
               onClick={createSnag}
               className="mt-3 rounded-full bg-ink px-4 py-2.5 font-body text-xs font-semibold text-paper disabled:opacity-50"
             >
-              Record snag
+              {t("recordSnag")}
             </button>
           </div>
         </div>
         <div className="rounded-2xl bg-[#e9e1d5] p-5">
           <p className="font-mono text-[9px] uppercase tracking-[0.16em] text-laterite">
-            Handover record
+            {t("handoverRecordLabel")}
           </p>
           <h3 className="mt-2 font-display text-2xl font-semibold">
-            {execution.handover?.status?.replaceAll("_", " ") ?? "Not started"}
+            {execution.handover?.status
+              ? (handoverStatusLabels[execution.handover.status] ??
+                execution.handover.status)
+              : t("notStarted")}
           </h3>
           <p className="mt-3 font-body text-sm leading-relaxed text-ink-soft">
-            {unresolved.length
-              ? "Resolve every snag before accepting handover."
-              : "All recorded snags are resolved or accepted. Review the work before accepting."}
+            {unresolved.length ? t("resolveEverySnag") : t("allSnagsResolved")}
           </p>
           {execution.handover?.acceptedAt ? (
             <p className="mt-4 font-mono text-[10px] uppercase tracking-[0.12em] text-moss-deep">
-              Accepted{" "}
-              {new Date(execution.handover.acceptedAt).toLocaleDateString(
-                "en-IN",
-              )}
+              {t("acceptedOn", {
+                date: new Date(
+                  execution.handover.acceptedAt,
+                ).toLocaleDateString("en-IN"),
+              })}
             </p>
           ) : (
             <div className="mt-5 space-y-2">
@@ -270,14 +286,14 @@ export function ExecutionReview({
                 onClick={() => reviewHandover("READY_FOR_REVIEW")}
                 className="w-full rounded-full border border-ink/20 px-4 py-2.5 font-body text-xs font-semibold text-ink disabled:opacity-50"
               >
-                Mark ready for review
+                {t("markReadyForReview")}
               </button>
               <button
                 disabled={busy || unresolved.length > 0}
                 onClick={() => reviewHandover("ACCEPTED")}
                 className="w-full rounded-full bg-ink px-4 py-2.5 font-body text-xs font-semibold text-paper disabled:opacity-40"
               >
-                Accept handover
+                {t("acceptHandover")}
               </button>
             </div>
           )}
