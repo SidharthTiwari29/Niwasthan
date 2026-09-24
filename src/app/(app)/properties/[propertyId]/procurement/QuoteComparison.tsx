@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 type Quote = {
   id: string;
@@ -32,16 +33,26 @@ function money(minor: number, currency: string) {
     maximumFractionDigits: 0,
   }).format(minor / 100);
 }
-function date(value: string | Date | null) {
-  return value ? new Date(value).toLocaleDateString("en-IN") : "Not stated";
-}
 
 export function QuoteComparison({ requests }: { requests: Request[] }) {
+  const t = useTranslations("quoteComparison");
   const router = useRouter();
   const [busy, setBusy] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [negotiation, setNegotiation] = useState<Record<string, string>>({});
   const request = requests[0];
+
+  const quoteStatusLabels: Record<string, string> = {
+    SUBMITTED: t("quoteStatusSubmitted"),
+    ACCEPTED: t("quoteStatusAccepted"),
+    REJECTED: t("quoteStatusRejected"),
+    EXPIRED: t("quoteStatusExpired"),
+  };
+
+  function formatDate(value: string | Date | null) {
+    return value ? new Date(value).toLocaleDateString("en-IN") : t("notStated");
+  }
+
   async function acceptQuote(quoteId: string) {
     if (!request) return;
     setBusy(quoteId);
@@ -53,22 +64,17 @@ export function QuoteComparison({ requests }: { requests: Request[] }) {
     const body = await response.json().catch(() => ({}));
     setBusy(null);
     if (!response.ok) {
-      setMessage(
-        body.error?.message ??
-          "This quote could not be accepted. Refresh and try again.",
-      );
+      setMessage(body.error?.message ?? t("quoteNotAccepted"));
       return;
     }
-    setMessage(
-      "Quote accepted and order created. The lifecycle will now track delivery and execution.",
-    );
+    setMessage(t("quoteAcceptedOrderCreated"));
     router.refresh();
   }
   async function negotiate(quote: Quote) {
     if (!request) return;
     const rupees = Number(negotiation[quote.id]);
     if (!Number.isFinite(rupees) || rupees <= 0) {
-      setMessage("Enter a positive proposed amount in rupees.");
+      setMessage(t("enterPositiveAmount"));
       return;
     }
     setBusy(`negotiate-${quote.id}`);
@@ -84,18 +90,17 @@ export function QuoteComparison({ requests }: { requests: Request[] }) {
     const body = await response.json().catch(() => ({}));
     setBusy(null);
     if (!response.ok) {
-      setMessage(
-        body.error?.message ??
-          "Negotiation is not available for this plan or quote.",
-      );
+      setMessage(body.error?.message ?? t("negotiationNotAvailable"));
       return;
     }
     setMessage(
       body.decision === "ACCEPTED"
-        ? "The proposed amount was accepted and the quote was updated."
+        ? t("proposalAccepted")
         : body.decision === "COUNTERED"
-          ? `The supplier decision returned a counter amount of ${money(Number(body.counterAmountMinor), quote.currency)}.`
-          : "The proposal was not accepted.",
+          ? t("counterAmount", {
+              amount: money(Number(body.counterAmountMinor), quote.currency),
+            })
+          : t("proposalNotAccepted"),
     );
     router.refresh();
   }
@@ -104,12 +109,10 @@ export function QuoteComparison({ requests }: { requests: Request[] }) {
     return (
       <div className="rounded-[1.5rem] border border-dashed border-ink/20 bg-white px-7 py-12 text-center">
         <p className="font-display text-2xl font-semibold">
-          No procurement request yet.
+          {t("noProcurementRequestYet")}
         </p>
         <p className="mx-auto mt-3 max-w-lg font-body text-sm leading-relaxed text-ink-soft">
-          Quotes begin only after a budget version is locked. This keeps
-          procurement tied to an explicit decision rather than an ungrounded
-          estimate.
+          {t("procurementBeginsDescription")}
         </p>
       </div>
     );
@@ -117,11 +120,10 @@ export function QuoteComparison({ requests }: { requests: Request[] }) {
     return (
       <div className="rounded-[1.5rem] border border-dashed border-ink/20 bg-white px-7 py-12 text-center">
         <p className="font-display text-2xl font-semibold">
-          Waiting for supplier quotes.
+          {t("waitingForQuotes")}
         </p>
         <p className="mx-auto mt-3 max-w-lg font-body text-sm leading-relaxed text-ink-soft">
-          Request status: {request.status}. A quote will show its supplier,
-          validity, amount, and notes here when received.
+          {t("requestStatusNote", { status: request.status })}
         </p>
       </div>
     );
@@ -130,12 +132,10 @@ export function QuoteComparison({ requests }: { requests: Request[] }) {
     <div className="space-y-4">
       <div className="rounded-2xl border border-brass/40 bg-brass/10 px-5 py-4">
         <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-laterite">
-          Decision guardrail
+          {t("decisionGuardrailLabel")}
         </p>
         <p className="mt-2 font-body text-sm leading-relaxed text-ink-soft">
-          The lowest quote is not automatically the best quote. Compare amount,
-          validity, supplier notes, and downstream execution context. No saving
-          is called realised until it is supported by transaction evidence.
+          {t("decisionGuardrailDescription")}
         </p>
       </div>
       {message ? (
@@ -155,14 +155,14 @@ export function QuoteComparison({ requests }: { requests: Request[] }) {
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-laterite">
-                  Supplier
+                  {t("supplierLabel")}
                 </p>
                 <h3 className="mt-2 font-display text-2xl font-semibold">
                   {quote.supplierName}
                 </h3>
               </div>
               <span className="rounded-full bg-paper-raised px-3 py-1 font-mono text-[9px] uppercase tracking-[0.14em] text-ink-soft">
-                {quote.status}
+                {quoteStatusLabels[quote.status] ?? quote.status}
               </span>
             </div>
             <p className="mt-7 font-display text-4xl font-semibold">
@@ -171,17 +171,17 @@ export function QuoteComparison({ requests }: { requests: Request[] }) {
             <dl className="mt-5 grid grid-cols-2 gap-3 border-y border-paper-raised py-4">
               <div>
                 <dt className="font-mono text-[9px] uppercase tracking-[0.12em] text-ink-soft">
-                  Valid until
+                  {t("validUntilLabel")}
                 </dt>
                 <dd className="mt-1 font-body text-sm">
-                  {date(quote.validUntil)}
+                  {formatDate(quote.validUntil)}
                 </dd>
               </div>
               <div>
                 <dt className="font-mono text-[9px] uppercase tracking-[0.12em] text-ink-soft">
-                  Price basis
+                  {t("priceBasisLabel")}
                 </dt>
-                <dd className="mt-1 font-body text-sm">Supplier quote</dd>
+                <dd className="mt-1 font-body text-sm">{t("supplierQuote")}</dd>
               </div>
             </dl>
             {quote.notes ? (
@@ -190,7 +190,7 @@ export function QuoteComparison({ requests }: { requests: Request[] }) {
               </p>
             ) : (
               <p className="mt-4 font-body text-sm text-ink-soft">
-                No supplier note supplied.
+                {t("noSupplierNote")}
               </p>
             )}
             {quote.status === "SUBMITTED" ? (
@@ -201,8 +201,8 @@ export function QuoteComparison({ requests }: { requests: Request[] }) {
                   className="w-full rounded-full bg-ink px-4 py-3 font-body text-sm font-semibold text-paper disabled:opacity-50"
                 >
                   {busy === quote.id
-                    ? "Accepting…"
-                    : "Accept quote & create order"}
+                    ? t("acceptingEllipsis")
+                    : t("acceptQuoteCreateOrder")}
                 </button>
                 <div className="flex gap-2">
                   <input
@@ -214,7 +214,7 @@ export function QuoteComparison({ requests }: { requests: Request[] }) {
                       }))
                     }
                     inputMode="decimal"
-                    placeholder="Propose ₹ amount"
+                    placeholder={t("proposeAmountPlaceholder")}
                     className="min-w-0 flex-1 rounded-full border border-ink/15 bg-paper px-4 py-2 font-body text-sm outline-none focus:border-laterite"
                   />
                   <button
@@ -222,7 +222,7 @@ export function QuoteComparison({ requests }: { requests: Request[] }) {
                     onClick={() => negotiate(quote)}
                     className="rounded-full border border-ink/20 px-4 py-2 font-body text-xs font-semibold text-ink disabled:opacity-50"
                   >
-                    {busy === `negotiate-${quote.id}` ? "…" : "Negotiate"}
+                    {busy === `negotiate-${quote.id}` ? "…" : t("negotiate")}
                   </button>
                 </div>
               </div>
