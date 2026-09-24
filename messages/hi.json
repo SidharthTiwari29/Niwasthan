@@ -361,5 +361,26 @@
     "quoteStatusAccepted": "स्वीकृत",
     "quoteStatusRejected": "अस्वीकृत",
     "quoteStatusExpired": "समाप्त"
+  },
+  "supplierPortal": {
+    "eyebrowSupplierPortal": "NIWASTHAN सप्लायर पोर्टल",
+    "heading": "एक सुविचारित कोटेशन प्रस्तुत करें।",
+    "description": "आमंत्रित आपूर्तिकर्ता के लिए एक निजी कोटेशन कार्यक्षेत्र। ग्राहक की पहचान और निजी बजट जानकारी जानबूझकर यहां नहीं दिखाई जाती है।",
+    "loadingInviteDetails": "आमंत्रण विवरण लोड हो रहा है…",
+    "inviteUnavailable": "आमंत्रण अनुपलब्ध",
+    "inviteUnavailableDefault": "यह आमंत्रण अनुपलब्ध है।",
+    "quoteReceivedBadge": "कोटेशन प्राप्त हुआ",
+    "thankYouQuoteRecorded": "धन्यवाद। आपका कोटेशन दर्ज कर लिया गया है।",
+    "homeownerWillSeeQuote": "गृहस्वामी का Niwasthan कार्यक्षेत्र अब तुलना के लिए आपकी प्रस्तुत राशि और नोट्स दिखाएगा।",
+    "invitedSupplierLabel": "आमंत्रित आपूर्तिकर्ता",
+    "forPropertyAddress": "{propertyName} · {propertyAddress} के लिए",
+    "totalQuoteAmountLabel": "कुल कोटेशन राशि (₹)",
+    "amountPlaceholder": "उदाहरण: 185000",
+    "notesInclusionsLabel": "नोट्स और समावेश",
+    "notesPlaceholder": "लीड टाइम, समावेश, बहिष्करण, वारंटी…",
+    "submitQuoteSecurely": "कोटेशन सुरक्षित रूप से प्रस्तुत करें →",
+    "oneTimeInviteNote": "यह एक बार का आमंत्रण स्वचालित रूप से समाप्त हो जाता है और प्रस्तुत करने के बाद पुनः उपयोग नहीं किया जा सकता।",
+    "enterValidAmount": "रुपयों में एक वैध कुल कोटेशन राशि दर्ज करें।",
+    "couldNotSubmitQuote": "हम यह कोटेशन प्रस्तुत नहीं कर सके।"
   }
 }

@@ -361,5 +361,26 @@
     "quoteStatusAccepted": "ஏற்கப்பட்டது",
     "quoteStatusRejected": "நிராகரிக்கப்பட்டது",
     "quoteStatusExpired": "காலாவதியானது"
+  },
+  "supplierPortal": {
+    "eyebrowSupplierPortal": "NIWASTHAN சப்ளையர் போர்ட்டல்",
+    "heading": "ஒரு கருத்தில் கொள்ளப்பட்ட மேற்கோளைச் சமர்ப்பிக்கவும்.",
+    "description": "அழைக்கப்பட்ட சப்ளையருக்கான ஒரு தனிப்பட்ட மேற்கோள் பணியிடம். வாடிக்கையாளர் அடையாளம் மற்றும் தனிப்பட்ட பட்ஜெட் தகவல் வேண்டுமென்றே இங்கே காட்டப்படவில்லை.",
+    "loadingInviteDetails": "அழைப்பு விவரங்களை ஏற்றுகிறது…",
+    "inviteUnavailable": "அழைப்பு கிடைக்கவில்லை",
+    "inviteUnavailableDefault": "இந்த அழைப்பு கிடைக்கவில்லை.",
+    "quoteReceivedBadge": "மேற்கோள் பெறப்பட்டது",
+    "thankYouQuoteRecorded": "நன்றி. உங்கள் மேற்கோள் பதிவு செய்யப்பட்டது.",
+    "homeownerWillSeeQuote": "வீட்டு உரிமையாளரின் Niwasthan பணியிடம் இப்போது ஒப்பீட்டிற்காக உங்கள் சமர்ப்பிக்கப்பட்ட தொகை மற்றும் குறிப்புகளைக் காண்பிக்கும்.",
+    "invitedSupplierLabel": "அழைக்கப்பட்ட சப்ளையர்",
+    "forPropertyAddress": "{propertyName} · {propertyAddress} க்காக",
+    "totalQuoteAmountLabel": "மொத்த மேற்கோள் தொகை (₹)",
+    "amountPlaceholder": "எ.கா. 185000",
+    "notesInclusionsLabel": "குறிப்புகள் மற்றும் சேர்க்கைகள்",
+    "notesPlaceholder": "லீட் டைம், சேர்க்கைகள், விலக்குகள், உத்தரவாதம்…",
+    "submitQuoteSecurely": "மேற்கோளை பாதுகாப்பாக சமர்ப்பிக்கவும் →",
+    "oneTimeInviteNote": "இந்த ஒரு முறை அழைப்பு தானாக காலாவதியாகும் மற்றும் சமர்ப்பித்த பிறகு மீண்டும் பயன்படுத்த முடியாது.",
+    "enterValidAmount": "ரூபாயில் ஒரு செல்லுபடியாகும் மொத்த மேற்கோள் தொகையை உள்ளிடவும்.",
+    "couldNotSubmitQuote": "இந்த மேற்கோளை சமர்ப்பிக்க முடியவில்லை."
   }
 }

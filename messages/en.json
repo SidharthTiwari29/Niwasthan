@@ -361,5 +361,26 @@
     "quoteStatusAccepted": "Accepted",
     "quoteStatusRejected": "Rejected",
     "quoteStatusExpired": "Expired"
+  },
+  "supplierPortal": {
+    "eyebrowSupplierPortal": "NIWASTHAN SUPPLIER PORTAL",
+    "heading": "Submit a considered quote.",
+    "description": "A private quote workspace for the invited supplier. Customer identity and private budget information are intentionally not shown here.",
+    "loadingInviteDetails": "Loading invite details…",
+    "inviteUnavailable": "Invite unavailable",
+    "inviteUnavailableDefault": "This invite is unavailable.",
+    "quoteReceivedBadge": "QUOTE RECEIVED",
+    "thankYouQuoteRecorded": "Thank you. Your quote is recorded.",
+    "homeownerWillSeeQuote": "The homeowner’s Niwasthan workspace will now show your submitted amount and notes for comparison.",
+    "invitedSupplierLabel": "INVITED SUPPLIER",
+    "forPropertyAddress": "For {propertyName} · {propertyAddress}",
+    "totalQuoteAmountLabel": "Total quote amount (₹)",
+    "amountPlaceholder": "e.g. 185000",
+    "notesInclusionsLabel": "Notes and inclusions",
+    "notesPlaceholder": "Lead time, inclusions, exclusions, warranty…",
+    "submitQuoteSecurely": "Submit quote securely →",
+    "oneTimeInviteNote": "This one-time invite expires automatically and cannot be reused after submission.",
+    "enterValidAmount": "Enter a valid total quote amount in rupees.",
+    "couldNotSubmitQuote": "We could not submit this quote."
   }
 }

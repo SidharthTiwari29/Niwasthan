@@ -361,5 +361,26 @@
     "quoteStatusAccepted": "स्वीकारले",
     "quoteStatusRejected": "नाकारले",
     "quoteStatusExpired": "कालबाह्य"
+  },
+  "supplierPortal": {
+    "eyebrowSupplierPortal": "NIWASTHAN पुरवठादार पोर्टल",
+    "heading": "एक विचारपूर्वक कोटेशन सादर करा.",
+    "description": "आमंत्रित पुरवठादारासाठी एक खाजगी कोटेशन कार्यक्षेत्र. ग्राहकाची ओळख आणि खाजगी बजेट माहिती जाणूनबुजून येथे दाखवली जात नाही.",
+    "loadingInviteDetails": "आमंत्रण तपशील लोड होत आहे…",
+    "inviteUnavailable": "आमंत्रण अनुपलब्ध",
+    "inviteUnavailableDefault": "हे आमंत्रण अनुपलब्ध आहे.",
+    "quoteReceivedBadge": "कोटेशन मिळाले",
+    "thankYouQuoteRecorded": "धन्यवाद. तुमचे कोटेशन नोंदवले गेले आहे.",
+    "homeownerWillSeeQuote": "घरमालकाचे Niwasthan कार्यक्षेत्र आता तुलनेसाठी तुमची सादर केलेली रक्कम आणि नोंदी दाखवेल.",
+    "invitedSupplierLabel": "आमंत्रित पुरवठादार",
+    "forPropertyAddress": "{propertyName} · {propertyAddress} साठी",
+    "totalQuoteAmountLabel": "एकूण कोटेशन रक्कम (₹)",
+    "amountPlaceholder": "उदा. 185000",
+    "notesInclusionsLabel": "नोंदी आणि समावेश",
+    "notesPlaceholder": "लीड टाइम, समावेश, वगळणी, वॉरंटी…",
+    "submitQuoteSecurely": "कोटेशन सुरक्षितपणे सादर करा →",
+    "oneTimeInviteNote": "हे एक-वेळचे आमंत्रण आपोआप कालबाह्य होते आणि सादर केल्यानंतर पुन्हा वापरता येत नाही.",
+    "enterValidAmount": "रुपयांमध्ये वैध एकूण कोटेशन रक्कम प्रविष्ट करा.",
+    "couldNotSubmitQuote": "आम्ही हे कोटेशन सादर करू शकलो नाही."
   }
 }

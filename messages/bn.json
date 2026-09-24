@@ -361,5 +361,26 @@
     "quoteStatusAccepted": "গৃহীত",
     "quoteStatusRejected": "প্রত্যাখ্যাত",
     "quoteStatusExpired": "মেয়াদ শেষ"
+  },
+  "supplierPortal": {
+    "eyebrowSupplierPortal": "NIWASTHAN সরবরাহকারী পোর্টাল",
+    "heading": "একটি বিবেচিত কোটেশন জমা দিন।",
+    "description": "আমন্ত্রিত সরবরাহকারীর জন্য একটি ব্যক্তিগত কোটেশন কর্মক্ষেত্র। গ্রাহকের পরিচয় এবং ব্যক্তিগত বাজেট তথ্য ইচ্ছাকৃতভাবে এখানে দেখানো হয় না।",
+    "loadingInviteDetails": "আমন্ত্রণের বিবরণ লোড হচ্ছে…",
+    "inviteUnavailable": "আমন্ত্রণ অনুপলব্ধ",
+    "inviteUnavailableDefault": "এই আমন্ত্রণটি অনুপলব্ধ।",
+    "quoteReceivedBadge": "কোটেশন প্রাপ্ত হয়েছে",
+    "thankYouQuoteRecorded": "ধন্যবাদ। আপনার কোটেশন রেকর্ড করা হয়েছে।",
+    "homeownerWillSeeQuote": "বাড়ির মালিকের Niwasthan কর্মক্ষেত্র এখন তুলনার জন্য আপনার জমা দেওয়া পরিমাণ এবং নোট দেখাবে।",
+    "invitedSupplierLabel": "আমন্ত্রিত সরবরাহকারী",
+    "forPropertyAddress": "{propertyName} · {propertyAddress} এর জন্য",
+    "totalQuoteAmountLabel": "মোট কোটেশন পরিমাণ (₹)",
+    "amountPlaceholder": "যেমন 185000",
+    "notesInclusionsLabel": "নোট এবং অন্তর্ভুক্তি",
+    "notesPlaceholder": "লিড টাইম, অন্তর্ভুক্তি, বর্জন, ওয়ারেন্টি…",
+    "submitQuoteSecurely": "নিরাপদে কোটেশন জমা দিন →",
+    "oneTimeInviteNote": "এই এককালীন আমন্ত্রণ স্বয়ংক্রিয়ভাবে মেয়াদ শেষ হয়ে যায় এবং জমা দেওয়ার পরে পুনরায় ব্যবহার করা যায় না।",
+    "enterValidAmount": "টাকায় একটি বৈধ মোট কোটেশন পরিমাণ লিখুন।",
+    "couldNotSubmitQuote": "আমরা এই কোটেশনটি জমা দিতে পারিনি।"
   }
 }

@@ -361,5 +361,26 @@
     "quoteStatusAccepted": "ಅಂಗೀಕರಿಸಲಾಗಿದೆ",
     "quoteStatusRejected": "ತಿರಸ್ಕರಿಸಲಾಗಿದೆ",
     "quoteStatusExpired": "ಅವಧಿ ಮುಗಿದಿದೆ"
+  },
+  "supplierPortal": {
+    "eyebrowSupplierPortal": "NIWASTHAN ಪೂರೈಕೆದಾರರ ಪೋರ್ಟಲ್",
+    "heading": "ಪರಿಗಣಿಸಲಾದ ಕೋಟೇಶನ್ ಸಲ್ಲಿಸಿ.",
+    "description": "ಆಹ್ವಾನಿತ ಪೂರೈಕೆದಾರರಿಗಾಗಿ ಒಂದು ಖಾಸಗಿ ಕೋಟೇಶನ್ ಕಾರ್ಯಕ್ಷೇತ್ರ. ಗ್ರಾಹಕ ಗುರುತು ಮತ್ತು ಖಾಸಗಿ ಬಜೆಟ್ ಮಾಹಿತಿಯನ್ನು ಉದ್ದೇಶಪೂರ್ವಕವಾಗಿ ಇಲ್ಲಿ ತೋರಿಸಲಾಗಿಲ್ಲ.",
+    "loadingInviteDetails": "ಆಹ್ವಾನ ವಿವರಗಳನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ…",
+    "inviteUnavailable": "ಆಹ್ವಾನ ಲಭ್ಯವಿಲ್ಲ",
+    "inviteUnavailableDefault": "ಈ ಆಹ್ವಾನ ಲಭ್ಯವಿಲ್ಲ.",
+    "quoteReceivedBadge": "ಕೋಟೇಶನ್ ಸ್ವೀಕರಿಸಲಾಗಿದೆ",
+    "thankYouQuoteRecorded": "ಧನ್ಯವಾದಗಳು. ನಿಮ್ಮ ಕೋಟೇಶನ್ ದಾಖಲಿಸಲಾಗಿದೆ.",
+    "homeownerWillSeeQuote": "ಮನೆ ಮಾಲೀಕರ Niwasthan ಕಾರ್ಯಕ್ಷೇತ್ರ ಈಗ ಹೋಲಿಕೆಗಾಗಿ ನಿಮ್ಮ ಸಲ್ಲಿಸಿದ ಮೊತ್ತ ಮತ್ತು ಟಿಪ್ಪಣಿಗಳನ್ನು ತೋರಿಸುತ್ತದೆ.",
+    "invitedSupplierLabel": "ಆಹ್ವಾನಿತ ಪೂರೈಕೆದಾರ",
+    "forPropertyAddress": "{propertyName} · {propertyAddress} ಗಾಗಿ",
+    "totalQuoteAmountLabel": "ಒಟ್ಟು ಕೋಟೇಶನ್ ಮೊತ್ತ (₹)",
+    "amountPlaceholder": "ಉದಾ. 185000",
+    "notesInclusionsLabel": "ಟಿಪ್ಪಣಿಗಳು ಮತ್ತು ಸೇರ್ಪಡೆಗಳು",
+    "notesPlaceholder": "ಲೀಡ್ ಟೈಮ್, ಸೇರ್ಪಡೆಗಳು, ಹೊರಗಿಡುವಿಕೆಗಳು, ವಾರಂಟಿ…",
+    "submitQuoteSecurely": "ಕೋಟೇಶನ್ ಅನ್ನು ಸುರಕ್ಷಿತವಾಗಿ ಸಲ್ಲಿಸಿ →",
+    "oneTimeInviteNote": "ಈ ಒಂದು-ಬಾರಿಯ ಆಹ್ವಾನ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಅವಧಿ ಮುಗಿಯುತ್ತದೆ ಮತ್ತು ಸಲ್ಲಿಸಿದ ನಂತರ ಮರುಬಳಕೆ ಮಾಡಲಾಗುವುದಿಲ್ಲ.",
+    "enterValidAmount": "ರೂಪಾಯಿಗಳಲ್ಲಿ ಮಾನ್ಯವಾದ ಒಟ್ಟು ಕೋಟೇಶನ್ ಮೊತ್ತವನ್ನು ನಮೂದಿಸಿ.",
+    "couldNotSubmitQuote": "ನಾವು ಈ ಕೋಟೇಶನ್ ಅನ್ನು ಸಲ್ಲಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ."
   }
 }

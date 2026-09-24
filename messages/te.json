@@ -361,5 +361,26 @@
     "quoteStatusAccepted": "ఆమోదించబడింది",
     "quoteStatusRejected": "తిరస్కరించబడింది",
     "quoteStatusExpired": "గడువు ముగిసింది"
+  },
+  "supplierPortal": {
+    "eyebrowSupplierPortal": "NIWASTHAN సప్లయర్ పోర్టల్",
+    "heading": "ఆలోచనాత్మక కోటేషన్‌ను సమర్పించండి.",
+    "description": "ఆహ్వానించబడిన సరఫరాదారు కోసం ఒక ప్రైవేట్ కోటేషన్ కార్యస్థలం. కస్టమర్ గుర్తింపు మరియు ప్రైవేట్ బడ్జెట్ సమాచారం ఉద్దేశపూర్వకంగా ఇక్కడ చూపబడలేదు.",
+    "loadingInviteDetails": "ఆహ్వాన వివరాలు లోడ్ అవుతున్నాయి…",
+    "inviteUnavailable": "ఆహ్వానం అందుబాటులో లేదు",
+    "inviteUnavailableDefault": "ఈ ఆహ్వానం అందుబాటులో లేదు.",
+    "quoteReceivedBadge": "కోటేషన్ అందుకుంది",
+    "thankYouQuoteRecorded": "ధన్యవాదాలు. మీ కోటేషన్ నమోదు చేయబడింది.",
+    "homeownerWillSeeQuote": "గృహయజమాని యొక్క Niwasthan కార్యస్థలం ఇప్పుడు పోలిక కోసం మీ సమర్పించిన మొత్తం మరియు గమనికలను చూపుతుంది.",
+    "invitedSupplierLabel": "ఆహ్వానించబడిన సరఫరాదారు",
+    "forPropertyAddress": "{propertyName} · {propertyAddress} కోసం",
+    "totalQuoteAmountLabel": "మొత్తం కోటేషన్ మొత్తం (₹)",
+    "amountPlaceholder": "ఉదా. 185000",
+    "notesInclusionsLabel": "గమనికలు మరియు చేర్పులు",
+    "notesPlaceholder": "లీడ్ టైమ్, చేర్పులు, మినహాయింపులు, వారంటీ…",
+    "submitQuoteSecurely": "కోటేషన్‌ను సురక్షితంగా సమర్పించండి →",
+    "oneTimeInviteNote": "ఈ వన్-టైమ్ ఆహ్వానం స్వయంచాలకంగా గడువు ముగుస్తుంది మరియు సమర్పించిన తర్వాత మళ్లీ ఉపయోగించబడదు.",
+    "enterValidAmount": "రూపాయలలో చెల్లుబాటు అయ్యే మొత్తం కోటేషన్ మొత్తాన్ని నమోదు చేయండి.",
+    "couldNotSubmitQuote": "మేము ఈ కోటేషన్‌ను సమర్పించలేకపోయాము."
   }
 }

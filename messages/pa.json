@@ -361,5 +361,26 @@
     "quoteStatusAccepted": "ਸਵੀਕਾਰ ਕੀਤਾ",
     "quoteStatusRejected": "ਰੱਦ ਕੀਤਾ",
     "quoteStatusExpired": "ਮਿਆਦ ਪੁੱਗੀ"
+  },
+  "supplierPortal": {
+    "eyebrowSupplierPortal": "NIWASTHAN ਸਪਲਾਇਰ ਪੋਰਟਲ",
+    "heading": "ਇੱਕ ਵਿਚਾਰਸ਼ੀਲ ਕੋਟੇਸ਼ਨ ਜਮ੍ਹਾਂ ਕਰੋ।",
+    "description": "ਸੱਦੇ ਗਏ ਸਪਲਾਇਰ ਲਈ ਇੱਕ ਨਿੱਜੀ ਕੋਟੇਸ਼ਨ ਵਰਕਸਪੇਸ। ਗਾਹਕ ਦੀ ਪਛਾਣ ਅਤੇ ਨਿੱਜੀ ਬਜਟ ਜਾਣਕਾਰੀ ਜਾਣਬੁੱਝ ਕੇ ਇੱਥੇ ਨਹੀਂ ਦਿਖਾਈ ਜਾਂਦੀ।",
+    "loadingInviteDetails": "ਸੱਦਾ ਵੇਰਵੇ ਲੋਡ ਹੋ ਰਹੇ ਹਨ…",
+    "inviteUnavailable": "ਸੱਦਾ ਉਪਲਬਧ ਨਹੀਂ",
+    "inviteUnavailableDefault": "ਇਹ ਸੱਦਾ ਉਪਲਬਧ ਨਹੀਂ ਹੈ।",
+    "quoteReceivedBadge": "ਕੋਟੇਸ਼ਨ ਪ੍ਰਾਪਤ ਹੋਇਆ",
+    "thankYouQuoteRecorded": "ਧੰਨਵਾਦ। ਤੁਹਾਡਾ ਕੋਟੇਸ਼ਨ ਦਰਜ ਕੀਤਾ ਗਿਆ ਹੈ।",
+    "homeownerWillSeeQuote": "ਘਰ ਦੇ ਮਾਲਕ ਦਾ Niwasthan ਵਰਕਸਪੇਸ ਹੁਣ ਤੁਲਨਾ ਲਈ ਤੁਹਾਡੀ ਜਮ੍ਹਾਂ ਕੀਤੀ ਰਕਮ ਅਤੇ ਨੋਟਸ ਦਿਖਾਏਗਾ।",
+    "invitedSupplierLabel": "ਸੱਦਿਆ ਗਿਆ ਸਪਲਾਇਰ",
+    "forPropertyAddress": "{propertyName} · {propertyAddress} ਲਈ",
+    "totalQuoteAmountLabel": "ਕੁੱਲ ਕੋਟੇਸ਼ਨ ਰਕਮ (₹)",
+    "amountPlaceholder": "ਜਿਵੇਂ 185000",
+    "notesInclusionsLabel": "ਨੋਟਸ ਅਤੇ ਸ਼ਮੂਲੀਅਤ",
+    "notesPlaceholder": "ਲੀਡ ਟਾਈਮ, ਸ਼ਮੂਲੀਅਤ, ਬੇਦਖਲੀ, ਵਾਰੰਟੀ…",
+    "submitQuoteSecurely": "ਕੋਟੇਸ਼ਨ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਜਮ੍ਹਾਂ ਕਰੋ →",
+    "oneTimeInviteNote": "ਇਹ ਇੱਕ-ਵਾਰ ਦਾ ਸੱਦਾ ਆਪਣੇ ਆਪ ਖਤਮ ਹੋ ਜਾਂਦਾ ਹੈ ਅਤੇ ਜਮ੍ਹਾਂ ਕਰਨ ਤੋਂ ਬਾਅਦ ਦੁਬਾਰਾ ਵਰਤਿਆ ਨਹੀਂ ਜਾ ਸਕਦਾ।",
+    "enterValidAmount": "ਰੁਪਏ ਵਿੱਚ ਇੱਕ ਵੈਧ ਕੁੱਲ ਕੋਟੇਸ਼ਨ ਰਕਮ ਦਰਜ ਕਰੋ।",
+    "couldNotSubmitQuote": "ਅਸੀਂ ਇਹ ਕੋਟੇਸ਼ਨ ਜਮ੍ਹਾਂ ਨਹੀਂ ਕਰ ਸਕੇ।"
   }
 }

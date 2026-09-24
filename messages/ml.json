@@ -361,5 +361,26 @@
     "quoteStatusAccepted": "അംഗീകരിച്ചു",
     "quoteStatusRejected": "നിരസിച്ചു",
     "quoteStatusExpired": "കാലഹരണപ്പെട്ടു"
+  },
+  "supplierPortal": {
+    "eyebrowSupplierPortal": "NIWASTHAN സപ്ലയർ പോർട്ടൽ",
+    "heading": "ചിന്തനീയമായ ഒരു ക്വോട്ട് സമർപ്പിക്കുക.",
+    "description": "ക്ഷണിക്കപ്പെട്ട സപ്ലയർക്കായുള്ള ഒരു സ്വകാര്യ ക്വോട്ട് വർക്ക്‌സ്‌പേസ്. ഉപഭോക്തൃ ഐഡന്റിറ്റിയും സ്വകാര്യ ബജറ്റ് വിവരങ്ങളും മനഃപൂർവ്വം ഇവിടെ കാണിച്ചിട്ടില്ല.",
+    "loadingInviteDetails": "ക്ഷണ വിശദാംശങ്ങൾ ലോഡ് ചെയ്യുന്നു…",
+    "inviteUnavailable": "ക്ഷണം ലഭ്യമല്ല",
+    "inviteUnavailableDefault": "ഈ ക്ഷണം ലഭ്യമല്ല.",
+    "quoteReceivedBadge": "ക്വോട്ട് ലഭിച്ചു",
+    "thankYouQuoteRecorded": "നന്ദി. നിങ്ങളുടെ ക്വോട്ട് രേഖപ്പെടുത്തിയിട്ടുണ്ട്.",
+    "homeownerWillSeeQuote": "വീട്ടുടമയുടെ Niwasthan വർക്ക്‌സ്‌പേസ് ഇപ്പോൾ താരതമ്യത്തിനായി നിങ്ങൾ സമർപ്പിച്ച തുകയും കുറിപ്പുകളും കാണിക്കും.",
+    "invitedSupplierLabel": "ക്ഷണിക്കപ്പെട്ട സപ്ലയർ",
+    "forPropertyAddress": "{propertyName} · {propertyAddress} എന്നതിനായി",
+    "totalQuoteAmountLabel": "മൊത്തം ക്വോട്ട് തുക (₹)",
+    "amountPlaceholder": "ഉദാ. 185000",
+    "notesInclusionsLabel": "കുറിപ്പുകളും ഉൾപ്പെടുത്തലുകളും",
+    "notesPlaceholder": "ലീഡ് ടൈം, ഉൾപ്പെടുത്തലുകൾ, ഒഴിവാക്കലുകൾ, വാറന്റി…",
+    "submitQuoteSecurely": "ക്വോട്ട് സുരക്ഷിതമായി സമർപ്പിക്കുക →",
+    "oneTimeInviteNote": "ഈ ഒറ്റത്തവണ ക്ഷണം സ്വയമേവ കാലഹരണപ്പെടുകയും സമർപ്പിച്ചതിനുശേഷം വീണ്ടും ഉപയോഗിക്കാൻ കഴിയാതിരിക്കുകയും ചെയ്യും.",
+    "enterValidAmount": "രൂപയിൽ സാധുവായ ഒരു മൊത്തം ക്വോട്ട് തുക നൽകുക.",
+    "couldNotSubmitQuote": "ഞങ്ങൾക്ക് ഈ ക്വോട്ട് സമർപ്പിക്കാൻ കഴിഞ്ഞില്ല."
   }
 }
