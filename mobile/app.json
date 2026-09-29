@@ -22,6 +22,12 @@
       "favicon": "./assets/favicon.png"
     },
     "scheme": "niwasthan",
-    "description": "Home intelligence for the real home."
+    "description": "Home intelligence for the real home.",
+    "extra": {
+      "apiBaseUrl": "https://niwasthan.com",
+      "googleWebClientId": "",
+      "googleIosClientId": "",
+      "googleAndroidClientId": ""
+    }
   }
 }

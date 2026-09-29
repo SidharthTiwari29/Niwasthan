@@ -1,6 +1,7 @@
 import { StatusBar } from "expo-status-bar";
 import { useMemo, useState } from "react";
 import {
+  ActivityIndicator,
   Alert,
   Pressable,
   SafeAreaView,
@@ -10,6 +11,7 @@ import {
   TextInput,
   View,
 } from "react-native";
+import { useNiwasthanAuth } from "./src/api/auth";
 
 type Tab = "Home" | "Design" | "Budget" | "Build" | "More";
 const tabs: Tab[] = ["Home", "Design", "Budget", "Build", "More"];
@@ -34,7 +36,7 @@ const directions = [
   },
 ];
 
-export default function App() {
+function MainApp() {
   const [tab, setTab] = useState<Tab>("Home");
   const [syncing, setSyncing] = useState(false);
   const [saved, setSaved] = useState<string[]>([]);
@@ -165,6 +167,103 @@ export default function App() {
     </SafeAreaView>
   );
 }
+
+// Real, minimal auth gate - shown before any real project data has
+// ever been requested. A signed-out visitor sees a genuine sign-in
+// prompt, not the existing placeholder UI below pretending to be
+// connected to an account that hasn't authenticated yet.
+export default function App() {
+  const { state, signIn } = useNiwasthanAuth();
+
+  if (state.status === "loading") {
+    return (
+      <SafeAreaView style={gateStyles.safe}>
+        <StatusBar style="dark" />
+        <ActivityIndicator color="#B66F51" />
+      </SafeAreaView>
+    );
+  }
+
+  if (state.status === "notConfigured") {
+    return (
+      <SafeAreaView style={gateStyles.safe}>
+        <StatusBar style="dark" />
+        <View style={gateStyles.content}>
+          <Text style={gateStyles.brand}>niwasthan</Text>
+          <Text style={gateStyles.title}>
+            Sign-in isn&apos;t configured yet.
+          </Text>
+          <Text style={gateStyles.subtitle}>
+            This build is missing its real Google sign-in credentials. Nothing
+            here is broken - the app just hasn&apos;t been given real values for
+            expo.extra.googleWebClientId (and the iOS/Android equivalents) in
+            app.json.
+          </Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (state.status === "signedOut") {
+    return (
+      <SafeAreaView style={gateStyles.safe}>
+        <StatusBar style="dark" />
+        <View style={gateStyles.content}>
+          <Text style={gateStyles.brand}>niwasthan</Text>
+          <Text style={gateStyles.title}>Your home, made legible.</Text>
+          <Text style={gateStyles.subtitle}>
+            Sign in with the same Google account you use on the Niwasthan
+            website to see your real properties, designs, and budget.
+          </Text>
+          <Pressable onPress={signIn} style={gateStyles.button}>
+            <Text style={gateStyles.buttonText}>Continue with Google</Text>
+          </Pressable>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  return <MainApp />;
+}
+
+const gateStyles = StyleSheet.create({
+  safe: {
+    flex: 1,
+    backgroundColor: "#F4F1EB",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  content: { paddingHorizontal: 28, alignItems: "center" },
+  brand: {
+    fontFamily: "serif",
+    fontSize: 22,
+    color: "#24221F",
+    letterSpacing: -1,
+    marginBottom: 24,
+  },
+  title: {
+    fontFamily: "serif",
+    fontSize: 30,
+    color: "#24221F",
+    textAlign: "center",
+    letterSpacing: -1,
+  },
+  subtitle: {
+    fontSize: 14,
+    lineHeight: 21,
+    color: "#81796F",
+    textAlign: "center",
+    marginTop: 14,
+    marginBottom: 28,
+  },
+  button: {
+    backgroundColor: "#2C2A27",
+    borderRadius: 999,
+    paddingHorizontal: 28,
+    paddingVertical: 14,
+  },
+  buttonText: { color: "#F7F1E8", fontSize: 14, fontWeight: "700" },
+});
 
 function HomeView({
   onCapture,
