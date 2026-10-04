@@ -99,6 +99,48 @@ enum AssetType {
   OTHER
 }
 
+// README §9's own required three-state distinction: POTENTIAL (a
+// preview calculation) is never persisted here at all - only once a
+// customer genuinely commits a what-if does a real row exist, and it
+// starts at ACCEPTED. REALISED requires real, explicit evidence (see
+// realisedEvidenceType/realisedEvidenceId below) - never inferred or
+// auto-matched, since an automatic match between a committed saving
+// and a later order is a real, genuine risk of a false "realised"
+// claim the README explicitly prohibits.
+enum SavingStatus {
+  ACCEPTED
+  REALISED
+}
+
+model Saving {
+  id        String       @id @default(cuid())
+  propertyId String
+  ownerId   String
+  // The real BudgetImpact row this saving's accepted budget delta was
+  // recorded against - BudgetImpact itself is a raw-SQL table (not a
+  // Prisma model), so this is a real id reference, not a Prisma
+  // relation, matching how the rest of this codebase already
+  // references that table.
+  budgetImpactId String      @unique
+  currentPriceMinor BigInt?
+  proposedPriceMinor BigInt?
+  savingMinor        BigInt?
+  reason             String   @db.Text
+  status             SavingStatus @default(ACCEPTED)
+  // Only ever set together, by a real caller supplying real evidence -
+  // never set by this saving's own creation path. "ProcurementOrder"
+  // or "Payment" naming the real table the evidence row lives in, so
+  // a future reader can trace the claim back to its real source
+  // without this model needing a Prisma relation to every possible
+  // evidence type.
+  realisedEvidenceType String?
+  realisedEvidenceId   String?
+  realisedAt           DateTime?
+  createdAt            DateTime     @default(now())
+
+  @@index([propertyId, ownerId, status])
+}
+
 enum PurchaseStatus {
   CREATED
   PAID

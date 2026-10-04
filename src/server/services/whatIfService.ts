@@ -1,5 +1,6 @@
 import { ConflictError } from "@/server/errors/AppError";
 import { budgetService } from "@/server/services/budgetService";
+import { savingRepository } from "@/server/repositories/savingRepository";
 import {
   rankSubstitutions,
   type SubstitutionCandidate,
@@ -104,7 +105,7 @@ export const whatIfService = {
       }
     }
 
-    return budgetService.impact(propertyId, ownerId, {
+    const result = await budgetService.impact(propertyId, ownerId, {
       baseVersion: input.baseVersion,
       proposedLowDeltaMinor: input.proposedLowDeltaMinor,
       proposedTargetDeltaMinor: input.proposedTargetDeltaMinor,
@@ -120,5 +121,31 @@ export const whatIfService = {
         functionImpact: input.functionImpact,
       },
     });
+
+    // README §9's required ACCEPTED state: only created when this
+    // commit genuinely represents a real cost reduction with both real
+    // prices known - never for a cost increase or a price-unknown
+    // commit, which are real, legitimate budget revisions but not
+    // "accepted savings" in the README's own sense. The committed
+    // target delta is already verified above to exactly match these
+    // same two prices, so this never records a saving amount that
+    // disagrees with the real, persisted BudgetImpact it references.
+    if (
+      input.currentPriceMinor !== null &&
+      input.proposedPriceMinor !== null &&
+      target < 0n
+    ) {
+      await savingRepository.create({
+        propertyId,
+        ownerId,
+        budgetImpactId: result.id,
+        currentPriceMinor: BigInt(input.currentPriceMinor),
+        proposedPriceMinor: BigInt(input.proposedPriceMinor),
+        savingMinor: -target,
+        reason: input.reason,
+      });
+    }
+
+    return result;
   },
 };
