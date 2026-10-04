@@ -27,44 +27,33 @@ type DashboardProperty = {
 
 type Tab = "Home" | "Design" | "Budget" | "Build" | "More";
 const tabs: Tab[] = ["Home", "Design", "Budget", "Build", "More"];
-const directions = [
-  {
-    name: "Quiet Japandi",
-    tag: "Concept exploration",
-    copy: "Warm oak, mineral plaster, low visual noise.",
-    colors: ["#D7C8B5", "#9A8B76"],
-  },
-  {
-    name: "Modern Indian",
-    tag: "Concept exploration",
-    copy: "Hand-finished details and flexible storage.",
-    colors: ["#B66F51", "#332E2B"],
-  },
-  {
-    name: "Soft Minimal",
-    tag: "Concept exploration",
-    copy: "Calm neutrals and durable surfaces.",
-    colors: ["#C8C3B9", "#76746D"],
-  },
-];
+
+type DesignDirection = {
+  id: string;
+  name: string;
+  status: "ACTIVE" | "ALTERNATIVE" | "REJECTED";
+  createdAt: string;
+  activatedAt: string | null;
+};
 
 function MainApp({ userName }: { userName: string | null }) {
   const [tab, setTab] = useState<Tab>("Home");
   const [syncing, setSyncing] = useState(false);
-  const [saved, setSaved] = useState<string[]>([]);
   const [search, setSearch] = useState("");
   const [properties, setProperties] = useState<DashboardProperty[] | null>(
     null,
   );
   const [dashboardError, setDashboardError] = useState<string | null>(null);
+  const [designDirections, setDesignDirections] = useState<
+    DesignDirection[] | null
+  >(null);
+  const [activatingId, setActivatingId] = useState<string | null>(null);
   const filteredDirections = useMemo(
     () =>
-      directions.filter((direction) =>
-        `${direction.name} ${direction.copy}`
-          .toLowerCase()
-          .includes(search.toLowerCase()),
+      (designDirections ?? []).filter((direction) =>
+        direction.name.toLowerCase().includes(search.toLowerCase()),
       ),
-    [search],
+    [designDirections, search],
   );
   function showCapture() {
     Alert.alert("Capture your home", "Choose what you want to add.", [
@@ -87,21 +76,45 @@ function MainApp({ userName }: { userName: string | null }) {
       { text: "Cancel", style: "cancel" },
     ]);
   }
-  function toggleDirection(name: string) {
-    setSaved((current) =>
-      current.includes(name)
-        ? current.filter((item) => item !== name)
-        : [...current, name],
-    );
+  async function activateDirectionOnMobile(direction: DesignDirection) {
+    setActivatingId(direction.id);
+    try {
+      await apiFetch(`/api/mobile/design/${direction.id}/activate`, {
+        method: "POST",
+      });
+      setDesignDirections(
+        (current) =>
+          current?.map((item) => ({
+            ...item,
+            status:
+              item.id === direction.id
+                ? "ACTIVE"
+                : item.status === "ACTIVE"
+                  ? "ALTERNATIVE"
+                  : item.status,
+          })) ?? null,
+      );
+    } catch (error) {
+      Alert.alert(
+        "Couldn't activate this direction",
+        error instanceof ApiError
+          ? error.message
+          : "Please try again in a moment.",
+      );
+    } finally {
+      setActivatingId(null);
+    }
   }
   const refreshSync = useCallback(async () => {
     setSyncing(true);
     setDashboardError(null);
     try {
-      const result = await apiFetch<{ properties: DashboardProperty[] }>(
-        "/api/mobile/dashboard",
-      );
-      setProperties(result.properties);
+      const [dashboardResult, designResult] = await Promise.all([
+        apiFetch<{ properties: DashboardProperty[] }>("/api/mobile/dashboard"),
+        apiFetch<{ directions: DesignDirection[] }>("/api/mobile/design"),
+      ]);
+      setProperties(dashboardResult.properties);
+      setDesignDirections(designResult.directions);
     } catch (error) {
       setDashboardError(
         error instanceof ApiError
@@ -172,11 +185,13 @@ function MainApp({ userName }: { userName: string | null }) {
           )}
           {tab === "Design" && (
             <DesignView
+              propertyName={properties?.[0]?.name ?? null}
               filteredDirections={filteredDirections}
+              loading={designDirections === null}
               search={search}
               setSearch={setSearch}
-              saved={saved}
-              toggleDirection={toggleDirection}
+              onActivate={activateDirectionOnMobile}
+              activatingId={activatingId}
             />
           )}
           {tab === "Budget" && <BudgetView />}
@@ -466,27 +481,41 @@ function HomeView({
   );
 }
 
+function statusLabel(status: DesignDirection["status"]) {
+  if (status === "ACTIVE") return "YOUR ACTIVE DIRECTION";
+  if (status === "REJECTED") return "REJECTED";
+  return "ALTERNATIVE";
+}
+
 function DesignView({
+  propertyName,
   filteredDirections,
+  loading,
   search,
   setSearch,
-  saved,
-  toggleDirection,
+  onActivate,
+  activatingId,
 }: {
-  filteredDirections: typeof directions;
+  propertyName: string | null;
+  filteredDirections: DesignDirection[];
+  loading: boolean;
   search: string;
   setSearch: (value: string) => void;
-  saved: string[];
-  toggleDirection: (name: string) => void;
+  onActivate: (direction: DesignDirection) => void;
+  activatingId: string | null;
 }) {
   return (
     <>
       <Text style={styles.date}>DESIGN INTELLIGENCE</Text>
-      <Text style={styles.title}>Directions grounded in your home.</Text>
+      <Text style={styles.title}>
+        {propertyName
+          ? `Directions for ${propertyName}.`
+          : "Directions grounded in your home."}
+      </Text>
       <Text style={styles.subtitle}>
-        Explore concept directions while the account-backed design evidence is
-        syncing. No fit score or approval is shown until the real workspace
-        provides it.
+        Real directions from your account - never a stock mockup. Activating one
+        here makes it your home&apos;s current direction; the one it replaces is
+        kept as an alternative, never deleted.
       </Text>
       <TextInput
         value={search}
@@ -495,56 +524,45 @@ function DesignView({
         placeholderTextColor="#9B9185"
         style={styles.input}
       />
-      {filteredDirections.map((direction) => (
-        <View key={direction.name} style={styles.directionCard}>
-          <View
-            style={[
-              styles.directionVisual,
-              { backgroundColor: direction.colors[0] },
-            ]}
-          >
-            <View
-              style={[
-                styles.directionShape,
-                { backgroundColor: direction.colors[1] },
-              ]}
-            />
-            <Text style={styles.directionTag}>{direction.tag}</Text>
-            <Pressable
-              onPress={() => toggleDirection(direction.name)}
-              style={styles.saveButton}
-            >
-              <Text
-                style={{
-                  color: saved.includes(direction.name) ? "#B66F51" : "#645C53",
-                }}
-              >
-                {saved.includes(direction.name) ? "✓" : "+"}
-              </Text>
-            </Pressable>
-          </View>
-          <View style={styles.directionBody}>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.directionName}>{direction.name}</Text>
-              <Text style={styles.cardCopy}>{direction.copy}</Text>
-            </View>
-            <View>
-              <Text style={styles.score}>—</Text>
-              <Text style={styles.scoreLabel}>LIVE FIT</Text>
-            </View>
-          </View>
-          <Pressable
-            onPress={() =>
-              Alert.alert(
-                direction.name,
-                "Review this direction against your plan, budget, and material evidence.",
-              )
-            }
-          >
-            <Text style={styles.link}>Review direction ›</Text>
-          </Pressable>
+      {loading ? (
+        <View style={styles.hero}>
+          <ActivityIndicator color="#B66F51" />
         </View>
-      ))}
+      ) : filteredDirections.length === 0 ? (
+        <View style={styles.directionCard}>
+          <Text style={styles.cardCopy}>
+            {propertyName
+              ? "No design directions yet. Start one from the Niwasthan website to see it here."
+              : "Add a property on the Niwasthan website to begin exploring design directions."}
+          </Text>
+        </View>
+      ) : (
+        filteredDirections.map((direction) => (
+          <View key={direction.id} style={styles.directionCard}>
+            <View style={styles.directionBody}>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.directionName}>{direction.name}</Text>
+                <Text style={styles.cardCopy}>
+                  {statusLabel(direction.status)}
+                </Text>
+              </View>
+            </View>
+            {direction.status !== "ACTIVE" &&
+            direction.status !== "REJECTED" ? (
+              <Pressable
+                disabled={activatingId === direction.id}
+                onPress={() => onActivate(direction)}
+              >
+                <Text style={styles.link}>
+                  {activatingId === direction.id
+                    ? "Activating…"
+                    : "Make this my active direction ›"}
+                </Text>
+              </Pressable>
+            ) : null}
+          </View>
+        ))
+      )}
     </>
   );
 }
