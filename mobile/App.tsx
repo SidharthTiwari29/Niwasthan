@@ -36,6 +36,24 @@ type DesignDirection = {
   activatedAt: string | null;
 };
 
+type MobileBudget = {
+  currency: string;
+  status: string;
+  lockedVersion: number | null;
+  latestVersion: {
+    version: number;
+    totalLowMinor: number | null;
+    totalTargetMinor: number | null;
+    totalHighMinor: number | null;
+    isLocked: boolean;
+  } | null;
+};
+
+type BuildMilestone = {
+  label: string;
+  state: "complete" | "active" | "attention" | "not-started";
+};
+
 function MainApp({ userName }: { userName: string | null }) {
   const [tab, setTab] = useState<Tab>("Home");
   const [syncing, setSyncing] = useState(false);
@@ -48,6 +66,11 @@ function MainApp({ userName }: { userName: string | null }) {
     DesignDirection[] | null
   >(null);
   const [activatingId, setActivatingId] = useState<string | null>(null);
+  const [budget, setBudget] = useState<MobileBudget | null | undefined>(
+    undefined,
+  );
+  const [milestones, setMilestones] = useState<BuildMilestone[] | null>(null);
+  const [openSnagCount, setOpenSnagCount] = useState(0);
   const filteredDirections = useMemo(
     () =>
       (designDirections ?? []).filter((direction) =>
@@ -109,12 +132,23 @@ function MainApp({ userName }: { userName: string | null }) {
     setSyncing(true);
     setDashboardError(null);
     try {
-      const [dashboardResult, designResult] = await Promise.all([
-        apiFetch<{ properties: DashboardProperty[] }>("/api/mobile/dashboard"),
-        apiFetch<{ directions: DesignDirection[] }>("/api/mobile/design"),
-      ]);
+      const [dashboardResult, designResult, budgetResult, buildResult] =
+        await Promise.all([
+          apiFetch<{ properties: DashboardProperty[] }>(
+            "/api/mobile/dashboard",
+          ),
+          apiFetch<{ directions: DesignDirection[] }>("/api/mobile/design"),
+          apiFetch<{ budget: MobileBudget | null }>("/api/mobile/budget"),
+          apiFetch<{
+            milestones: BuildMilestone[] | null;
+            openSnagCount: number;
+          }>("/api/mobile/build"),
+        ]);
       setProperties(dashboardResult.properties);
       setDesignDirections(designResult.directions);
+      setBudget(budgetResult.budget);
+      setMilestones(buildResult.milestones);
+      setOpenSnagCount(buildResult.openSnagCount);
     } catch (error) {
       setDashboardError(
         error instanceof ApiError
@@ -194,8 +228,10 @@ function MainApp({ userName }: { userName: string | null }) {
               activatingId={activatingId}
             />
           )}
-          {tab === "Budget" && <BudgetView />}
-          {tab === "Build" && <BuildView onCapture={showCapture} />}
+          {tab === "Budget" && <BudgetView budget={budget} />}
+          {tab === "Build" && (
+            <BuildView milestones={milestones} openSnagCount={openSnagCount} />
+          )}
           {tab === "More" && <MoreView />}
         </ScrollView>
         <View style={styles.tabbar}>
@@ -566,7 +602,13 @@ function DesignView({
     </>
   );
 }
-function BudgetView() {
+function formatRupeesMinor(minor: number | null | undefined) {
+  if (minor === null || minor === undefined) return "—";
+  return `₹${Math.round(minor / 100).toLocaleString("en-IN")}`;
+}
+
+function BudgetView({ budget }: { budget: MobileBudget | null | undefined }) {
+  const latest = budget?.latestVersion;
   return (
     <>
       <Text style={styles.date}>BUDGET & BOQ</Text>
@@ -575,24 +617,48 @@ function BudgetView() {
         Estimates are clearly separated from confirmed values. Potential savings
         are not reported as realised savings.
       </Text>
-      <View style={styles.budgetHero}>
-        <Text style={styles.budgetLabel}>WORKING BUDGET</Text>
-        <Text style={styles.budgetValue}>—</Text>
-        <View style={styles.budgetSplit}>
-          <View>
-            <Text style={styles.budgetSmall}>Confirmed</Text>
-            <Text style={styles.budgetStat}>—</Text>
-          </View>
-          <View>
-            <Text style={styles.budgetSmall}>Estimated</Text>
-            <Text style={styles.budgetStat}>—</Text>
-          </View>
-          <View>
-            <Text style={styles.budgetSmall}>Confidence</Text>
-            <Text style={styles.budgetStat}>—</Text>
+      {budget === undefined ? (
+        <View style={styles.hero}>
+          <ActivityIndicator color="#B66F51" />
+        </View>
+      ) : !budget || !latest ? (
+        <View style={styles.budgetHero}>
+          <Text style={styles.budgetLabel}>WORKING BUDGET</Text>
+          <Text style={styles.budgetValue}>—</Text>
+          <Text style={styles.budgetSmall}>
+            No budget has been created for this home yet.
+          </Text>
+        </View>
+      ) : (
+        <View style={styles.budgetHero}>
+          <Text style={styles.budgetLabel}>
+            {latest.isLocked ? "LOCKED BUDGET" : "WORKING BUDGET (DRAFT)"}
+          </Text>
+          <Text style={styles.budgetValue}>
+            {formatRupeesMinor(latest.totalTargetMinor)}
+          </Text>
+          <View style={styles.budgetSplit}>
+            <View>
+              <Text style={styles.budgetSmall}>Low</Text>
+              <Text style={styles.budgetStat}>
+                {formatRupeesMinor(latest.totalLowMinor)}
+              </Text>
+            </View>
+            <View>
+              <Text style={styles.budgetSmall}>Target</Text>
+              <Text style={styles.budgetStat}>
+                {formatRupeesMinor(latest.totalTargetMinor)}
+              </Text>
+            </View>
+            <View>
+              <Text style={styles.budgetSmall}>High</Text>
+              <Text style={styles.budgetStat}>
+                {formatRupeesMinor(latest.totalHighMinor)}
+              </Text>
+            </View>
           </View>
         </View>
-      </View>
+      )}
       <View style={styles.infoCard}>
         <Text style={styles.cardTitle}>
           A better deal is not always the cheapest choice.
@@ -605,7 +671,7 @@ function BudgetView() {
           onPress={() =>
             Alert.alert(
               "Savings mode",
-              "Savings opportunities will appear once the catalogue and BOQ are connected.",
+              "Open the Niwasthan website to explore what-if savings for this property.",
             )
           }
         >
@@ -615,7 +681,26 @@ function BudgetView() {
     </>
   );
 }
-function BuildView({ onCapture }: { onCapture: () => void }) {
+const MILESTONE_COLOR: Record<BuildMilestone["state"], string> = {
+  complete: "#7E9A7C",
+  active: "#B66F51",
+  attention: "#C0523A",
+  "not-started": "#D8D0C4",
+};
+const MILESTONE_COPY: Record<BuildMilestone["state"], string> = {
+  complete: "Complete",
+  active: "In progress",
+  attention: "Needs your attention",
+  "not-started": "Not started",
+};
+
+function BuildView({
+  milestones,
+  openSnagCount,
+}: {
+  milestones: BuildMilestone[] | null;
+  openSnagCount: number;
+}) {
   return (
     <>
       <Text style={styles.date}>BUILD & HANDOVER</Text>
@@ -624,32 +709,38 @@ function BuildView({ onCapture }: { onCapture: () => void }) {
         Every milestone keeps the decision history, evidence, and next owner
         visible.
       </Text>
-      {[
-        ["Design lock", "Awaiting live sync", "#D8D0C4"],
-        ["BOQ and quote review", "Awaiting live sync", "#D8D0C4"],
-        ["Site reality check", "Awaiting live sync", "#D8D0C4"],
-        ["Installation and snagging", "Awaiting live sync", "#D8D0C4"],
-      ].map(([label, state, color], index) => (
-        <View key={String(label)} style={styles.timelineRow}>
-          <View
-            style={[styles.timelineDot, { backgroundColor: color as string }]}
-          >
-            <Text style={styles.timelineNumber}>{index + 1}</Text>
-          </View>
-          <View style={styles.timelineCopy}>
-            <Text style={styles.cardTitle}>{label}</Text>
-            <Text style={styles.cardCopy}>{state}</Text>
-          </View>
-          <Text style={styles.arrow}>›</Text>
+      {milestones === null ? (
+        <View style={styles.hero}>
+          <ActivityIndicator color="#B66F51" />
         </View>
-      ))}
+      ) : (
+        milestones.map((milestone, index) => (
+          <View key={milestone.label} style={styles.timelineRow}>
+            <View
+              style={[
+                styles.timelineDot,
+                { backgroundColor: MILESTONE_COLOR[milestone.state] },
+              ]}
+            >
+              <Text style={styles.timelineNumber}>{index + 1}</Text>
+            </View>
+            <View style={styles.timelineCopy}>
+              <Text style={styles.cardTitle}>{milestone.label}</Text>
+              <Text style={styles.cardCopy}>
+                {MILESTONE_COPY[milestone.state]}
+              </Text>
+            </View>
+            <Text style={styles.arrow}>›</Text>
+          </View>
+        ))
+      )}
       <View style={styles.infoCard}>
         <Text style={styles.cardTitle}>Snags and handover</Text>
         <Text style={styles.cardCopy}>
-          Structured snags, evidence attachments, resolution, and handover
-          acceptance will appear here after authenticated execution data syncs.
+          {openSnagCount > 0
+            ? `${openSnagCount} open snag${openSnagCount === 1 ? "" : "s"} recorded for this build. Open the Niwasthan website for full detail and to resolve them.`
+            : "No open snags recorded. Structured snag and handover review is available on the Niwasthan website."}
         </Text>
-        <Text style={styles.link}>Awaiting live execution sync</Text>
       </View>
     </>
   );
@@ -683,23 +774,83 @@ function MoreView() {
           <Text style={styles.arrow}>›</Text>
         </Pressable>
       ))}
-      <View style={styles.humsafar}>
-        <Text style={styles.pill}>HUMSAFAR</Text>
-        <Text style={styles.humsafarTitle}>
-          A second opinion, without taking the decision away from you.
-        </Text>
-        <Pressable
-          onPress={() =>
-            Alert.alert(
-              "Humsafar",
-              "Ask about your space, budget, or the next best step.",
-            )
-          }
-        >
-          <Text style={styles.heroLinkText}>Start a conversation ↗</Text>
-        </Pressable>
-      </View>
+      <HumsafarPanel />
     </>
+  );
+}
+
+function HumsafarPanel() {
+  const [messages, setMessages] = useState<
+    { role: "user" | "assistant"; content: string }[]
+  >([]);
+  const [question, setQuestion] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function ask() {
+    const trimmed = question.trim();
+    if (!trimmed || busy) return;
+    const next = [...messages, { role: "user" as const, content: trimmed }];
+    setMessages(next);
+    setQuestion("");
+    setBusy(true);
+    setError(null);
+    try {
+      const result = await apiFetch<{ reply: string }>(
+        "/api/mobile/assistant",
+        { method: "POST", body: { messages: next } },
+      );
+      setMessages([...next, { role: "assistant", content: result.reply }]);
+    } catch (err) {
+      setError(
+        err instanceof ApiError
+          ? err.message
+          : "Couldn't reach Humsafar. Please try again.",
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <View style={styles.humsafar}>
+      <Text style={styles.pill}>HUMSAFAR</Text>
+      <Text style={styles.humsafarTitle}>
+        A second opinion, without taking the decision away from you.
+      </Text>
+      {messages.length === 0 ? (
+        <Text style={styles.cardCopy}>
+          Ask about your space, budget, or the next best step.
+        </Text>
+      ) : (
+        messages.map((message, index) => (
+          <Text
+            key={`${message.role}-${index}`}
+            style={[
+              styles.cardCopy,
+              message.role === "user" ? { color: "#332E2B" } : null,
+            ]}
+          >
+            {message.role === "user" ? "You: " : "Humsafar: "}
+            {message.content}
+          </Text>
+        ))
+      )}
+      {error ? (
+        <Text style={[styles.cardCopy, { color: "#C0523A" }]}>{error}</Text>
+      ) : null}
+      <TextInput
+        value={question}
+        onChangeText={setQuestion}
+        placeholder="Ask Humsafar…"
+        placeholderTextColor="#9B9185"
+        style={styles.input}
+        onSubmitEditing={ask}
+      />
+      <Pressable onPress={ask} disabled={busy}>
+        <Text style={styles.heroLinkText}>{busy ? "Thinking…" : "Send ↗"}</Text>
+      </Pressable>
+    </View>
   );
 }
 function Stat({ value, label }: { value: string; label: string }) {
