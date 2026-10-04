@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -12,6 +12,18 @@ import {
   View,
 } from "react-native";
 import { useNiwasthanAuth } from "./src/api/auth";
+import { apiFetch, ApiError } from "./src/api/client";
+
+type DashboardProperty = {
+  id: string;
+  name: string;
+  address: string | null;
+  city: string | null;
+  propertyType: string | null;
+  targetBudgetMinor: number | null;
+  roomCount: number;
+  designCount: number;
+};
 
 type Tab = "Home" | "Design" | "Budget" | "Build" | "More";
 const tabs: Tab[] = ["Home", "Design", "Budget", "Build", "More"];
@@ -36,11 +48,15 @@ const directions = [
   },
 ];
 
-function MainApp() {
+function MainApp({ userName }: { userName: string | null }) {
   const [tab, setTab] = useState<Tab>("Home");
   const [syncing, setSyncing] = useState(false);
   const [saved, setSaved] = useState<string[]>([]);
   const [search, setSearch] = useState("");
+  const [properties, setProperties] = useState<DashboardProperty[] | null>(
+    null,
+  );
+  const [dashboardError, setDashboardError] = useState<string | null>(null);
   const filteredDirections = useMemo(
     () =>
       directions.filter((direction) =>
@@ -78,10 +94,30 @@ function MainApp() {
         : [...current, name],
     );
   }
-  function refreshSync() {
+  const refreshSync = useCallback(async () => {
     setSyncing(true);
-    setTimeout(() => setSyncing(false), 900);
-  }
+    setDashboardError(null);
+    try {
+      const result = await apiFetch<{ properties: DashboardProperty[] }>(
+        "/api/mobile/dashboard",
+      );
+      setProperties(result.properties);
+    } catch (error) {
+      setDashboardError(
+        error instanceof ApiError
+          ? error.message
+          : "Couldn't reach your account. Pull to refresh to try again.",
+      );
+    } finally {
+      setSyncing(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      await refreshSync();
+    })();
+  }, [refreshSync]);
   return (
     <SafeAreaView style={styles.safe}>
       <StatusBar style="dark" />
@@ -108,9 +144,18 @@ function MainApp() {
         >
           <View style={styles.syncRow}>
             <View style={styles.syncLeft}>
-              <View style={styles.syncDot} />
+              <View
+                style={[
+                  styles.syncDot,
+                  dashboardError ? { backgroundColor: "#B66F51" } : null,
+                ]}
+              />
               <Text style={styles.syncText}>
-                {syncing ? "Syncing your workspace…" : "Synced just now"}
+                {syncing
+                  ? "Syncing your workspace…"
+                  : dashboardError
+                    ? dashboardError
+                    : "Synced"}
               </Text>
             </View>
             <Pressable onPress={refreshSync}>
@@ -118,7 +163,12 @@ function MainApp() {
             </Pressable>
           </View>
           {tab === "Home" && (
-            <HomeView onCapture={showCapture} onOpen={setTab} />
+            <HomeView
+              onCapture={showCapture}
+              onOpen={setTab}
+              properties={properties}
+              userName={userName}
+            />
           )}
           {tab === "Design" && (
             <DesignView
@@ -223,7 +273,7 @@ export default function App() {
     );
   }
 
-  return <MainApp />;
+  return <MainApp userName={state.user.name} />;
 }
 
 const gateStyles = StyleSheet.create({
@@ -265,92 +315,136 @@ const gateStyles = StyleSheet.create({
   buttonText: { color: "#F7F1E8", fontSize: 14, fontWeight: "700" },
 });
 
+function formatBudget(minor: number | null) {
+  if (!minor) return "Not set";
+  return `₹${Math.round(minor / 100).toLocaleString("en-IN")}`;
+}
+
+// Same real progress and next-step rules the web dashboard uses, so the
+// same account never tells two different stories on two devices.
+function propertyProgress(property: DashboardProperty) {
+  if (property.designCount > 0) return 75;
+  if (property.roomCount > 0) return 50;
+  return 25;
+}
+
+function nextStepFor(property: DashboardProperty) {
+  if (property.roomCount === 0)
+    return {
+      title: "Upload your floor plan",
+      copy: "Rooms, dimensions and unknowns can be reviewed once a plan is added. Nothing is assumed before then.",
+    };
+  if (property.designCount === 0)
+    return {
+      title: "Start a design direction",
+      copy: "Your rooms are understood. Compare design directions grounded in your real home.",
+    };
+  return {
+    title: "Continue designing",
+    copy: "Review your directions and budget impact before committing to anything.",
+  };
+}
+
 function HomeView({
   onCapture,
   onOpen,
+  properties,
+  userName,
 }: {
   onCapture: () => void;
   onOpen: (tab: Tab) => void;
+  properties: DashboardProperty[] | null;
+  userName: string | null;
 }) {
+  const now = new Date();
+  const hour = now.getHours();
+  const greeting =
+    hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+  const firstName = userName?.split(" ")[0];
+  const featured = properties?.[0];
+  const progress = featured ? propertyProgress(featured) : 0;
+  const step = featured ? nextStepFor(featured) : null;
+
   return (
     <>
-      <Text style={styles.date}>SUNDAY, 13 SEPTEMBER 2026</Text>
-      <Text style={styles.title}>Good morning, Sidharth.</Text>
+      <Text style={styles.date}>
+        {now
+          .toLocaleDateString("en-IN", {
+            weekday: "long",
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+          })
+          .toUpperCase()}
+      </Text>
+      <Text style={styles.title}>
+        {firstName ? `${greeting}, ${firstName}.` : `${greeting}.`}
+      </Text>
       <Text style={styles.subtitle}>
         Your home is becoming clearer. Confirm the few unknowns and your next
         decision gets easier.
       </Text>
-      <View style={styles.hero}>
-        <View style={styles.heroLine}>
-          <View>
-            <Text style={styles.pill}>ACTIVE HOME</Text>
-            <Text style={styles.heroTitle}>Your home workspace</Text>
-            <Text style={styles.heroMeta}>
-              Shared project context · awaiting live sync
-            </Text>
+      {properties === null ? (
+        <View style={styles.hero}>
+          <ActivityIndicator color="#B66F51" />
+        </View>
+      ) : featured ? (
+        <View style={styles.hero}>
+          <View style={styles.heroLine}>
+            <View>
+              <Text style={styles.pill}>ACTIVE HOME</Text>
+              <Text style={styles.heroTitle}>{featured.name}</Text>
+              <Text style={styles.heroMeta}>
+                {featured.city ??
+                  featured.address ??
+                  "Location to be confirmed"}
+              </Text>
+            </View>
+            <Text style={styles.heroMark}>✦</Text>
           </View>
-          <Text style={styles.heroMark}>✦</Text>
-        </View>
-        <View style={styles.statRow}>
-          <Stat value="—" label="HOME UNDERSTOOD" />
-          <Stat value="—" label="DIRECTIONS READY" />
-          <Stat value="—" label="WORKING BUDGET" />
-        </View>
-        <Text style={styles.heroNote}>
-          We will show confirmed, inferred, estimated, and unknown values
-          separately once your account data syncs.
-        </Text>
-        <Pressable onPress={() => onOpen("Design")} style={styles.heroLink}>
-          <Text style={styles.heroLinkText}>Open home intelligence ↗</Text>
-        </Pressable>
-      </View>
-      <SectionHeading
-        eyebrow="NEXT BEST STEP"
-        title="One small confirmation unlocks better options."
-      />
-      <View style={styles.nextCard}>
-        <View style={styles.iconBubble}>
-          <Text style={styles.iconText}>⌾</Text>
-        </View>
-        <View style={styles.nextCopy}>
-          <Text style={styles.cardTitle}>Confirm your living room opening</Text>
-          <Text style={styles.cardCopy}>
-            We inferred a 1.2m balcony opening from your plan. A photo will
-            raise design confidence.
-          </Text>
-          <Pressable onPress={onCapture}>
-            <Text style={styles.link}>Add a photo ›</Text>
-          </Pressable>
-        </View>
-      </View>
-      <SectionHeading
-        eyebrow="PROJECT PULSE"
-        title="A clear view of what’s moving"
-      />
-      {[
-        ["Home intelligence", "—", "Awaiting live account sync", 0, "#D8D0C4"],
-        ["Design direction", "—", "Awaiting live account sync", 0, "#D8D0C4"],
-        ["Budget confidence", "—", "Awaiting live account sync", 0, "#D8D0C4"],
-      ].map(([label, value, note, progress, color]) => (
-        <View key={String(label)} style={styles.progressCard}>
-          <View style={styles.progressHead}>
-            <Text style={styles.cardTitle}>{label}</Text>
-            <Text style={styles.progressValue}>{value}</Text>
-          </View>
-          <View style={styles.track}>
-            <View
-              style={[
-                styles.progress,
-                {
-                  width: `${Number(progress)}%`,
-                  backgroundColor: color as string,
-                },
-              ]}
+          <View style={styles.statRow}>
+            <Stat value={`${progress}%`} label="PROGRESS" />
+            <Stat value={String(featured.roomCount)} label="ROOMS UNDERSTOOD" />
+            <Stat
+              value={formatBudget(featured.targetBudgetMinor)}
+              label="TARGET BUDGET"
             />
           </View>
-          <Text style={styles.cardCopy}>{note}</Text>
+          <Text style={styles.heroNote}>
+            Target budget is what you set, not a confirmed final cost.
+          </Text>
+          <Pressable onPress={() => onOpen("Design")} style={styles.heroLink}>
+            <Text style={styles.heroLinkText}>Open home intelligence ↗</Text>
+          </Pressable>
         </View>
-      ))}
+      ) : (
+        <View style={styles.hero}>
+          <Text style={styles.heroTitle}>Your first home starts here.</Text>
+          <Text style={styles.heroNote}>
+            Add a property on the Niwasthan website and it will appear here.
+          </Text>
+        </View>
+      )}
+      {step ? (
+        <>
+          <SectionHeading
+            eyebrow="NEXT BEST STEP"
+            title="One small confirmation unlocks better options."
+          />
+          <View style={styles.nextCard}>
+            <View style={styles.iconBubble}>
+              <Text style={styles.iconText}>⌾</Text>
+            </View>
+            <View style={styles.nextCopy}>
+              <Text style={styles.cardTitle}>{step.title}</Text>
+              <Text style={styles.cardCopy}>{step.copy}</Text>
+              <Pressable onPress={onCapture}>
+                <Text style={styles.link}>Add a photo or plan ›</Text>
+              </Pressable>
+            </View>
+          </View>
+        </>
+      ) : null}
       <Pressable
         onPress={onCapture}
         style={({ pressed }) => [styles.captureCard, pressed && styles.pressed]}
