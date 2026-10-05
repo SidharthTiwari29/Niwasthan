@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
+    "pretest": "prisma migrate deploy || true",
     "test": "vitest run",
     "format:check": "prettier --check .",
     "format": "prettier --write .",
