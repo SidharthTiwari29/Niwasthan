@@ -1344,19 +1344,35 @@ enum NotificationType {
   WALKTHROUGH_READY
 }
 
+// README §34: notifications must have real "channel delivery and
+// operational monitoring", not just the in-app bell. emailStatus tracks
+// whether this notification's event was also genuinely attempted over
+// email (reusing the same SMTP transport sendEmail() already uses for
+// magic-link sign-in) - never a fabricated "delivered" when it wasn't.
+enum NotificationEmailStatus {
+  PENDING
+  SENT
+  FAILED
+  SKIPPED
+}
+
 model Notification {
-  id                String           @id @default(cuid())
+  id                String                   @id @default(cuid())
   userId            String
   type              NotificationType
   title             String
-  message           String           @db.Text
+  message           String                   @db.Text
   relatedEntityType String?
   relatedEntityId   String?
-  read              Boolean          @default(false)
-  createdAt         DateTime         @default(now())
-  user              User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  read              Boolean                  @default(false)
+  emailStatus       NotificationEmailStatus  @default(PENDING)
+  emailError        String?                  @db.Text
+  emailSentAt       DateTime?
+  createdAt         DateTime                 @default(now())
+  user              User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, read, createdAt])
+  @@index([emailStatus, createdAt])
 }
 
 enum NegotiationDecision {
