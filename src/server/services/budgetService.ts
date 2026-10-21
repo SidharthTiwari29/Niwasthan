@@ -1,5 +1,6 @@
 import { ConflictError, NotFoundError } from "@/server/errors/AppError";
 import { budgetRepository } from "@/server/repositories/budgetRepository";
+import { observeBudgetAndAct } from "@/server/agents/budgetOperationsAgent";
 import type {
   BudgetImpactInput,
   CreateBudgetInput,
@@ -19,6 +20,12 @@ export const budgetService = {
         input,
       );
       if (!result) throw new NotFoundError("Property");
+      // README §15 BOQ & Budget Operations Agent: observes the newly
+      // saved plan and notifies the owner if it's already at its
+      // estimated ceiling or a real trade-off is available. Best-effort
+      // and swallowed - an observation failure must never fail the real,
+      // already-persisted budget write that triggered it.
+      await observeBudgetAndAct(propertyId, ownerId).catch(() => undefined);
       return result;
     } catch (error) {
       if (error instanceof Error && error.message === "BUDGET_LOCKED") {
