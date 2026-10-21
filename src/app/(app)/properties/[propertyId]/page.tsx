@@ -203,6 +203,12 @@ export default async function PropertyDetailPage({
             Budget &amp; BOQ
           </Link>
           <Link
+            href={`/properties/${propertyId}/renders`}
+            className="rounded-full border border-ink/15 px-4 py-3 font-body text-sm font-semibold text-ink"
+          >
+            Past renders
+          </Link>
+          <Link
             href={`/properties/${propertyId}/procurement`}
             className="rounded-full border border-ink/15 px-4 py-3 font-body text-sm font-semibold text-ink"
           >

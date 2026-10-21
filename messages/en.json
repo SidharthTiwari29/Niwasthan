@@ -404,5 +404,13 @@
     "noSavings": "No accepted savings recorded yet.",
     "savingStatusAccepted": "Accepted",
     "savingStatusRealised": "Realised"
+  },
+  "propertyRenders": {
+    "backToProperty": "← Back to {name}",
+    "eyebrow": "Render library",
+    "heading": "Every render this home has produced.",
+    "description": "Images, panoramas and walkthroughs genuinely generated for this property's design projects, newest first.",
+    "noRendersYet": "No renders have been generated for this property yet.",
+    "versionLabel": "v"
   }
 }

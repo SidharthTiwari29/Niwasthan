@@ -98,6 +98,41 @@ export const assetService = {
     return { asset: serializeAsset(asset), grant };
   },
 
+  // README: a real "render asset library" - every genuine render-type
+  // asset this property's design projects have produced, each with a
+  // real, freshly-signed download URL (never a stale/public link), so
+  // the owner can browse past renders rather than hunting through each
+  // individual design project. Ownership is enforced inside the
+  // repository query itself; findPropertyContext here is only to turn
+  // a wrong/foreign propertyId into a clean 404/403 before doing any
+  // signing work for it.
+  async listRenderLibrary(propertyId: string, userId: string) {
+    const property = await assetRepository.findPropertyContext(propertyId);
+    if (!property) throw new NotFoundError("Property");
+    if (property.ownerId !== userId) throw new ForbiddenError();
+
+    const assets = await assetRepository.listRenderableForProperty(
+      propertyId,
+      userId,
+    );
+    const storage = getStorageProvider();
+
+    return Promise.all(
+      assets.map(async (asset: (typeof assets)[number]) => ({
+        id: asset.id,
+        type: asset.type,
+        contentType: asset.contentType,
+        createdAt: asset.createdAt,
+        designProjectId: asset.designVersion?.projectId ?? null,
+        designVersion: asset.designVersion?.version ?? null,
+        downloadUrl: await storage.createDownloadUrl(
+          asset.objectKey,
+          SIGNED_URL_TTL_SECONDS,
+        ),
+      })),
+    );
+  },
+
   async createDownloadUrl(assetId: string, userId: string) {
     await assertAssetOwner(assetId, userId);
     const asset = await assetRepository.findById(assetId);

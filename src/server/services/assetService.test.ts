@@ -13,6 +13,7 @@ vi.mock("@/server/repositories/assetRepository", () => ({
     createForJob: vi.fn(),
     createForProperty: vi.fn(),
     findById: vi.fn(),
+    listRenderableForProperty: vi.fn(),
   },
 }));
 
@@ -210,5 +211,73 @@ describe("assetService.createDownloadUrl", () => {
     expect(result.asset.sizeBytes).toBe(2_500_000);
     expect(typeof result.asset.sizeBytes).toBe("number");
     expect(result.downloadUrl).toBe("https://real-signed-url");
+  });
+});
+
+describe("assetService.listRenderLibrary", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockStorage.mockReturnValue({
+      createUploadGrant: vi.fn(),
+      createDownloadUrl: vi
+        .fn()
+        .mockImplementation((key: string) =>
+          Promise.resolve(`https://signed/${key}`),
+        ),
+    });
+  });
+
+  it("rejects a property that does not exist", async () => {
+    db.findPropertyContext.mockResolvedValue(null);
+
+    await expect(
+      assetService.listRenderLibrary("nonexistent-property", "user-1"),
+    ).rejects.toBeInstanceOf(NotFoundError);
+    expect(db.listRenderableForProperty).not.toHaveBeenCalled();
+  });
+
+  it("rejects a property the caller does not own", async () => {
+    db.findPropertyContext.mockResolvedValue({
+      id: "property-1",
+      ownerId: "someone-else",
+    } as never);
+
+    await expect(
+      assetService.listRenderLibrary("property-1", "user-1"),
+    ).rejects.toBeInstanceOf(ForbiddenError);
+    expect(db.listRenderableForProperty).not.toHaveBeenCalled();
+  });
+
+  it("returns every render asset with a real, freshly-signed download URL", async () => {
+    db.findPropertyContext.mockResolvedValue({
+      id: "property-1",
+      ownerId: "user-1",
+    } as never);
+    const createdAt = new Date("2026-01-01T00:00:00Z");
+    db.listRenderableForProperty.mockResolvedValue([
+      {
+        id: "asset-1",
+        type: "PANORAMA",
+        objectKey: "real-key-1",
+        contentType: "image/jpeg",
+        createdAt,
+        designVersionId: "version-1",
+        designVersion: { projectId: "project-1", version: 2 },
+      },
+    ] as never);
+
+    const result = await assetService.listRenderLibrary("property-1", "user-1");
+
+    expect(result).toEqual([
+      {
+        id: "asset-1",
+        type: "PANORAMA",
+        contentType: "image/jpeg",
+        createdAt,
+        designProjectId: "project-1",
+        designVersion: 2,
+        downloadUrl: "https://signed/real-key-1",
+      },
+    ]);
   });
 });

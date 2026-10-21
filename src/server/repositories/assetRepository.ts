@@ -94,6 +94,44 @@ export const assetRepository = {
     });
   },
 
+  // README: "an asset library for past renders" - every render-type
+  // asset (not floor plans/room photos/OTHER) genuinely produced for
+  // this property's design projects, newest first. Ownership is
+  // enforced in the same WHERE clause, not a separate check, so an
+  // asset belonging to someone else's project is structurally
+  // unreachable here, not just policy-forbidden.
+  listRenderableForProperty(propertyId: string, ownerId: string) {
+    return prisma.asset.findMany({
+      where: {
+        type: {
+          in: [
+            "DESIGN_IMAGE",
+            "PANORAMA",
+            "THREE_D_SCENE",
+            "WALKTHROUGH",
+            "VIDEO",
+          ],
+        },
+        designVersion: {
+          project: { propertyId, ownerId },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+      take: 60,
+      select: {
+        id: true,
+        type: true,
+        objectKey: true,
+        contentType: true,
+        createdAt: true,
+        designVersionId: true,
+        designVersion: {
+          select: { projectId: true, version: true },
+        },
+      },
+    });
+  },
+
   createForProperty(input: {
     propertyId: string;
     type: Prisma.AssetCreateInput["type"];
