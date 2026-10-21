@@ -197,6 +197,12 @@ export default async function PropertyDetailPage({
             What-if & Smart Home
           </Link>
           <Link
+            href={`/properties/${propertyId}/budget`}
+            className="rounded-full border border-ink/15 px-4 py-3 font-body text-sm font-semibold text-ink"
+          >
+            Budget &amp; BOQ
+          </Link>
+          <Link
             href={`/properties/${propertyId}/procurement`}
             className="rounded-full border border-ink/15 px-4 py-3 font-body text-sm font-semibold text-ink"
           >

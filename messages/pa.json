@@ -382,5 +382,27 @@
     "oneTimeInviteNote": "ਇਹ ਇੱਕ-ਵਾਰ ਦਾ ਸੱਦਾ ਆਪਣੇ ਆਪ ਖਤਮ ਹੋ ਜਾਂਦਾ ਹੈ ਅਤੇ ਜਮ੍ਹਾਂ ਕਰਨ ਤੋਂ ਬਾਅਦ ਦੁਬਾਰਾ ਵਰਤਿਆ ਨਹੀਂ ਜਾ ਸਕਦਾ।",
     "enterValidAmount": "ਰੁਪਏ ਵਿੱਚ ਇੱਕ ਵੈਧ ਕੁੱਲ ਕੋਟੇਸ਼ਨ ਰਕਮ ਦਰਜ ਕਰੋ।",
     "couldNotSubmitQuote": "ਅਸੀਂ ਇਹ ਕੋਟੇਸ਼ਨ ਜਮ੍ਹਾਂ ਨਹੀਂ ਕਰ ਸਕੇ।"
+  },
+  "propertyBudget": {
+    "backToProperty": "← {name} ਵੱਲ ਵਾਪਸ ਜਾਓ",
+    "eyebrow": "ਬਜਟ ਅਤੇ BOQ",
+    "heading": "ਹਰ ਕਮਰੇ ਲਈ ਇੱਕ ਅਸਲ ਅੰਕੜਾ।",
+    "description": "ਹੇਠਾਂ ਦਿੱਤੀ ਹਰ ਚੀਜ਼ ਸੇਵ ਕੀਤੀ ਬਜਟ ਯੋਜਨਾ, ਕਮਰਿਆਂ ਵਿਚਕਾਰ ਅਸਲ ਟ੍ਰੇਡ-ਆਫ ਵਿਸ਼ਲੇਸ਼ਣ ਅਤੇ ਅਸਲ ਮਨਜ਼ੂਰਸ਼ੁਦਾ ਬੱਚਤ ਰਿਕਾਰਡ ਤੋਂ ਲਈ ਗਈ ਹੈ - ਇਸ ਪੰਨੇ ਲਈ ਕੋਈ ਅੰਦਾਜ਼ਾ ਨਹੀਂ ਲਗਾਇਆ ਗਿਆ।",
+    "noBudgetYet": "ਇਸ ਜਾਇਦਾਦ ਲਈ ਅਜੇ ਤੱਕ ਕੋਈ ਬਜਟ ਯੋਜਨਾ ਸੇਵ ਨਹੀਂ ਕੀਤੀ ਗਈ।",
+    "planStatusLabel": "ਯੋਜਨਾ ਦੀ ਸਥਿਤੀ",
+    "totalRangeLabel": "ਕੁੱਲ ਅਸਲ ਸੀਮਾ",
+    "targetLabel": "ਟੀਚਾ",
+    "roomBreakdownHeading": "ਕਮਰੇ-ਦਰ-ਕਮਰੇ ਖਰਚ",
+    "unassignedRoom": "ਨਿਰਧਾਰਤ ਨਹੀਂ",
+    "roomHeadroom": "ਘਟਾਉਣ ਦੀ ਗੁੰਜਾਇਸ਼",
+    "roomStretch": "ਹੋਰ ਖਰਚ ਕਰਨ ਦੀ ਗੁੰਜਾਇਸ਼",
+    "optimizationHeading": "ਕਮਰਿਆਂ ਵਿਚਕਾਰ ਟ੍ਰੇਡ-ਆਫ",
+    "noOptimization": "ਹਰ ਕਮਰਾ ਪਹਿਲਾਂ ਹੀ ਆਪਣੇ ਟੀਚੇ 'ਤੇ ਹੈ - ਹੁਣ ਸੁਝਾਉਣ ਲਈ ਕੋਈ ਟ੍ਰੇਡ-ਆਫ ਨਹੀਂ ਹੈ।",
+    "shiftFrom": "ਇੱਥੋਂ ਸ਼ਿਫਟ ਕਰੋ",
+    "shiftTo": "ਇੱਥੇ",
+    "savingsHeading": "ਬੱਚਤ",
+    "noSavings": "ਅਜੇ ਤੱਕ ਕੋਈ ਮਨਜ਼ੂਰਸ਼ੁਦਾ ਬੱਚਤ ਦਰਜ ਨਹੀਂ ਹੋਈ।",
+    "savingStatusAccepted": "ਮਨਜ਼ੂਰ",
+    "savingStatusRealised": "ਅਸਲ ਵਿੱਚ ਪ੍ਰਾਪਤ"
   }
 }

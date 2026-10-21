@@ -382,5 +382,27 @@
     "oneTimeInviteNote": "This one-time invite expires automatically and cannot be reused after submission.",
     "enterValidAmount": "Enter a valid total quote amount in rupees.",
     "couldNotSubmitQuote": "We could not submit this quote."
+  },
+  "propertyBudget": {
+    "backToProperty": "← Back to {name}",
+    "eyebrow": "Budget & BOQ",
+    "heading": "One real number for every room.",
+    "description": "Everything below comes from the saved budget plan, the cross-room trade-off reasoning, and the real accepted savings ledger - never an estimate made up for this page.",
+    "noBudgetYet": "No budget plan has been saved for this property yet.",
+    "planStatusLabel": "Plan status",
+    "totalRangeLabel": "Total realistic range",
+    "targetLabel": "Target",
+    "roomBreakdownHeading": "Room-by-room spend",
+    "unassignedRoom": "Unassigned",
+    "roomHeadroom": "Headroom to cut",
+    "roomStretch": "Room to absorb more",
+    "optimizationHeading": "Cross-room trade-offs",
+    "noOptimization": "Every room is already at its target - there is no trade-off to suggest right now.",
+    "shiftFrom": "Shift from",
+    "shiftTo": "to",
+    "savingsHeading": "Savings",
+    "noSavings": "No accepted savings recorded yet.",
+    "savingStatusAccepted": "Accepted",
+    "savingStatusRealised": "Realised"
   }
 }
